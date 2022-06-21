@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en" itemscope itemtype="http://schema.org/Person">
+<head>
+  <meta charset="utf-8">
+  <!-- Site Meta Data -->
+  <title>Component of DST, interface</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="junehan">
+
+  <link rel="shortcut icon" href="">
+
+  <!-- schema.org -->
+  <meta itemprop="name" content="junehan.dev.log">
+  <meta itemprop="image" content="">
+  <meta itemprop="description" content="">
+
+  <!-- Style Meta Data -->
+  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
+  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
+
+  <!-- Feed Meta Data -->
+
+  <!-- Twitter Feed -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="">
+  <meta name="twitter:image" content="">
+
+<meta name="twitter:creator" content="">
+<meta name="twitter:url" content="/posts/datastructure/2022/06/16/interface-in-datastructure">
+<meta name="twitter:title" content="junehan.dev.log ~ Component of DST, interface">
+<meta name="twitter:description" content="About the interface of datastructure">
+
+<!-- Facebook Meta Data -->
+<meta property="og:title" content="junehan.dev.log ~ Component of DST, interface" />
+<meta property="og:description" content="About the interface of datastructure" />
+<meta property="og:image" content="" />
+</head>
+
+<body>
+    <div class="container">
+
+    <!-- Navbar -->
+      <div class="navbar">
+        <ul>
+            <div>
+                <li>
+                    <a href=""><h3>junehan.dev.log</h3></a>
+                </li>
+                <li>
+                </li>
+            </div>
+        </ul>
+      </div>
+
+  <!-- Sidebar -->
+    <sidebar>
+        <ul class="static-item">
+
+        </ul>        
+
+        <ul>
+                <div class="cat-border">
+                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+                    <li><a href="/category/datastructure.html">datastructure</a></li>
+                    <li><a href="/category/diary.html">diary</a></li>
+                    <li><a href="/category/math.html">math</a></li>
+                </div>
+        </ul>
+
+            <h2><br/>BLOGROLLS</h2>
+            <ul>
+                    <li><a href="https://github.com/junehan-dev">github</a></li>
+                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+            </ul> 
+   
+        <p> 
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+    </sidebar>
+    
+    <maincontent>
+<h2>
+    <a href="/posts/datastructure/2022/06/16/interface-in-datastructure" rel="bookmark" title="Permalink to Component of DST, interface">Component of DST, interface</a>
+</h2>
+
+<div>
+    <b>By: </b><a href="/author/junehan.html">junehan</a><b>    On: </b>Thu 16 June 2022<br />
+    <b>In: </b><a href="/category/datastructure.html" rel="bookmark" title="Permalink to datastructure">datastructure</a><br />
+    <em><b>Tags: </b>
+                <span><a href="/tag/interface.html">#interface </a></span>
+    </em>
+    <hr>
+</div>
+
+<div>
+    <mainarticle>
+    <div class="section" id="subject-dst">
+<h2>SUBJECT: DST의 구성요소</h2>
+<div class="section" id="objectives">
+<h3>Objectives</h3>
+<blockquote>
+<ul class="simple">
+<li>자료구조와 인터페이스, 알고리즘 요소들과 역할, 정의등을 두루 분명히 하는 것</li>
+<li>사소한 것들은 사소한대로 잘 정의하는 것</li>
+<li>명료한 지식의 상태로 체득하는 것</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="why">
+<h3>Why</h3>
+<blockquote>
+<p>C에서는 항상 <tt class="docutils literal">array</tt>나 <tt class="docutils literal">malloc</tt>으로 거의 다 해결하고, 파이썬에서도 <tt class="docutils literal">list</tt>, <tt class="docutils literal">tuple</tt>, 고작해야 <tt class="docutils literal">namedtuple</tt>같은 자료형을 좋아하고, 그러다보니 복잡한 문제를 해결하는 데에 기본 자료형의 자유로움이 제약이 굉장히 크게 온 경험이 있었다.</p>
+<blockquote>
+<ul class="simple">
+<li>늘 쓰던 방식을 전 프로그램에 걸쳐서 특정한 함수를 따로 만들어서 사용하는걸 해내지 못했으니 오히려 코드 품질이나 개발의 집중도, 진척도 모든 것에 악영향을 주었다. 배열을 앞에서 1byte씩 잘라서 재할당하는 행동을 좋아할 사람은 아무도 없다.</li>
+</ul>
+</blockquote>
+<p>프로그래머스의 문제 중 어려운 문제가 아니었는데, 다리위에 트럭이 지나가고 빠져나가는 것을 시뮬레이션 하는 프로그램을 작성하는 케이스였다.</p>
+<blockquote>
+<ul class="simple">
+<li>나 같이 기본데이터만 사용해온 사람들은 array-like 한 파이썬의 리스트를 사용하여 앞에서 slicing을 사용하거나 slice and push 용 함수를 짰었을 텐데, 자유도가 높은 자료형으로 사용해왔던 습관을 특정 방식으로만 특정한 시간 내에 조작할 수 있도록 유지해서 프로그램을 완성하기가 어려웠고, 절망에 빠지게 되었다.</li>
+<li>난 이것도 못하는 놈인가 생각을 해보니 나는 queue, stack같은 자료형에 관심도 없었을 뿐만 아니라 그게 어떤건지 정확히 규정하는 것도 불가능하면서 잘난척하는 부류였다는 사실은 절망감을 주었다.</li>
+</ul>
+</blockquote>
+<p>이를 개선하기 위해 명칭, 작용방식, 활용 가능성들을 충분히 머금기 위해서 이에 대한 학습을 정리하였다.</p>
+</blockquote>
+</div>
+<div class="section" id="interface">
+<h3>interface</h3>
+<blockquote>
+<strong>&quot;인터페이스와 자료구조는 다르다.&quot;</strong></blockquote>
+<img alt="Component of DST" src="https://lh3.googleusercontent.com/pw/AM-JKLUaqZqeosJ5JDXPp_SHx8CkNC5gl4cGEKHvhyobqDxlL9uC5o09qSQzqtV239d76gchF8mOuIaKsPO7tQXDdhJ8XTgItEVO7jAJc4oWHF66E11K4qd9Dpe6OYXA9PjuQzLBkU9Zv-5-gJqtGDVA0hU=w916-h1222-no?authuser=0" />
+<p>Interface는 <em>&quot;무엇을 하고 싶은지?&quot;</em> 에 대해 규정하는 부분이다.</p>
+<blockquote>
+<ul>
+<li><p class="first">Sequence</p>
+<blockquote>
+<ul class="simple">
+<li>일반적으로는 사람들이 가장 원하는 데이터가 Array기반의 빠른 동작을 주는 인덱싱 오브젝트.</li>
+<li><em>(ADT는 다양하다)</em>: OS에서 제공하는 배열은 stack이나 malloc 이지만 이걸로 다양한 동작방식으로 강제할 수 있다.</li>
+<li>Linked list의 연속성을 관리하고 대표해주는 Node클래스 혹은 인스턴스</li>
+</ul>
+</blockquote>
+</li>
+<li><p class="first">Set(Hash map)</p>
+<blockquote>
+<ul class="simple">
+<li>Hash map은 Hash function이라는 키 생성 함수를 통해서, 배열에 포인터가 저장된 형태로, hash function을 통해서 해당 인덱스로 접근할 수 있도록 구성된 인터페이스.</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<img alt="Dynamic Interfaces" src="https://lh3.googleusercontent.com/pw/AM-JKLUJZAhvAONIMKM2dRlsgYzfEh6cMUdljndNb-zHx73fKhuXwqaCQFkEdgY_4VQwPPc4SGGWr1PE4WqTceMQx9dn9kcyqwL0AeKqhBeYRFf7MA3A-iGKIVY0MNX8jS1wwgDKlS5gqEcNu6BvytBZUZk=w916-h1222-no?authuser=0" />
+<ul class="simple">
+<li>파이썬의 리스트가 위에 얘기가 나오는데, ADT에 대해 얘기할 때는 뭘 담는것을 신경쓸 것이 아니라 자료를 어떻게 다루는지를 관찰해야 한다.</li>
+<li>일단 거기 들어 있는 데이터가 reference건 아니건 신경 쓸 부분이 아니다. 파이썬의 list는 dynamic array로서 사용성만큼은 C에서 사용하는 array이상의 advanced array의 기능을 자동적으로 처리해주고 있다.</li>
+</ul>
+</div>
+<div class="section" id="physical-datastructure">
+<h3>Physical Datastructure</h3>
+<blockquote>
+<strong>&quot;인터페이스가 없어도 물리적인 메모리의 주소는 존재한다. 하지만, 인터페이스가 있어야 우리는 사용할 수 있다. 그것이 아주 단순한 문자열 배열일지라도.</strong></blockquote>
+<p>반면 흔히 통칭하는 Data-structure는 <em>&quot;어떻게 할 수 있는지?&quot;</em>를 규정하거나, 이미 규정된 부분이다.</p>
+<blockquote>
+<ul>
+<li><p class="first">Array based: stack automatic</p>
+<blockquote>
+<ul>
+<li><p class="first">string</p>
+</li>
+<li><p class="first">array of bytes</p>
+</li>
+<li><p class="first">sequencial to physical</p>
+<blockquote>
+<ul class="simple">
+<li>가장 기본적인 형태</li>
+<li>재할당의 리스크를 변경시에 순서, 즉 시퀸스를 다시 구성해줘야 하는 단점.</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</li>
+<li><p class="first">Pointer based: link based data structure</p>
+<blockquote>
+<ul>
+<li><p class="first">dynamic allocation</p>
+</li>
+<li><p class="first">structure</p>
+</li>
+<li><p class="first">sequencial to logical inside strcture through link</p>
+<blockquote>
+<ul class="simple">
+<li>어떻게보면, 진화된 형태</li>
+<li>하지만, 주소에 대해 값을 가져오라는 명령을 추가로 수행하기 때문에 단점은 있다.</li>
+<li>마찬가지로, 명령이 늘어나는 것에 부담을 적은 경우에 더 이점이 있고, 관리가 용이하다.</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+</div>
+
+    </mainarticle>
+</div>
+<hr>
+        
+<div>
+        <i>If you found the article helpful, please share or cite the article, and spread the word:</i>
+            <p style="margin-top: 2%;">
+                <span><a target="_blank" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Twitter" href="https://twitter.com/share?url=/posts/datastructure/2022/06/16/interface-in-datastructure&text=Component of DST, interface&via="><img class="social-icons-a" src="/theme/images/icons/twitter.png"></a></span>
+                <span><a target="_blank" title="Facebook" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;" href="https://www.facebook.com/sharer.php?u=/posts/datastructure/2022/06/16/interface-in-datastructure&t=Component of DST, interface"><img class="social-icons-a" src="/theme/images/icons/facebook.png"></a></span>
+
+                <a  target="_blank" title="Linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=/posts/datastructure/2022/06/16/interface-in-datastructure&title=Component of DST, interface" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=450,width=650');return false;"><img class="social-icons-a" src="/theme/images/icons/linkedin.png"></a>
+            </p>
+</div>
+<hr>
+    <p><i>For any feedback or corrections, please write in to: </i><b> junehan </b></p>
+        
+    </maincontent>
+
+  <!-- Analytics -->
+
+  </div>
+</body>
+
+</html>
