@@ -137,7 +137,7 @@
 <div class="section" id="interface">
 <h3>interface</h3>
 <blockquote>
-<strong>&quot;인터페이스와 자료구조는 다르다.&quot;</strong></blockquote>
+<p><strong>&quot;인터페이스와 자료구조는 다르다.&quot;</strong></p>
 <img alt="Component of DST" src="https://lh3.googleusercontent.com/pw/AM-JKLUaqZqeosJ5JDXPp_SHx8CkNC5gl4cGEKHvhyobqDxlL9uC5o09qSQzqtV239d76gchF8mOuIaKsPO7tQXDdhJ8XTgItEVO7jAJc4oWHF66E11K4qd9Dpe6OYXA9PjuQzLBkU9Zv-5-gJqtGDVA0hU=w916-h1222-no?authuser=0" />
 <p>Interface는 <em>&quot;무엇을 하고 싶은지?&quot;</em> 에 대해 규정하는 부분이다.</p>
 <blockquote>
@@ -146,7 +146,7 @@
 <blockquote>
 <ul class="simple">
 <li>일반적으로는 사람들이 가장 원하는 데이터가 Array기반의 빠른 동작을 주는 인덱싱 오브젝트.</li>
-<li><em>(ADT는 다양하다)</em>: OS에서 제공하는 배열은 stack이나 malloc 이지만 이걸로 다양한 동작방식으로 강제할 수 있다.</li>
+<li><em>(ADT는 다양하다)</em>: OS에서 제공하는 배열은 stack이나 malloc이지만 이걸로 다양한 동작방식으로 구현할 수 있다.</li>
 <li>Linked list의 연속성을 관리하고 대표해주는 Node클래스 혹은 인스턴스</li>
 </ul>
 </blockquote>
@@ -158,35 +158,68 @@
 </ul>
 </blockquote>
 </li>
+<li><p class="first">static sequence interface: 변하지 않는 크기 혹은 연속성 개체를 조작하는 ADT</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal">build(w)</tt>: w-길이 바이트의 연속적인 데이터를 할당 받는다.</li>
+<li><tt class="docutils literal">len()</tt>: 길이 값을 반환한다.</li>
+<li><tt class="docutils literal">iter_seq()</tt>: sequence order로 <tt class="docutils literal">seq[i <span class="pre">-&gt;</span> w - 1]</tt> 까지 출력한다.</li>
+<li><tt class="docutils literal">get_at(i)</tt>: w미만의 값으로 <tt class="docutils literal">seq[i]</tt>값을 반환한다.</li>
+<li><tt class="docutils literal">set_at(i, x)</tt>: <tt class="docutils literal">seq[i]</tt>에 값을 x로 설정한다.</li>
 </ul>
 </blockquote>
+</li>
+<li><p class="first">Dynamic Sequence</p>
+<blockquote>
 <img alt="Dynamic Interfaces" src="https://lh3.googleusercontent.com/pw/AM-JKLUJZAhvAONIMKM2dRlsgYzfEh6cMUdljndNb-zHx73fKhuXwqaCQFkEdgY_4VQwPPc4SGGWr1PE4WqTceMQx9dn9kcyqwL0AeKqhBeYRFf7MA3A-iGKIVY0MNX8jS1wwgDKlS5gqEcNu6BvytBZUZk=w916-h1222-no?authuser=0" />
+<ul>
+<li><p class="first">sequence의 <tt class="docutils literal">set_at(i, v)</tt>는 index의 값을 교환하는 개념이지만, 여기선 shifting을 포함한 <tt class="docutils literal">insert_at(i, v)</tt>는 값을 추가하는 개념으로 현재 길이가 늘어난다.</p>
+</li>
+<li><p class="first">word-RAM의 동작 방식과 차이가 있다. 이 부분을 해결하는 방법으로는</p>
+<blockquote>
 <ul class="simple">
-<li>파이썬의 리스트가 위에 얘기가 나오는데, ADT에 대해 얘기할 때는 뭘 담는것을 신경쓸 것이 아니라 자료를 어떻게 다루는지를 관찰해야 한다.</li>
-<li>일단 거기 들어 있는 데이터가 reference건 아니건 신경 쓸 부분이 아니다. 파이썬의 list는 dynamic array로서 사용성만큼은 C에서 사용하는 array이상의 advanced array의 기능을 자동적으로 처리해주고 있다.</li>
+<li>shifting, realloction (array)</li>
+<li>linkbased, additional information to sequence (linked list)</li>
 </ul>
+</blockquote>
+</li>
+<li><p class="first">파이썬의 리스트가 위에 얘기가 나오는데, ADT에 대해 얘기할 때는 뭘 담는 것을 신경쓸 것이 아니라 자료를 어떻게 다루는지를 관찰해야 한다.</p>
+</li>
+<li><p class="first">파이썬의 <em>list 느슨한 사이즈제약</em>이란, 즉 huristic에 의하여, 사용하려는 사이즈보다 조금 더 넓은 크기의 배열을 초기 할당하여 재할당을 방지한다.</p>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</blockquote>
 </div>
 <div class="section" id="physical-datastructure">
 <h3>Physical Datastructure</h3>
 <blockquote>
-<strong>&quot;인터페이스가 없어도 물리적인 메모리의 주소는 존재한다. 하지만, 인터페이스가 있어야 우리는 사용할 수 있다. 그것이 아주 단순한 문자열 배열일지라도.</strong></blockquote>
-<p>반면 흔히 통칭하는 Data-structure는 <em>&quot;어떻게 할 수 있는지?&quot;</em>를 규정하거나, 이미 규정된 부분이다.</p>
+<p><em>&quot;인터페이스가 없어도 물리적인 메모리의 주소는 존재한다. 하지만, 인터페이스가 있어야 우리는 사용할 수 있다. 그것이 아주 단순한 문자열 배열일지라도.&quot;</em></p>
+<blockquote>
+반면 흔히 통칭하는 Data-structure는 <em>&quot;어떻게 할 수 있는지?&quot;</em>를 규정하거나, 이미 규정된 부분이다.</blockquote>
+<ul>
+<li><p class="first">w-bit words static memory <em>(64bit generally)</em></p>
 <blockquote>
 <ul>
-<li><p class="first">Array based: stack automatic</p>
-<blockquote>
-<ul>
-<li><p class="first">string</p>
+<li><p class="first">가장 기본적인 형태, 즉 word기반 RAM model of computation 자체에서 제공하는 물리적인 구조와 일맥상통하는 것</p>
 </li>
-<li><p class="first">array of bytes</p>
+<li><p class="first"><em>consecutive chunk of memory</em>: 연속적인 순서를 보장하는 덩어리의 메모리</p>
 </li>
-<li><p class="first">sequencial to physical</p>
+<li><p class="first">변경시에 재할당의 리스크를 순서, 즉 시퀸스를 다시 구성해줘야 하는 단점.</p>
+</li>
+<li><p class="first">예시</p>
 <blockquote>
 <ul class="simple">
-<li>가장 기본적인 형태</li>
-<li>재할당의 리스크를 변경시에 순서, 즉 시퀸스를 다시 구성해줘야 하는 단점.</li>
+<li>string</li>
+<li>n-bytes</li>
+<li>sequencial to physical</li>
 </ul>
 </blockquote>
+</li>
+<li><p class="first">이를 조작하기 위해 array라는 개념의 ADT를 제공한다.</p>
 </li>
 </ul>
 </blockquote>
