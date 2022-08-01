@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en" itemscope itemtype="http://schema.org/Person">
+<head>
+  <meta charset="utf-8">
+  <!-- Site Meta Data -->
+  <title>Basic Sql</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="junehan">
+
+  <link rel="shortcut icon" href="">
+
+  <!-- schema.org -->
+  <meta itemprop="name" content="junehan.dev.log">
+  <meta itemprop="image" content="">
+  <meta itemprop="description" content="">
+
+  <!-- Style Meta Data -->
+  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
+  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
+
+  <!-- Feed Meta Data -->
+
+  <!-- Twitter Feed -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="">
+  <meta name="twitter:image" content="">
+
+<meta name="twitter:creator" content="">
+<meta name="twitter:url" content="/posts/database/2022/04/19/Basic-sql-language">
+<meta name="twitter:title" content="junehan.dev.log ~ Basic Sql">
+<meta name="twitter:description" content="basic to sql">
+
+<!-- Facebook Meta Data -->
+<meta property="og:title" content="junehan.dev.log ~ Basic Sql" />
+<meta property="og:description" content="basic to sql" />
+<meta property="og:image" content="" />
+</head>
+
+<body>
+    <div class="container">
+
+    <!-- Navbar -->
+      <div class="navbar">
+        <ul>
+            <div>
+                <li>
+                    <a href=""><h3>junehan.dev.log</h3></a>
+                </li>
+                <li>
+                </li>
+            </div>
+        </ul>
+      </div>
+
+  <!-- Sidebar -->
+    <sidebar>
+        <ul class="static-item">
+
+        </ul>        
+
+        <ul>
+                <div class="cat-border">
+                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+                    <li><a href="/category/algorithm.html">algorithm</a></li>
+                    <li><a href="/category/database.html">database</a></li>
+                    <li><a href="/category/datastructure.html">datastructure</a></li>
+                    <li><a href="/category/diary.html">diary</a></li>
+                    <li><a href="/category/math.html">math</a></li>
+                </div>
+        </ul>
+
+            <h2><br/>BLOGROLLS</h2>
+            <ul>
+                    <li><a href="https://github.com/junehan-dev">github</a></li>
+                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+            </ul> 
+   
+        <p> 
+                <span>
+                    <a href="https://github.com/junehan-dev/" target="_blank">
+                        <img class="social-icons-m" src="/theme/images/icons/github.png">
+                    </a>
+                </span>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+    </sidebar>
+    
+    <maincontent>
+<h2>
+    <a href="/posts/database/2022/04/19/Basic-sql-language" rel="bookmark" title="Permalink to Basic Sql">Basic Sql</a>
+</h2>
+
+<div>
+    <b>By: </b><a href="/author/junehan.html">junehan</a><b>    On: </b>Tue 19 April 2022<br />
+    <b>In: </b><a href="/category/database.html" rel="bookmark" title="Permalink to database">database</a><br />
+    <em><b>Tags: </b>
+    </em>
+    <hr>
+</div>
+
+<div>
+    <mainarticle>
+    <div class="section" id="subject">
+<h2>SUBJECT: 데이터베이스 기본 쿼리문을 파악하고 이해하자</h2>
+<blockquote>
+<ul>
+<li><p class="first">References</p>
+<blockquote>
+<ul class="simple">
+<li><a class="reference external" href="https://www.w3schools.com/mysql/default.asp">https://www.w3schools.com/mysql/default.asp</a></li>
+<li>text book, Learning sql 3rd edition</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="basics">
+<h2>BASICS</h2>
+<div class="section" id="terminolgy">
+<h3>TERMINOLGY</h3>
+<dl class="docutils">
+<dt><em>Entity</em></dt>
+<dd><div class="first last line-block">
+<div class="line">Something of interest to the database user community.</div>
+<div class="line">데이터베이스의 유저들이 흥미를 갖는 대상, 예시로는 고객, parts, 지정학적 위치 등이 있다.</div>
+</div>
+</dd>
+<dt><em>Column</em></dt>
+<dd><div class="first last line-block">
+<div class="line">An individual piece of data stored in a table</div>
+<div class="line">테이블에 저장된 개별적인 데이터 부분으로의 유닛</div>
+</div>
+</dd>
+<dt><em>Row (Record)</em></dt>
+<dd><div class="first last line-block">
+<div class="line">set of Columns, 함께 모여서 완전하게 entity 혹은 entity의 어떤 action을 설명할 수 있는 것.</div>
+</div>
+</dd>
+<dt><em>Table</em></dt>
+<dd><div class="first last line-block">
+<div class="line">A set of rows, 메모리에 영구적으로 혹 은 비영구적으로 로드되는 데이터의 뭉치</div>
+</div>
+</dd>
+<dt><em>Result Set</em></dt>
+<dd><div class="first last line-block">
+<div class="line">nonpersistent table의 또 다른 이름, 일반적으로 SQL쿼리에 대한 결과가 해당된다.</div>
+</div>
+</dd>
+<dt><em>Primary Key</em></dt>
+<dd><div class="first last line-block">
+<div class="line">하나 혹은 복수의 columns로, 유니크한 구분자로 각 테이블의 row를 상징할 수 있는 column</div>
+</div>
+</dd>
+<dt><em>Foreign Key</em></dt>
+<dd><div class="first last line-block">
+<div class="line">하나 혹은 복수의 columns로, 다른 테이블의 하나의 row를 구별해주는 column</div>
+</div>
+</dd>
+<dt><em>Database transaction</em></dt>
+<dd><div class="first line-block">
+<div class="line">DBMS내에서, 실행의 단위를 상징하며, 다른 transaction에 대해서 독립적이며 믿을 수 있는 것으로 취급된다.</div>
+<div class="line">2개의 큰 목적을 지니고 있다.</div>
+</div>
+<blockquote class="last">
+<ol class="arabic simple">
+<li>믿을 수 있는 작업들을 제공하며, 실패에서 회복하고, 데이터 베이스를 실패의 경우에도 지속적인 것으로 한다.</li>
+<li>데이터베이스에 동시적으로 접근하는 프로그램들에 대해서 분리, 고립을 제공한다.</li>
+</ol>
+</blockquote>
+</dd>
+</dl>
+</div>
+<div class="section" id="sql">
+<h3>SQL 이란?</h3>
+<div class="line-block">
+<div class="line">SEQUEL이라 불려졌던 이름이 SQL로 줄여젔다.</div>
+<div class="line">관계형 데이터베이스에서 데이터를 조작하기 위해 시작되었으나,</div>
+<div class="line">다양한 데이터베이스 기술들을 모두 포용하는 데이터 조작 언어가 되었다.</div>
+<div class="line">어떠한 줄임말도 아니고, 그저 sequel이라는 단어를 줄여 부르는 것이다.</div>
+</div>
+</div>
+<div class="section" id="sql-classes">
+<h3>SQL 진술 classes</h3>
+<dl class="docutils">
+<dt>SQL schema statement (DDL)</dt>
+<dd><div class="first line-block">
+<div class="line">데이터베이스에서 데이터 구조를 정의하는데 사용된다.</div>
+<div class="line">모든 데이터베이스 요소들은 이것으로 생성되며, <em>data dictionary</em>라고 불리는 데이터베이스를 위한 데이터에 저장된다.</div>
+</div>
+<div class="last"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">corporation</span><span class="w"></span>
+<span class="w">   </span><span class="p">(</span><span class="n">corp_id</span><span class="w"> </span><span class="nb">SMALLINT</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">),</span><span class="w"></span>
+<span class="w">    </span><span class="n">CONTRAINT</span><span class="w"> </span><span class="n">pk_corporation</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">corp_id</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div></dd>
+<dt>SQL data statement (DML)</dt>
+<dd><p class="first">데이터베이스에서 데이터 구조를 조작한는데 사용된다.</p>
+<div class="last"><div class="highlight"><pre><span></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">coporation</span><span class="w"> </span><span class="p">(</span><span class="n">corp_id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"></span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">27</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Acme Paper Corporation&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div></dd>
+<dt>SQL transaction statement</dt>
+<dd><div class="first last line-block">
+<div class="line">시작과 끝, 그리고 되돌리는 transaction에 사용된다.</div>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="sql-dml-statements">
+<h2>SQL DML statements</h2>
+<div class="section" id="group-by">
+<h3>GROUP BY</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd>GROUP BY 진술은 일반 rows를 같은 값으로 평가된 것을 요약화된 rows로 그룹화합니다.</dd>
+<dt>EXAMPLE</dt>
+<dd><ul class="first last simple">
+<li>예를 들면, find the number of customers in each country</li>
+<li>각 나라별 소비자의 숫자. / 도시(공통키워드) / customer 별로 country 정보가 있을 것이다.</li>
+</ul>
+</dd>
+</dl>
+<p>SYNTAX</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">column_name</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="order-by">
+<h3>ORDER BY</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal">ORDER BY</tt> 키워드는 result-set을 오름차순, 내림차순으로 정렬하는 데에 사용됩니다.</li>
+<li><tt class="docutils literal">ORDER BY</tt> 키워드는 records들을 기본적으로 asc(오름차순)으로 정렬하고, <tt class="docutils literal">DESC</tt> 키워드를 통해 내림차순으로 정렬할 수 있습니다.</li>
+</ul>
+</dd>
+</dl>
+<p>SYNTAX</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">column1</span><span class="p">,</span><span class="w"> </span><span class="n">column2</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">column1</span><span class="p">,</span><span class="w"> </span><span class="n">column2</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="k">ASC</span><span class="o">|</span><span class="k">DESC</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="min-max-function">
+<h3>MIN MAX Function</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal">MIN()</tt>는 선택한 column에서 가장 작은 값을 반환합니다.</li>
+<li><tt class="docutils literal">MAX()</tt>는 선택한 column에서 가장 큰 값을 반환합니다.</li>
+</ul>
+</dd>
+</dl>
+<p>SYNTAX</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">MIN</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="count-function">
+<h3>COUNT Function</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal">COUNT()</tt>는 명시한 조건을 만족하는 Rows의 수를 반환합니다.</li>
+</ul>
+</dd>
+</dl>
+<p>SYNTAX</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="avg-function">
+<h3>AVG Function</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal">AVG()</tt>는 명시한 조건을 만족하는 column(numeric)에 해당하는 row들의값의 평균을 반환합니다.</li>
+</ul>
+</dd>
+</dl>
+<p>SYNTAX</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">TYPE</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="n">by와</span><span class="w"> </span><span class="err">다르다</span><span class="p">.</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="aliases">
+<h3>ALIASES</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd><ul class="first last simple">
+<li>aliases들은 테이블 혹은 테이블의 필드에 대해서 temporary name을 부여합니다.</li>
+<li>aliases들은 column(필드)의 이름을 더욱 가독성 있게 만들어줍니다.</li>
+<li>지정한 aliases들은 해당 쿼리에 대해서만 유효합니다.</li>
+<li>aliases들은 <tt class="docutils literal">AS</tt>키워드를 통해 생성됩니다.</li>
+</ul>
+</dd>
+</dl>
+<p>SYNTAX</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">alias_name</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">alias_name</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="join">
+<h3>JOIN</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd><ul class="first last simple">
+<li><tt class="docutils literal">JOIN</tt>구문은 두 개 혹은 그 이상의 테이블들을 결합할 떄 사용됩니다. 기본적으로 그들의 관련된 필드를 통해서 가능합니다. <tt class="docutils literal">ON</tt></li>
+<li><dl class="first docutils">
+<dt><tt class="docutils literal">ON</tt>이 없다면?</dt>
+<dd><ul class="first last">
+<li>원칙적으로 사용이 불가능하지만, 아무 교차점이 없는 두 개의 테이블을 하나의 테이블에 필드를 생성해서 연결하는 것을 따로 가져오는 것보다 좋은 선택이 아닐 것 같습니다.</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>TYPES</p>
+<blockquote>
+<ul>
+<li><p class="first"><tt class="docutils literal">INNER JOIN</tt>: 각 테이블에서 matching value를 가진 record을 반환합니다.</p>
+<blockquote>
+<p>두 테이블에 교집합으로 지정한 필드가 유효한 record만 반환하기 때문에, 완전 테이블을 획득 가능합니다.</p>
+<img alt="inner join graphic" src="https://www.w3schools.com/mysql/img_innerjoin.gif" />
+</blockquote>
+</li>
+<li><p class="first"><tt class="docutils literal">LEFT JOIN</tt>: 좌측 테이블의 모든 레코드와, 그와 match되는 우측 테이블의 record를 함께 반환합니다.</p>
+<blockquote>
+<p>두 테이블 중 LEFT에 RIGHT의 교집합을 붙이는 방식으로 LEFT의 일부는 RIGHT가 연결되지 않을 수 있다.</p>
+<img alt="left join graphic" src="https://www.w3schools.com/mysql/img_leftjoin.gif" />
+</blockquote>
+</li>
+<li><p class="first"><tt class="docutils literal">RIGHT JOIN</tt>: 우측 테이블의 모든 레코드와, 그와 match되는 좌측 테이블의 record를 함께 반환합니다.</p>
+<blockquote>
+<img alt="right join graphic" src="https://www.w3schools.com/mysql/img_rightjoin.gif" />
+</blockquote>
+</li>
+<li><p class="first"><tt class="docutils literal">CROSS JOIN(fulljoin)</tt>: 두 테이블의 모든 레코드를 반환합니다.</p>
+<blockquote>
+<img alt="full join graphic" src="https://www.w3schools.com/mysql/img_crossjoin.png" />
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="union">
+<h3>UNION</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd><ul class="first last">
+<li><p class="first"><tt class="docutils literal">UNION</tt>연산자는 2개 이상의 <tt class="docutils literal">SELECT</tt>에 대한 result-set을 조합합니다.</p>
+<blockquote>
+<ul>
+<li><p class="first">모든 <tt class="docutils literal">UNION</tt> 내부의 <tt class="docutils literal">SELECT</tt> 진술은 같은 수의 columns, 즉 필드수가 동일해야 합니다.</p>
+</li>
+<li><p class="first">columns, 필드들은 또한 반드시 유사한 데이터타입을 지녀야 합니다.</p>
+</li>
+<li><p class="first"><tt class="docutils literal">SELECT</tt> 진술 내부의 모든 columns, 필드들은 또한 반드시동일한 순서를 가져야 합니다.</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal">(name, id, date)</tt></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+<p>EXAMPLE</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">City</span><span class="p">,</span><span class="w"> </span><span class="n">CustormName</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"></span>
+<span class="k">UNION</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">City</span><span class="p">,</span><span class="w"> </span><span class="n">SupplierName</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Suppliers</span><span class="w"></span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">City</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="n">Name</span><span class="w"> </span><span class="n">City</span><span class="w"></span>
+<span class="n">Drachenblut</span><span class="w"> </span><span class="n">Delikatessend</span><span class="w">    </span><span class="n">Aachen</span><span class="w"></span>
+<span class="n">Rattlesnake</span><span class="w"> </span><span class="n">Canyon</span><span class="w"> </span><span class="n">Grocery</span><span class="w">   </span><span class="n">Albuquerque</span><span class="w"></span>
+<span class="k">Old</span><span class="w"> </span><span class="n">World</span><span class="w"> </span><span class="n">Delicatessen</span><span class="w">       </span><span class="n">Anchorage</span><span class="w"></span>
+<span class="n">Grandma</span><span class="w"> </span><span class="n">Kelly</span><span class="err">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">Homestead</span><span class="w">    </span><span class="n">Ann</span><span class="w"> </span><span class="n">Arbor</span><span class="w"></span>
+<span class="n">Gai</span><span class="w"> </span><span class="n">pâturage</span><span class="w"> </span><span class="n">Annecy</span><span class="w"></span>
+<span class="n">Vaffeljernet</span><span class="w"> </span><span class="err">Å</span><span class="n">rhus</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="subquery">
+<h3>SUBQuery</h3>
+<dl class="docutils">
+<dt>DESC</dt>
+<dd><ul class="first last simple">
+<li>서브쿼리는 값에서부터 필드 혹은 테이블로 까지 치환이 가능하며, 참조 순서에 따라 correlated subquery라고 부르기도 합니다..</li>
+<li>메인 쿼리보다 먼저 평가되면서도 해당 서브쿼리 밖의 네임스페이스까지 사용할 수 있습니다..</li>
+<li>따라서 바깥 쿼리부터 평가해서 메모리에 적재하고, 단위별로 분류하면서 깊이가 깊은, 혹은 가장 나중에 정의된 서브쿼리부터 평가를 수행하여 바깥으로 돌아가면서 결과에 반영합니다.</li>
+</ul>
+</dd>
+</dl>
+<p>wikipedia Example</p>
+<blockquote>
+<ul class="simple">
+<li>고용자의 임금과 고용자의 학과별 임금을 한꺼번에 표시</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">employee_number</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">employee</span><span class="w"> </span><span class="n">emps</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">salary</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="err">고용인의</span><span class="w"> </span><span class="err">평균임금</span><span class="w"></span>
+<span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">emps</span><span class="p">.</span><span class="n">department</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">department</span><span class="w">  </span><span class="o">#</span><span class="w"> </span><span class="err">학과별로</span><span class="w"> </span><span class="err">골라서</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+<span class="cm">/*</span>
+<span class="cm">* INNER JOIN으로 학과별로 GROUP BY 를 학과별로 연결해서 처리할 수 있는데,</span>
+<span class="cm">* 동적으로 매 루프마다 employees 테이블을 1회씩 풀스캔합니다.</span>
+<span class="cm">*/</span><span class="w"></span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">employee_number</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">salary</span><span class="p">,</span><span class="w"> </span><span class="n">survey</span><span class="p">.</span><span class="n">avg_salary</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">employee</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="err">전공별</span><span class="w"> </span><span class="err">임금</span><span class="w"> </span><span class="err">취합</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">department</span><span class="p">,</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_salary</span><span class="w"></span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">employee</span><span class="w"></span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">department</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">survey</span><span class="w"></span>
+<span class="k">ON</span><span class="w"> </span><span class="n">employee</span><span class="p">.</span><span class="n">department</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">survey</span><span class="p">.</span><span class="n">department</span><span class="w"></span>
+</pre></div>
+</blockquote>
+<div class="line-block">
+<div class="line">(보통 서브쿼리가, 테이블 혹은 필드로 정의될 수 있는 독립적인 SELECT 구문이라면,</div>
+<div class="line">위 예시에 등장하는 correlated 서브쿼리는 아래와 같은 참조와 실행순서를 갖습니다.)</div>
+</div>
+<blockquote>
+<ul>
+<li><p class="first">nested 쿼리의 내부 쿼리는 각 외부employee에 대해서 재실행 된다.</p>
+</li>
+<li><p class="first">위 예시에서는 쿼리가 값으로 평가되고 있으며 밖의 emp에 대해 매회 수행되는 row를 이용한다.</p>
+</li>
+<li><p class="first">A(A1(A2))의 쿼리가 존재한다면, A의 바깥 루프를 가장 먼저 수행하고,  그 값을 결과테이블에 반영하는 것이 아니라 A에서 수행되는 값들을 기억해놓은 상태로 <tt class="docutils literal">A <span class="pre">-&gt;</span> A1 <span class="pre">-&gt;</span> A2</tt> 로 이동한다.</p>
+<blockquote>
+<ul class="simple">
+<li>A, A1의 메모리를 사용하여 A2에서 실행된 결과가 최종적으로 출력 테이블에 입력된다.</li>
+<li>위의 경우에는,</li>
+</ul>
+<ol class="arabic">
+<li><p class="first">emps.1(john), john의 임금</p>
+</li>
+<li><p class="first">subq(john의 학과, employees.all의 학과에 대한 평균값)</p>
+</li>
+<li><p class="first">where(john의 임금이 더 큰가?)</p>
+</li>
+<li><p class="first">테이블의 row에 john의 number, name 저장</p>
+</li>
+<li><p class="first">emps.2(amy)</p>
+<p>순서로 진행이 되는데 마치 <tt class="docutils literal">nested for loop</tt> 과 같다.</p>
+</li>
+</ol>
+</blockquote>
+</li>
+<li><p class="first">correlated 서브쿼리는 또한 WHERE을 제외한 어디서든 등장할 수 있다.</p>
+<blockquote>
+<ul class="simple">
+<li><em>WHERE은 조건문이 들어오는 곳이어서 서브쿼리 2개를 조건문으로 양쪽 항으로 값으로 평가해서 사용한다면 가능하지만 서브쿼리하나가 조건문의 평가 결과로 사용될 수 는 없다.,</em> <tt class="docutils literal">(SQ.value) in (SQ.table) (O)/ WHERE (SQ) (X)</tt></li>
+<li>이 얘기가 아니었다, (WHERE outer.name in (SELECT..) 에서 WHERE은 subquery로 지정할 수 없다는 얘기이다.</li>
+</ul>
+</blockquote>
+</li>
+<li><p class="first">예를 들어 위의 쿼리는 SELECT구문 내부에서 서브쿼리로 사용하여 &gt; 평가식의 우측항의 값으로 사용한다.</p>
+</li>
+<li><p class="first">일반적으로 FROM구문의 우측항을 대상으로 서브쿼리를 사용하는 것은 의미가 없다고 여겨진다.</p>
+<blockquote>
+<ul class="simple">
+<li>왜냐하면 이것은 치킨과 닭의 문제다. <em>(main query는 from table에서 기인하는데, 해당 table이 서브쿼리라면, 해당 서브쿼리가 참조할 바깥 공간이 없기 때문에 단순히 테이블을 해당 테이블 내에서 필터링하는 결과로만 사용할 수 있기 때문에 그렇다.)</em></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<p><em>(4-3 6:20)에서 왜인지 from구에서 사용하는게 가장 많이 사용한다고 한다.</em></p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">point</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">avg_likes</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">point_user</span><span class="w"> </span><span class="n">pu</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">ROUND</span><span class="p">(</span><span class="k">AVG</span><span class="p">(</span><span class="n">likes</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">avg_likes</span><span class="w"> </span><span class="k">FROM</span><span class="w"></span>
+<span class="w">    </span><span class="n">checkins</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">user_id</span><span class="p">)</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">user_id</span><span class="w"></span>
+</pre></div>
+</blockquote>
+</div>
+<div class="section" id="subquery-from-with">
+<h3>SubQuery FROM을 해결하기 위한 WITH</h3>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="err">코스별</span><span class="w"> </span><span class="err">시작</span><span class="w"> </span><span class="err">유저</span><span class="w"> </span><span class="err">분포</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">ch</span><span class="p">.</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">checkins</span><span class="w"> </span><span class="n">ch</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span><span class="w"></span>
+
+<span class="o">#</span><span class="w"> </span><span class="err">코스별</span><span class="w"> </span><span class="err">주문</span><span class="w"> </span><span class="err">수</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="k">COUNT</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="err">두</span><span class="w"> </span><span class="err">개를</span><span class="w"> </span><span class="err">합쳐서</span><span class="w"> </span><span class="err">총</span><span class="w"> </span><span class="err">주문</span><span class="w"> </span><span class="err">수에</span><span class="w"> </span><span class="err">대한</span><span class="w"> </span><span class="err">사용</span><span class="w"> </span><span class="err">유저의</span><span class="w"> </span><span class="err">비율을</span><span class="w"> </span><span class="err">계산합니다</span><span class="p">.</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
+<span class="n">ch</span><span class="p">.</span><span class="n">c_users</span><span class="p">,</span><span class="w"></span>
+<span class="n">o</span><span class="p">.</span><span class="n">o_orders</span><span class="p">,</span><span class="w"></span>
+<span class="p">(</span><span class="n">ch</span><span class="p">.</span><span class="n">c_users</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">o_orders</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ratio</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span><span class="w"></span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">checkins</span><span class="w"></span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"></span>
+<span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span><span class="w"></span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"></span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span><span class="w"></span>
+<span class="o">##</span><span class="w"> </span><span class="err">복잡합니다</span><span class="p">.</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="k">WITH</span><span class="w"> </span><span class="n">user_table</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="n">SUBQUERY1</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span><span class="w"></span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">Checkins</span><span class="w"></span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
+<span class="p">),</span><span class="w"> </span><span class="n">order_table</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="n">SUBQUERY2</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span><span class="w"></span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">Orders</span><span class="w"></span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">이</span><span class="w"> </span><span class="err">부분부터</span><span class="w"></span>
+<span class="w">    </span><span class="n">user_table</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">user_table</span><span class="p">.</span><span class="n">c_users</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">order_table</span><span class="p">.</span><span class="n">o_orders</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">(</span><span class="n">user_table</span><span class="p">.</span><span class="n">c_users</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">order_table</span><span class="p">.</span><span class="n">o_orders</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ratio</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">결과</span><span class="w"> </span><span class="err">필드</span><span class="w"> </span><span class="err">정의</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">user_table</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">order_table</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">테이블</span><span class="w"> </span><span class="err">조합</span><span class="w"></span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">user_table</span><span class="p">.</span><span class="n">course_id</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">order_table</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<ul class="simple">
+<li>메인 SQL은 테이블에서 필드를 가져오거나 테이블을 조합하는 것으루 이루어지는데, 필드 정의에 Sub SQL이 들어와서 난잡했었습니다.</li>
+<li>Sub SQL를 상단으로 분리하고 하단에서는 결과를 정의하는 메인 SQL만 남겨 분명하게 정의되었습니다.</li>
+</ul>
+</div>
+<div class="section" id="function">
+<h3>활용빈도가 높은 FUNCTION</h3>
+<ol class="arabic">
+<li><p class="first"><tt class="docutils literal">SUBSTRINGINDEX(Target, delimiter, indexto)</tt></p>
+<ul class="simple">
+<li>Target의 delimiter로부터 indexto까지 index를 잘라내 줍니다.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">king123</span><span class="o">@</span><span class="n">google</span><span class="p">.</span><span class="n">com</span><span class="w"></span>
+<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;@&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">account</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">king123</span><span class="w"></span>
+<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;@&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">domain</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">google</span><span class="p">.</span><span class="n">com</span><span class="w"></span>
+</pre></div>
+</li>
+<li><p class="first"><tt class="docutils literal">SUBSTRING(Target, indexFrom, count)</tt></p>
+<ul class="simple">
+<li>Target의 indexFrom로부터 count만큼 문자열을 반환합니다.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">king123</span><span class="o">@</span><span class="n">google</span><span class="p">.</span><span class="n">com</span><span class="w"></span>
+<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">account</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">king123</span><span class="w"></span>
+<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">domain</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">google</span><span class="p">.</span><span class="n">com</span><span class="w"></span>
+</pre></div>
+</li>
+</ol>
+</div>
+<div class="section" id="case">
+<h3>Case</h3>
+<p>DESC</p>
+<blockquote>
+<ul class="simple">
+<li>필드에 대해서 <tt class="docutils literal"><span class="pre">IF-THEN-ELSE-FI</span></tt> 를 수행합니다.</li>
+<li>WHEN의 조건을 만났을때, 값을 평가하고 CASE를 벗어납니다.</li>
+</ul>
+</blockquote>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">OrderID</span><span class="p">,</span><span class="w"> </span><span class="n">Quantity</span><span class="p">,</span><span class="w"></span>
+<span class="k">CASE</span><span class="w"></span>
+<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="n">Quantity</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;The quantity is greater than 30&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="n">Quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;The quantity is 30&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="k">ELSE</span><span class="w"> </span><span class="s1">&#39;The quantity is under 30&#39;</span><span class="w"></span>
+<span class="k">END</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">QuantityText</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">OrderDetails</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+
+    </mainarticle>
+</div>
+<hr>
+        
+<div>
+        <i>If you found the article helpful, please share or cite the article, and spread the word:</i>
+            <p style="margin-top: 2%;">
+                <span><a target="_blank" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Twitter" href="https://twitter.com/share?url=/posts/database/2022/04/19/Basic-sql-language&text=Basic Sql&via="><img class="social-icons-a" src="/theme/images/icons/twitter.png"></a></span>
+                <span><a target="_blank" title="Facebook" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;" href="https://www.facebook.com/sharer.php?u=/posts/database/2022/04/19/Basic-sql-language&t=Basic Sql"><img class="social-icons-a" src="/theme/images/icons/facebook.png"></a></span>
+
+                <a  target="_blank" title="Linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=/posts/database/2022/04/19/Basic-sql-language&title=Basic Sql" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=450,width=650');return false;"><img class="social-icons-a" src="/theme/images/icons/linkedin.png"></a>
+            </p>
+</div>
+<hr>
+    <p><i>For any feedback or corrections, please write in to: </i><b> junehan </b></p>
+        
+    </maincontent>
+
+  <!-- Analytics -->
+
+  </div>
+</body>
+
+</html>
