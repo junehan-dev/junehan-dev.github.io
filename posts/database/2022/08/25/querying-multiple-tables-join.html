@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en" itemscope itemtype="http://schema.org/Person">
+<head>
+  <meta charset="utf-8">
+  <!-- Site Meta Data -->
+  <title>Query Primer 5. Querying Multiple Tables, JOIN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="junehan">
+
+  <link rel="shortcut icon" href="">
+
+  <!-- schema.org -->
+  <meta itemprop="name" content="junehan.dev.log">
+  <meta itemprop="image" content="">
+  <meta itemprop="description" content="">
+
+  <!-- Style Meta Data -->
+  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
+  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
+
+  <!-- Feed Meta Data -->
+
+  <!-- Twitter Feed -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="">
+  <meta name="twitter:image" content="">
+
+<meta name="twitter:creator" content="">
+<meta name="twitter:url" content="/posts/database/2022/08/25/querying-multiple-tables-join">
+<meta name="twitter:title" content="junehan.dev.log ~ Query Primer 5. Querying Multiple Tables, JOIN">
+<meta name="twitter:description" content="intro to multiple table querying, join">
+
+<!-- Facebook Meta Data -->
+<meta property="og:title" content="junehan.dev.log ~ Query Primer 5. Querying Multiple Tables, JOIN" />
+<meta property="og:description" content="intro to multiple table querying, join" />
+<meta property="og:image" content="" />
+</head>
+
+<body>
+    <div class="container">
+
+    <!-- Navbar -->
+      <div class="navbar">
+        <ul>
+            <div>
+                <li>
+                    <a href=""><h3>junehan.dev.log</h3></a>
+                </li>
+                <li>
+                </li>
+            </div>
+        </ul>
+      </div>
+
+  <!-- Sidebar -->
+    <sidebar>
+        <ul class="static-item">
+
+        </ul>        
+
+        <ul>
+                <div class="cat-border">
+                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+                    <li><a href="/category/algorithm.html">algorithm</a></li>
+                    <li><a href="/category/database.html">database</a></li>
+                    <li><a href="/category/datastructure.html">datastructure</a></li>
+                    <li><a href="/category/diary.html">diary</a></li>
+                    <li><a href="/category/math.html">math</a></li>
+                </div>
+        </ul>
+
+            <h2><br/>BLOGROLLS</h2>
+            <ul>
+                    <li><a href="https://github.com/junehan-dev">github</a></li>
+                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+            </ul> 
+   
+        <p> 
+                <span>
+                    <a href="https://github.com/junehan-dev/" target="_blank">
+                        <img class="social-icons-m" src="/theme/images/icons/github.png">
+                    </a>
+                </span>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+    </sidebar>
+    
+    <maincontent>
+<h2>
+    <a href="/posts/database/2022/08/25/querying-multiple-tables-join" rel="bookmark" title="Permalink to Query Primer 5. Querying Multiple Tables, JOIN">Query Primer 5. Querying Multiple Tables, JOIN</a>
+</h2>
+
+<div>
+    <b>By: </b><a href="/author/junehan.html">junehan</a><b>    On: </b>Thu 25 August 2022<br />
+    <b>In: </b><a href="/category/database.html" rel="bookmark" title="Permalink to database">database</a><br />
+    <em><b>Tags: </b>
+                <span><a href="/tag/sql.html">#sql </a></span>
+                <span><a href="/tag/sql-join.html">#sql-join </a></span>
+    </em>
+    <hr>
+</div>
+
+<div>
+    <mainarticle>
+    <div class="section" id="subject-join">
+<h2>SUBJECT: 다수의 테이블을 다루는 방법, JOIN을 파악하자</h2>
+<blockquote>
+<ul>
+<li><p class="first">References</p>
+<blockquote>
+<ul class="simple">
+<li>text book, Learning sql 3rd edition</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="what-is-join">
+<h2>What is JOIN</h2>
+<dl class="docutils">
+<dt><em>normalization</em></dt>
+<dd><div class="first last line-block">
+<div class="line">같은 데이터를 여러번 저장하는 것은 낭비이기 때문에, 관계형 모델에서는 이 부분의 분할이 정확하다.</div>
+<div class="line">데이터의 각 독립적인 부분의 데이터를 중복되지 않도록 데이터베이스의 디자인을 정제하는 과정을 normalization이라 부른다.</div>
+</div>
+</dd>
+</dl>
+<div class="line-block">
+<div class="line">위 같은 관계형 데이터베이스의 효과적인 데이터 저장 방식에 의해서,</div>
+<div class="line">다수의 테이블을 엮어서 조회하는 방식은 매우 흔하게 일어나는데, 이 메커니즘은 <tt class="docutils literal">JOIN</tt>으로 알려져 있다.</div>
+</div>
+<dl class="docutils">
+<dt><tt class="docutils literal">JOIN</tt></dt>
+<dd><div class="first last line-block">
+<div class="line">두 테이블 간에 교집합관계가 되는 필드를 통신수단으로 하여, 두 테이블을 result set으로 포함되도록 하는 것.</div>
+<div class="line">이러한 타입의 연산이 join으로 알려져 있다.</div>
+</div>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<div class="last line-block">
+<div class="line">Foreign key constraint는 해당 값이 다른 테이블에 존재한다고 명시하기위해 추가될 수 있다.</div>
+<div class="line">하지만, 다른 테이블을 join하기 위해서 반드시 foreign key가 필요한 것은 아니다.</div>
+</div>
+</div>
+</div>
+<div class="section" id="inner-joins">
+<h2>Inner joins</h2>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">   </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"></span>
+<span class="o">#</span><span class="w"> </span><span class="mi">361</span><span class="p">,</span><span class="mi">197</span><span class="w"></span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">   </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span><span class="w"></span>
+<span class="o">#</span><span class="w"> </span><span class="mi">599</span><span class="w"></span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span><span class="w"></span>
+<span class="o">#</span><span class="w"> </span><span class="mi">599</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">INNER</tt>를 명시하지 않아도 기본적으로 <tt class="docutils literal">INNER JOIN</tt>을 의미한다.</div>
+</div>
+</div>
+<div class="section" id="joining-three-or-more-tables">
+<h2>Joining Three or More Tables</h2>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">위 쿼리에서 3개의 테이블이 있고 2개의 join타입이 있다.</div>
+<div class="line">그리고 2개의 ON 부구문이 from구문에 포함되어 있다.</div>
+<div class="line">먼저 테이블을 입력하는 것은 아무런 결과의 차이가 없다. 그저 순서만 조금 다른데,</div>
+<div class="line">그것은 <tt class="docutils literal">ORDER BY</tt>구분이 존재하지 않기 때문이다.</div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p>JOIN 순서가 중요한가?</p>
+<blockquote class="last">
+<div class="line-block">
+<div class="line">SQL은 절차적인 언어가 아니다.</div>
+<div class="line">어떤 쿼리를 작성하건 결론적으로 SQL서버가 이 쿼리를 어떻게 결정하는지가 결과이다.</div>
+<div class="line">만약 여러 테이블을 JOIN할때, 동일한 순서를 보장받고 싶다면,</div>
+<div class="line"><tt class="docutils literal">STRAIGHT_JOIN</tt> 키워드를 사용하여, force order 옵션을 요청할 수 있다.</div>
+<div class="line">이 경우 첫번쨰의 명시하는 테이블을 기점(as driving table)으로 정렬 순서를 보장한다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">STRAIGHT_JOIN</span><span class="w"></span>
+<span class="w">   </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">_last_name</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</blockquote>
+</div>
+</div>
+<div class="section" id="self-joins">
+<h2>Self Joins</h2>
+<div class="line-block">
+<div class="line">일부 테이블들은 자신을 foreign key로 사용하는 경우가 있기 때문에, 이런 경우에 self join이 사용된다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">f</span><span class="p">.</span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">f_prnt</span><span class="p">.</span><span class="n">title</span><span class="w"> </span><span class="n">prequel</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="n">f</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w">  </span><span class="n">film</span><span class="w"> </span><span class="n">f_prnt</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">f_prnt</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">prequel_file_id</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="k">self</span><span class="w"> </span><span class="k">Foreign</span><span class="w"> </span><span class="k">key</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">prequel_film_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<p>위 쿼리는 file 테이블이 자신의 prequel_file_id 외래키를 스스로의 테이블을 join한다.</p>
+</div>
+
+    </mainarticle>
+</div>
+<hr>
+        
+<div>
+        <i>If you found the article helpful, please share or cite the article, and spread the word:</i>
+            <p style="margin-top: 2%;">
+                <span><a target="_blank" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Twitter" href="https://twitter.com/share?url=/posts/database/2022/08/25/querying-multiple-tables-join&text=Query Primer 5. Querying Multiple Tables, JOIN&via="><img class="social-icons-a" src="/theme/images/icons/twitter.png"></a></span>
+                <span><a target="_blank" title="Facebook" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;" href="https://www.facebook.com/sharer.php?u=/posts/database/2022/08/25/querying-multiple-tables-join&t=Query Primer 5. Querying Multiple Tables, JOIN"><img class="social-icons-a" src="/theme/images/icons/facebook.png"></a></span>
+
+                <a  target="_blank" title="Linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=/posts/database/2022/08/25/querying-multiple-tables-join&title=Query Primer 5. Querying Multiple Tables, JOIN" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=450,width=650');return false;"><img class="social-icons-a" src="/theme/images/icons/linkedin.png"></a>
+            </p>
+</div>
+<hr>
+    <p><i>For any feedback or corrections, please write in to: </i><b> junehan </b></p>
+        
+    </maincontent>
+
+  <!-- Analytics -->
+
+  </div>
+</body>
+
+</html>

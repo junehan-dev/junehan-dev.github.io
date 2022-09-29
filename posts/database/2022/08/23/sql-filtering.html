@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en" itemscope itemtype="http://schema.org/Person">
+<head>
+  <meta charset="utf-8">
+  <!-- Site Meta Data -->
+  <title>Query Primer 4. Fitering</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="junehan">
+
+  <link rel="shortcut icon" href="">
+
+  <!-- schema.org -->
+  <meta itemprop="name" content="junehan.dev.log">
+  <meta itemprop="image" content="">
+  <meta itemprop="description" content="">
+
+  <!-- Style Meta Data -->
+  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
+  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
+
+  <!-- Feed Meta Data -->
+
+  <!-- Twitter Feed -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="">
+  <meta name="twitter:image" content="">
+
+<meta name="twitter:creator" content="">
+<meta name="twitter:url" content="/posts/database/2022/08/23/sql-filtering">
+<meta name="twitter:title" content="junehan.dev.log ~ Query Primer 4. Fitering">
+<meta name="twitter:description" content="intro to filtering in sql">
+
+<!-- Facebook Meta Data -->
+<meta property="og:title" content="junehan.dev.log ~ Query Primer 4. Fitering" />
+<meta property="og:description" content="intro to filtering in sql" />
+<meta property="og:image" content="" />
+</head>
+
+<body>
+    <div class="container">
+
+    <!-- Navbar -->
+      <div class="navbar">
+        <ul>
+            <div>
+                <li>
+                    <a href=""><h3>junehan.dev.log</h3></a>
+                </li>
+                <li>
+                </li>
+            </div>
+        </ul>
+      </div>
+
+  <!-- Sidebar -->
+    <sidebar>
+        <ul class="static-item">
+
+        </ul>        
+
+        <ul>
+                <div class="cat-border">
+                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+                    <li><a href="/category/algorithm.html">algorithm</a></li>
+                    <li><a href="/category/database.html">database</a></li>
+                    <li><a href="/category/datastructure.html">datastructure</a></li>
+                    <li><a href="/category/diary.html">diary</a></li>
+                    <li><a href="/category/math.html">math</a></li>
+                </div>
+        </ul>
+
+            <h2><br/>BLOGROLLS</h2>
+            <ul>
+                    <li><a href="https://github.com/junehan-dev">github</a></li>
+                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+            </ul> 
+   
+        <p> 
+                <span>
+                    <a href="https://github.com/junehan-dev/" target="_blank">
+                        <img class="social-icons-m" src="/theme/images/icons/github.png">
+                    </a>
+                </span>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+    </sidebar>
+    
+    <maincontent>
+<h2>
+    <a href="/posts/database/2022/08/23/sql-filtering" rel="bookmark" title="Permalink to Query Primer 4. Fitering">Query Primer 4. Fitering</a>
+</h2>
+
+<div>
+    <b>By: </b><a href="/author/junehan.html">junehan</a><b>    On: </b>Tue 23 August 2022<br />
+    <b>In: </b><a href="/category/database.html" rel="bookmark" title="Permalink to database">database</a><br />
+    <em><b>Tags: </b>
+                <span><a href="/tag/sql-where.html">#sql-where </a></span>
+                <span><a href="/tag/sql.html">#sql </a></span>
+    </em>
+    <hr>
+</div>
+
+<div>
+    <mainarticle>
+    <div class="section" id="subject-filtering">
+<h2>SUBJECT: Filtering의 방법과 차이를 이해하자</h2>
+<blockquote>
+<ul>
+<li><p class="first">References</p>
+<blockquote>
+<ul class="simple">
+<li>text book, Learning sql 3rd edition</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="intro">
+<h2>Intro</h2>
+<p>때로 테이블의 모든 row에 대해서 작업이 필요할 때가 있다.</p>
+<blockquote>
+<ul class="simple">
+<li>새로운 데이터를 형성하기 위해 테이블에서 불필요한 부분을 제거한다.</li>
+<li>새로운 Column(필드)가 추가된 후에 테이블의 데이터를 수정한다.</li>
+<li>메세지-큐 테이블에서 모든 데이터를 찾는다.</li>
+</ul>
+</blockquote>
+<p>대부분 이런 경우는 <em>WHERE</em>구문을 굳이 사용할 필요가 없다. (모든 데이터가 대상이 되기 때문에.)</p>
+<div class="line-block">
+<div class="line">하지만 테이블의 rows에서 subset에 집중하길 원할 때가 있을 것이다.</div>
+<div class="line">그러므로 모든 SQL구문은(insert를 제외한) 추가적인 <em>WHERE</em>구문을 포함하여 구문에서 동작할 rows의 수를 제한한다.</div>
+<div class="line">추가적으로 <em>SELECT</em>구문은 <em>having</em>구문을 포함하여, 대상 데이터에 관계된 어떤 필터 조건들을 포함시킬지 정할 수 있다.</div>
+<div class="line">이 챕터에서는 다양한 필터 조건들을 알아보도록 한다.</div>
+</div>
+</div>
+<div class="section" id="condition-evaluation">
+<h2>Condition Evaluation</h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">SYNTAX:</th><td class="field-body">WHERE &lt;CONDITION-1&gt; [[&lt;AND / OR&gt; &lt;CONDITION-2&gt;]...]</td>
+</tr>
+<tr class="field"><th class="field-name">DEFINITION:</th><td class="field-body"><div class="first last line-block">
+<div class="line">한개 혹은 다수의 Conditions를 포함할 수 있으며 연산자 <em>AND, OR</em>를 사용한다.</div>
+<div class="line">만약 다수의 조건이 걸려 있을때, 각 row에 대해 모두 true여야 <em>result set</em>에 포함된다.</div>
+</div>
+</td>
+</tr>
+<tr class="field"><th class="field-name">EXAMPLE:</th><td class="field-body"><tt class="docutils literal">WHERE first_name = &quot;STEVEN&quot; AND create_date &gt; <span class="pre">&quot;2006-01-01&quot;</span></tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="operators">
+<h2>OPERATORS</h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">AND:</th><td class="field-body">두 개의 CONDITION을 AND 연산으로 연결</td>
+</tr>
+<tr class="field"><th class="field-name">OR:</th><td class="field-body">두 개의 CONDITION을 OR 연산으로 연결</td>
+</tr>
+<tr class="field"><th class="field-name">NOT:</th><td class="field-body">CONDITION 의 결과값인 true false를 부정하는 연산</td>
+</tr>
+<tr class="field"><th class="field-name">(CONDITION):</th><td class="field-body">다수의 CONDITION이 AND, OR를 통해 이루어져 있을때, 목적을 분명히 하기위해 사용된다.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="building-a-condition">
+<h2>Building a Condition</h2>
+<p>Condition은 하나 혹은 그 이상의 <em>expression</em>으로 구성된다.</p>
+<dl class="docutils">
+<dt>:<em>Expression</em>:</dt>
+<dd><ul class="first last simple">
+<li>number</li>
+<li>column in a table or view</li>
+<li>string lteral</li>
+<li>buil-in function (<tt class="docutils literal"><span class="pre">concat(&quot;Learning&quot;,</span> &quot; &quot; , &quot;SQL&quot;)</tt>)</li>
+<li>subquery</li>
+<li>list of expressions (<tt class="docutils literal">(&quot;boston&quot;, &quot;new york&quot;, &quot;chicago&quot;)</tt>)</li>
+</ul>
+</dd>
+<dt>:<em>Operators</em>:</dt>
+<dd><ul class="first last simple">
+<li>Comparison operator (<tt class="docutils literal">=, !=, &lt;, &gt;, &lt;&gt;, LIKE, IN, BETWEEN</tt>)</li>
+<li>Arithmetic operator (+, -, *, /)</li>
+</ul>
+</dd>
+</dl>
+<div class="section" id="between-operator">
+<h3>BETWEEN Operator</h3>
+<ul>
+<li><p class="first"><tt class="docutils literal">column BETWEEN A and B</tt></p>
+<blockquote>
+<div class="line-block">
+<div class="line">반드시 A를 하한의 경계를 먼저 입력하고 상한의 값 B를 입력해야한다.</div>
+<div class="line">(<tt class="docutils literal">column &gt;= A, column &lt;= B</tt>로 평가되기 때문에, 공통범위가 사라진다.)</div>
+</div>
+</blockquote>
+</li>
+<li><p class="first">문자열의 Range도 처리할 수 있다. (<tt class="docutils literal">first_name BETWEEN &quot;FA&quot; AND &quot;FRB&quot;</tt>)</p>
+</li>
+</ul>
+</div>
+<div class="section" id="membership-conditions-in-operator">
+<h3>Membership Conditions (IN Operator)</h3>
+<p><tt class="docutils literal">IN</tt>연산자를 통해서, member를 추가적인 연산자 사용 없이 표기할 수 있다.</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;G&quot;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;G&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;R&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;FG&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">&quot;</span><span class="n">GPR</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="using-subqueries">
+<h3>Using Subqueries</h3>
+<p><tt class="docutils literal">(&quot;G&quot;, &quot;PG&quot;)</tt>와 같이 멤버요소를 표현할때 Subquery를 사용해서 배열을 생성할 수 있다.</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">      </span><span class="n">rating</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="ss">&quot;%PET%&quot;</span><span class="w"></span>
+<span class="p">);</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="ss">&quot;G&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span><span class="w"></span>
+
+<span class="o">+</span><span class="c1">---------------------------+--------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">title</span><span class="w">                     </span><span class="o">|</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">+</span><span class="c1">---------------------------+--------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">ACADEMY</span><span class="w"> </span><span class="n">DINOSAUR</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">PG</span><span class="w">     </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="n">ACE</span><span class="w"> </span><span class="n">GOLDFINGER</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="n">AFFAIR</span><span class="w"> </span><span class="n">PREJUDICE</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="n">AFRICAN</span><span class="w"> </span><span class="n">EGG</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w"></span>
+<span class="p">...</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="wildcards">
+<h3>WildCards</h3>
+<p>부분적인 문자열을 검색할때, 아래 2가지 wildcard를 사용할 수 있다.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">_:</th><td class="field-body">Exactly one any character</td>
+</tr>
+<tr class="field"><th class="field-name">%:</th><td class="field-body">Any number of any character</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="null">
+<h3>NULL</h3>
+<dl class="docutils">
+<dt>NULL</dt>
+<dd>값이 존재하지 않음을 의미하는 값.</dd>
+</dl>
+<p>위처럼 단순한 명제이지만, 아래처럼 활용은 다양하다.</p>
+<blockquote>
+<ul class="simple">
+<li>Not applicable (적용할 수 없는)</li>
+<li>Value not yet known (값을 알 수 없는)</li>
+<li>Value undefined (값이 정해지지 않은)</li>
+</ul>
+</blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>표현이 null이 될 수는 있지만, = null은 불가능 하다. (IS를 사용해야 한다.)</li>
+<li>두 개의 null은 절대 동일한 값이 아니다.</li>
+</ul>
+</div>
+<ol class="arabic">
+<li><p class="first">Normal Usage</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</li>
+<li><p class="first">NULL Is NOT A Value</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<p>Null이라는 값을 넣은 것이 아니라, 값을 넣지 않은 것이다.</p>
+</li>
+</ol>
+</div>
+</div>
+
+    </mainarticle>
+</div>
+<hr>
+        
+<div>
+        <i>If you found the article helpful, please share or cite the article, and spread the word:</i>
+            <p style="margin-top: 2%;">
+                <span><a target="_blank" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Twitter" href="https://twitter.com/share?url=/posts/database/2022/08/23/sql-filtering&text=Query Primer 4. Fitering&via="><img class="social-icons-a" src="/theme/images/icons/twitter.png"></a></span>
+                <span><a target="_blank" title="Facebook" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;" href="https://www.facebook.com/sharer.php?u=/posts/database/2022/08/23/sql-filtering&t=Query Primer 4. Fitering"><img class="social-icons-a" src="/theme/images/icons/facebook.png"></a></span>
+
+                <a  target="_blank" title="Linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=/posts/database/2022/08/23/sql-filtering&title=Query Primer 4. Fitering" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=450,width=650');return false;"><img class="social-icons-a" src="/theme/images/icons/linkedin.png"></a>
+            </p>
+</div>
+<hr>
+    <p><i>For any feedback or corrections, please write in to: </i><b> junehan </b></p>
+        
+    </maincontent>
+
+  <!-- Analytics -->
+
+  </div>
+</body>
+
+</html>
