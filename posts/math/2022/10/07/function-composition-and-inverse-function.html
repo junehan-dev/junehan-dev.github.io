@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en" itemscope itemtype="http://schema.org/Person">
+<head>
+  <meta charset="utf-8">
+  <!-- Site Meta Data -->
+  <title>4.5 function composition and inverse function</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="junehan">
+
+  <link rel="shortcut icon" href="">
+
+  <!-- schema.org -->
+  <meta itemprop="name" content="junehan.dev.log">
+  <meta itemprop="image" content="">
+  <meta itemprop="description" content="">
+
+  <!-- Style Meta Data -->
+  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
+  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
+
+  <!-- Feed Meta Data -->
+
+  <!-- Twitter Feed -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="">
+  <meta name="twitter:image" content="">
+
+<meta name="twitter:creator" content="">
+<meta name="twitter:url" content="/posts/math/2022/10/07/function-composition-and-inverse-function">
+<meta name="twitter:title" content="junehan.dev.log ~ 4.5 function composition and inverse function">
+<meta name="twitter:description" content="합성함수와 역함수">
+
+<!-- Facebook Meta Data -->
+<meta property="og:title" content="junehan.dev.log ~ 4.5 function composition and inverse function" />
+<meta property="og:description" content="합성함수와 역함수" />
+<meta property="og:image" content="" />
+</head>
+
+<body>
+    <div class="container">
+
+    <!-- Navbar -->
+      <div class="navbar">
+        <ul>
+            <div>
+                <li>
+                    <a href=""><h3>junehan.dev.log</h3></a>
+                </li>
+                <li>
+                </li>
+            </div>
+        </ul>
+      </div>
+
+  <!-- Sidebar -->
+    <sidebar>
+        <ul class="static-item">
+
+        </ul>        
+
+        <ul>
+                <div class="cat-border">
+                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+                    <li><a href="/category/algorithm.html">algorithm</a></li>
+                    <li><a href="/category/database.html">database</a></li>
+                    <li><a href="/category/datastructure.html">datastructure</a></li>
+                    <li><a href="/category/diary.html">diary</a></li>
+                    <li><a href="/category/math.html">math</a></li>
+                </div>
+        </ul>
+
+            <h2><br/>BLOGROLLS</h2>
+            <ul>
+                    <li><a href="https://github.com/junehan-dev">github</a></li>
+                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+            </ul> 
+   
+        <p> 
+                <span>
+                    <a href="https://github.com/junehan-dev/" target="_blank">
+                        <img class="social-icons-m" src="/theme/images/icons/github.png">
+                    </a>
+                </span>
+        </p>
+        <p>
+        </p>
+        <p>
+        </p>
+    </sidebar>
+    
+    <maincontent>
+<h2>
+    <a href="/posts/math/2022/10/07/function-composition-and-inverse-function" rel="bookmark" title="Permalink to 4.5 function composition and inverse function">4.5 function composition and inverse function</a>
+</h2>
+
+<div>
+    <b>By: </b><a href="/author/junehan.html">junehan</a><b>    On: </b>Fri 07 October 2022<br />
+    <b>In: </b><a href="/category/math.html" rel="bookmark" title="Permalink to math">math</a><br />
+    <em><b>Tags: </b>
+                <span><a href="/tag/functions.html">#functions </a></span>
+    </em>
+    <hr>
+</div>
+
+<div>
+    <mainarticle>
+    <div class="section" id="terminologies">
+<h2>Terminologies</h2>
+<dl class="docutils">
+<dt><em>function composition</em></dt>
+<dd><div class="first line-block">
+<div class="line">'∘' 연산자로 표현되며, 이 연산자는 다수의 함수 <em>f, g</em>를 피연산자로 한다.</div>
+<div class="line">이는 <tt class="docutils literal">h = g ∘ f</tt> || <tt class="docutils literal">h = g(f(x))</tt>의 표현을 가진다.</div>
+<div class="line">여기서 g의 입력은 f의 x에 대한 출력에 적용된다.</div>
+<div class="line">직관적으로, <strong>함수를 조합하는 것은 f의 출력을 g함수에 입력하는, 과정을 연결하는 것이다.</strong></div>
+</div>
+<blockquote class="last">
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">함수의 합성은 함수의 곱과는 차이가 있는데, 대표적으로 함수의 합성은 commutative(대화적인, 교환 법칙, <tt class="docutils literal">f ∘ g != g ∘ f</tt>)하지 않다.</p>
+</div>
+</blockquote>
+</dd>
+</dl>
+</div>
+<div class="section" id="function-composition">
+<h2>function composition?</h2>
+<img alt="handnote to function composition" src="https://lh3.googleusercontent.com/pw/AL9nZEXHeAA0kB_b1XCG2TTIvtzbIJqq-dFT3BRzqks6tOmynhaBC_N-immjWsnhw5O6GF99M6HdiBGTFaFjtPwEIAhF8MHeKpy3rMRxbPMjoik-rfk8Qrx83UtUj3fhuGQMiUusbems1Y3ExDS4GWYy8KMy=w1016-h1353-no?authuser=0" />
+<div class="line-block">
+<div class="line">이제까지 살펴본 polynomial function, linear function, rational irrational function 등은 단순히 하나의 식으로 표현되는 하나의 속성이다.</div>
+<div class="line">현실의 문제들은 단순히 하나의 함수(두 수의 대응관계)만으로 표현하기에는 어려울 것이다.</div>
+<div class="line">때로는 함수 여럿을 한데 묶어서 조합하여 나타낼 수 있는 복잡한 과정을 가지는 대응 관계도 존재한다. 이것을 다수의 함수의 조합으로 풀어낼 수 있는데,</div>
+<div class="line">이 함수의 조합 자체를 <em>function composition(합성함수)</em>라 부르고, 함수를 연결해 합성함수를 만들거나, 합성함수를 일반함수로 분해하는 과정을 포함한다.</div>
+</div>
+</div>
+<div class="section" id="inverse-function">
+<h2>inverse function?</h2>
+<img alt="handnote to inverse function" src="https://lh3.googleusercontent.com/pw/AL9nZEU1Q-cuYGH2GtieQZHozFgljXaBbYWxM7kfzg0cs5jS6_XaGCnCpk6oMk3hlAx02q2pMCvp-XYF2JV49m8Mi9m2CMPlvHuR0T4wVxNX9OCTRY7uzdM-XcazX-ZgoSjKWvzvBokWjtcLbjMh_UmuNMBD=w1016-h1353-no?authuser=0" />
+<div class="line-block">
+<div class="line">함수는 방향이 있는 대응관계이고, associative(수의 관계)라는 속성이 가장 중심이 된다.</div>
+<div class="line">함수가 되는 조건으로는 단순히 입력값이 하나의 출력값으로 관계를 가지면 되는 것이지만,</div>
+<div class="line">one to one의 관계를 만족하는 함수의 경우 반대의 관계로 표현하여도 함수의 조건을 만족한다.</div>
+<div class="line">이를 <em>inverse function(역함수)</em>라고 한다.</div>
+</div>
+</div>
+
+    </mainarticle>
+</div>
+<hr>
+        
+<div>
+        <i>If you found the article helpful, please share or cite the article, and spread the word:</i>
+            <p style="margin-top: 2%;">
+                <span><a target="_blank" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Twitter" href="https://twitter.com/share?url=/posts/math/2022/10/07/function-composition-and-inverse-function&text=4.5 function composition and inverse function&via="><img class="social-icons-a" src="/theme/images/icons/twitter.png"></a></span>
+                <span><a target="_blank" title="Facebook" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=500,width=700');return false;" href="https://www.facebook.com/sharer.php?u=/posts/math/2022/10/07/function-composition-and-inverse-function&t=4.5 function composition and inverse function"><img class="social-icons-a" src="/theme/images/icons/facebook.png"></a></span>
+
+                <a  target="_blank" title="Linkedin" href="https://www.linkedin.com/shareArticle?mini=true&url=/posts/math/2022/10/07/function-composition-and-inverse-function&title=4.5 function composition and inverse function" rel="nofollow" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=450,width=650');return false;"><img class="social-icons-a" src="/theme/images/icons/linkedin.png"></a>
+            </p>
+</div>
+<hr>
+    <p><i>For any feedback or corrections, please write in to: </i><b> junehan </b></p>
+        
+    </maincontent>
+
+  <!-- Analytics -->
+
+  </div>
+</body>
+
+</html>
