@@ -126,13 +126,23 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name">Union operator:</th><td class="field-body">합집합, A + B</td>
+<tr class="field"><th class="field-name"><tt class="docutils literal">UNION</tt> operator:</th><td class="field-body"><p class="first">합집합, A OR B</p>
+</td>
 </tr>
-<tr class="field"><th class="field-name" colspan="2">Intersect operator:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body">교집합, A * B</td>
+<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">INTERSECT</tt> operator:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">교집합, A AND B</p>
+</td>
 </tr>
-<tr class="field"><th class="field-name" colspan="2">Except operator:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body">A - B</td>
+<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">EXCEPT</tt> operator:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">A - B (ONLY A)</p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">non common:</th><td class="field-body"><p class="first">A OR B - A AND B</p>
+<ul class="last simple">
+<li><tt class="docutils literal">(A UNION B) EXCEPT (A INTERSECT B)</tt></li>
+<li><tt class="docutils literal">(A EXCEPT B) UNION (B EXCEPT A)</tt></li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
