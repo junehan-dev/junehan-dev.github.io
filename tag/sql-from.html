@@ -1,121 +1,195 @@
-<!doctype html>
-<html lang="en" itemscope itemtype="http://schema.org/Person">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-      <meta charset="utf-8">
-  <!-- Site Meta Data -->
-  <title>junehan.dev.log - sql-from</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="junehan">
-
-  <link rel="shortcut icon" href="">
-
-  <!-- schema.org -->
-  <meta itemprop="name" content="junehan.dev.log">
-  <meta itemprop="image" content="">
-  <meta itemprop="description" content="">
-
-  <!-- Style Meta Data -->
-  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
-  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
-
-  <!-- Feed Meta Data -->
-
-  <!-- Twitter Feed -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:site" content="">
-  <meta name="twitter:image" content="">
-
-  <meta name="twitter:creator" content="">
-  <meta name="twitter:url" content="">
-  <meta name="twitter:title" content="junehan.dev.log">
-  <meta name="twitter:description" content="">
-
-  <!-- Facebook Meta Data -->
-  <meta property="og:title" content="junehan.dev.log" />
-  <meta property="og:description" content="" />
-  <meta property="og:image" content="" />
-
-    <meta name="twitter:creator" content="">
-    <meta name="twitter:url" content="/tag/sql-from.html">
-    <meta name="twitter:title" content="junehan.dev.log || sql-from">
-    <meta name="twitter:description" content="Articles with the tag 'sql-from'">
-
-    <!-- Facebook Meta Data -->
-    <meta property="og:title" content="junehan.dev.log || sql-from"/>
-    <meta property="og:description" content="Articles with the tag 'sql-from'"/>
-    <meta property="og:image" content=""/>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>junehan.dev.log - sql-from</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
 </head>
 
-<body>
-    <div class="container">
-
-    <!-- Navbar -->
-      <div class="navbar">
-        <ul>
-            <div>
-                <li>
-                    <a href=""><h3>junehan.dev.log</h3></a>
-                </li>
-                <li>
-                </li>
-            </div>
-        </ul>
-      </div>
-
-  <!-- Sidebar -->
-    <sidebar>
-        <ul class="static-item">
-
-        </ul>        
-
-        <ul>
-                <div class="cat-border">
-                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">junehan.dev.log</a></h1>
+                <nav><ul>
                     <li><a href="/category/algorithm.html">algorithm</a></li>
                     <li><a href="/category/database.html">database</a></li>
                     <li><a href="/category/datastructure.html">datastructure</a></li>
                     <li><a href="/category/diary.html">diary</a></li>
                     <li><a href="/category/math.html">math</a></li>
-                </div>
-        </ul>
+                </ul></nav>
+        </header><!-- /#banner -->
 
-            <h2><br/>BLOGROLLS</h2>
-            <ul>
-                    <li><a href="https://github.com/junehan-dev">github</a></li>
-                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
-            </ul> 
-   
-        <p> 
-                <span>
-                    <a href="https://github.com/junehan-dev/" target="_blank">
-                        <img class="social-icons-m" src="/theme/images/icons/github.png">
-                    </a>
-                </span>
-        </p>
-        <p>
-        </p>
-        <p>
-        </p>
-    </sidebar>
-    
-    <maincontent>
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/posts/database/2022/08/05/sql-query-from-and-tables">Query Primer 3. from and tables</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2022-08-05T17:32:00+09:00">
+                Published: Fri 05 August 2022
+        </abbr>
+		<br />
+        <abbr class="modified" title="2022-08-22T19:01:00+09:00">
+                Updated: Mon 22 August 2022
+        </abbr>
 
-    <ol>
-    <h2>Tag: sql-from</h2>
-        <hr>
-        <li>
-            <h5><a href="/posts/database/2022/08/05/sql-query-from-and-tables" rel="bookmark" title="Permalink to Query Primer 3. from and tables">Query Primer 3. from and tables</a></h5>
-            By:<a href="/author/junehan.html">junehan</a><br />On:Fri 05 August 2022<br />In:<a href="/category/database.html" rel="bookmark" title="Permalink to database">database</a>
-        </li>
-    </ol>
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/database.html">database</a>.</p>
+<p>tags: <a href="/tag/sql.html">sql</a> <a href="/tag/sql-tables.html">sql-tables</a> <a href="/tag/sql-from.html">sql-from</a> </p>
+</footer><!-- /.post-info --><div class="section" id="subject-from">
+<h2>SUBJECT: from문을 파악하고 이해하자</h2>
+<blockquote>
+<ul>
+<li><p class="first">References</p>
+<blockquote>
+<ul class="simple">
+<li>text book, Learning sql 3rd edition</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="from-clause">
+<h2>From Clause</h2>
+<p>SYNTAX</p>
+<blockquote>
+<tt class="docutils literal">SELECT ... FROM [TABLE1 NAME <span class="pre">[??JOIN</span> [TABLE2] ON <span class="pre">[CONDITION]]]</span></tt></blockquote>
+<p>INTRO</p>
+<blockquote>
+<div class="line-block">
+<div class="line">지금까지 보았을 쿼리에서 <tt class="docutils literal">FROM</tt> 구가 하나의 테이블을 포함하는 것을 보았을 것입니다.</div>
+<div class="line">대부분 하나 혹은 다수의 테이블을 포함하는 구 로설명하지만 아래와 같이 정의를 넓히고 싶습니다.</div>
+</div>
+<blockquote>
+<div class="line-block">
+<div class="line"><em>The from clause defines the tables used by query, along with the means of linking the tables together.</em></div>
+<div class="line"><em>from구는 테이블들과 연결되어 쿼리에서 사용될 테이블들을 정의한다.</em></div>
+</div>
+</blockquote>
+<div class="line-block">
+<div class="line">이 정의는 2개의 다른 개념이 혼용된 것이지만 이 장에서 다룰 것입니다.</div>
+</div>
+</blockquote>
+</div>
+<div class="section" id="tables">
+<h2>TABLES</h2>
+<p>4-Types of Tables</p>
+<blockquote>
+<ul class="simple">
+<li>Permanent Tables (<tt class="docutils literal">CREATE TABLE</tt>로 생성된 전통적인 테이블)</li>
+<li>Derived Tables (subquery에 의해 생성된 in-memory 중간 테이블)</li>
+<li>Temporary Tables (in-memory volatile 테이블)</li>
+<li>Virtual Tables (<tt class="docutils literal">CREATE VIEW</tt>로 생성된 가상테이블 command of table)</li>
+</ul>
+</blockquote>
+<div class="line-block">
+<div class="line">각 테이블은 query의 from 구문에 포함 될 수 있다.</div>
+<div class="line">현재로서는 영구적인 테이블을 from구에 더하는 것에 익숙해져야하기 때문에, 다른 타입의 테이블은 간단하게 설명하기로 하자.</div>
+</div>
+<div class="section" id="derived-subquery-generated-tables">
+<h3>Derived (Subquery-generated) Tables</h3>
+<dl class="docutils">
+<dt>Subuquery</dt>
+<dd><div class="first last line-block">
+<div class="line">서브쿼리는 다른 쿼리에 대해 포함되는 쿼리를 의미한다.</div>
+<div class="line">서브쿼리는 괄호에 둘러쌓여 있고, select 구문, from 구문의 다양한 부분에서 사용될 수 있다.</div>
+</div>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">그러나 from 구문 내에서 서브쿼리는 <em>파생테이블</em>을 생성하는 역할을 수행하며
+이에 다른 모든 쿼리 내에서 접근 가능하고, from 구문 내의 다른 테이블과 상호작용할 수 있다.</p>
+</div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">concat</span><span class="p">(</span><span class="n">cust</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;, &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cust</span><span class="p">.</span><span class="n">first_name</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">full_name</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">      </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"></span>
+<span class="w">      </span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;JESSIE&quot;</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cust</span><span class="p">;</span><span class="w"></span>
 
+<span class="o">+</span><span class="c1">---------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">full_name</span><span class="w">     </span><span class="o">|</span><span class="w"></span>
+<span class="o">+</span><span class="c1">---------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">BANKS</span><span class="p">,</span><span class="w"> </span><span class="n">JESSIE</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="n">MILAM</span><span class="p">,</span><span class="w"> </span><span class="n">JESSIE</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">+</span><span class="c1">---------------+</span>
+<span class="mi">2</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="temporary-tables">
+<h3>Temporary tables</h3>
+<div class="line-block">
+<div class="line">비록 구현체에 차이는 있지만, 모든 관계형 데이터베이스는 volatile 혹은 temporary한 table을 생성할 수 있는 기능이 있다.</div>
+<div class="line">이 테이블들은 일반 테이블과 동일해 보이지만, 특정한 순간에 사라지는 것이다.(일반적으로 transaction, db-session의 종료시점)</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TEMPORARY</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">actors_j</span><span class="w"></span>
+<span class="w">   </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="n">actor_id</span><span class="w"> </span><span class="nb">smallint</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span><span class="w"></span>
+<span class="w">      </span><span class="n">first_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">45</span><span class="p">),</span><span class="w"></span>
+<span class="w">      </span><span class="n">last_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="p">);</span><span class="w"></span>
 
-    </maincontent>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">actors_j</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">      </span><span class="n">actor_id</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">first_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">      </span><span class="n">last_name</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">actor</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="ss">&quot;J%&quot;</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="virtual-view-prepared-tables">
+<h3>Virtual (View-prepared) tables</h3>
+<div class="line-block">
+<div class="line">view는 <strong>data dictionary</strong>에 저장되는 쿼리이다.</div>
+<div class="line">이것은 마치 테이블 처럼 보이고 동작하지만, 실제로 데이터가 관련되지는 않는다.</div>
+<div class="line">우리가 view를 향해서 query를 전달할때, 쿼리는 view와 결합되어 실행된다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">cust_vw</span><span class="w"> </span><span class="k">AS</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">      </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">firstName</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">active</span><span class="w"></span>
+<span class="w">      </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="p">;</span><span class="w"></span>
 
-  <!-- Analytics -->
+<span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">first_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">last_name</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">cust_vw</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://github.com/junehan-dev">github</a></li>
+                            <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
 
-  </div>
+                            <li><a href="https://github.com/junehan-dev/">github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
 </body>
-
 </html>

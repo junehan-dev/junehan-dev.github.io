@@ -1,121 +1,118 @@
-<!doctype html>
-<html lang="en" itemscope itemtype="http://schema.org/Person">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-      <meta charset="utf-8">
-  <!-- Site Meta Data -->
-  <title>junehan.dev.log - queue</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="junehan">
-
-  <link rel="shortcut icon" href="">
-
-  <!-- schema.org -->
-  <meta itemprop="name" content="junehan.dev.log">
-  <meta itemprop="image" content="">
-  <meta itemprop="description" content="">
-
-  <!-- Style Meta Data -->
-  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
-  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
-
-  <!-- Feed Meta Data -->
-
-  <!-- Twitter Feed -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:site" content="">
-  <meta name="twitter:image" content="">
-
-  <meta name="twitter:creator" content="">
-  <meta name="twitter:url" content="">
-  <meta name="twitter:title" content="junehan.dev.log">
-  <meta name="twitter:description" content="">
-
-  <!-- Facebook Meta Data -->
-  <meta property="og:title" content="junehan.dev.log" />
-  <meta property="og:description" content="" />
-  <meta property="og:image" content="" />
-
-    <meta name="twitter:creator" content="">
-    <meta name="twitter:url" content="/tag/queue.html">
-    <meta name="twitter:title" content="junehan.dev.log || queue">
-    <meta name="twitter:description" content="Articles with the tag 'queue'">
-
-    <!-- Facebook Meta Data -->
-    <meta property="og:title" content="junehan.dev.log || queue"/>
-    <meta property="og:description" content="Articles with the tag 'queue'"/>
-    <meta property="og:image" content=""/>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>junehan.dev.log - queue</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
 </head>
 
-<body>
-    <div class="container">
-
-    <!-- Navbar -->
-      <div class="navbar">
-        <ul>
-            <div>
-                <li>
-                    <a href=""><h3>junehan.dev.log</h3></a>
-                </li>
-                <li>
-                </li>
-            </div>
-        </ul>
-      </div>
-
-  <!-- Sidebar -->
-    <sidebar>
-        <ul class="static-item">
-
-        </ul>        
-
-        <ul>
-                <div class="cat-border">
-                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">junehan.dev.log</a></h1>
+                <nav><ul>
                     <li><a href="/category/algorithm.html">algorithm</a></li>
                     <li><a href="/category/database.html">database</a></li>
                     <li><a href="/category/datastructure.html">datastructure</a></li>
                     <li><a href="/category/diary.html">diary</a></li>
                     <li><a href="/category/math.html">math</a></li>
-                </div>
-        </ul>
+                </ul></nav>
+        </header><!-- /#banner -->
 
-            <h2><br/>BLOGROLLS</h2>
-            <ul>
-                    <li><a href="https://github.com/junehan-dev">github</a></li>
-                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
-            </ul> 
-   
-        <p> 
-                <span>
-                    <a href="https://github.com/junehan-dev/" target="_blank">
-                        <img class="social-icons-m" src="/theme/images/icons/github.png">
-                    </a>
-                </span>
-        </p>
-        <p>
-        </p>
-        <p>
-        </p>
-    </sidebar>
-    
-    <maincontent>
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/posts/datastructure/2022/06/22/intro-to-queue">Intro to QUEUE</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2022-06-22T08:19:00+09:00">
+                Published: Wed 22 June 2022
+        </abbr>
+		<br />
+        <abbr class="modified" title="2022-06-22T08:19:00+09:00">
+                Updated: Wed 22 June 2022
+        </abbr>
 
-    <ol>
-    <h2>Tag: queue</h2>
-        <hr>
-        <li>
-            <h5><a href="/posts/datastructure/2022/06/22/intro-to-queue" rel="bookmark" title="Permalink to Intro to QUEUE">Intro to QUEUE</a></h5>
-            By:<a href="/author/junehan.html">junehan</a><br />On:Wed 22 June 2022<br />In:<a href="/category/datastructure.html" rel="bookmark" title="Permalink to datastructure">datastructure</a>
-        </li>
-    </ol>
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/datastructure.html">datastructure</a>.</p>
+<p>tags: <a href="/tag/interface.html">interface</a> <a href="/tag/queue.html">queue</a> </p>
+</footer><!-- /.post-info --><div class="section" id="subject">
+<h2>SUBJECT: 스택에 대비하여 큐를 이해하자</h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Objectives:</th><td class="field-body"><ul class="first simple">
+<li>Queue의 ADT가 제공하는 메커니즘을 이해한다.</li>
+<li>Stack에 비교하여 어떤 성질을 가지고 있는지를 깊게 체득한다.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">References:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Queue_(abstract_data_type">https://en.wikipedia.org/wiki/Queue_(abstract_data_type</a>)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="essentials">
+<h2>Essentials</h2>
+<img alt="Queue basic note" src="https://lh3.googleusercontent.com/pw/AM-JKLWU5Qqd-m-7ItrXBpyLa91UEZ8US00Uu4ICF092y8TXzXoPS1gbyqcp_ewuHFZUXJlBbjdBXLOvyr4I16_GJNecQsnpda0T6xfZpjR7gIZ8gzW47U5DQluzse8s21f6y-zoMYzx8aA-KHQ0fVgN-Vc=w701-h934-no?authuser=0" />
+<ol class="arabic simple">
+<li><em>Iterative한 특성을 지니는 프로세스를 가졌다</em><ul>
+<li>입력 그대로 해결, Resolve의 순서를 가지기 때문에 Resolve는 언제든 중단될 수 있고, 그 대상이 사라졌다고 나머지 Queue의 출력프로세스와 단절되는 방식.</li>
+</ul>
+</li>
+<li><em>Resolve하는 순서가 입력순서를 유지하고 바로 문제해결 해소될 수 있는 특성</em><ul>
+<li>이 덕에 충분히 쌓아놓고, 먼저 쌓은 문제를 좀 해결하고, 이후 더 쌓을지 혹은 그만할지를 정해도 sequence가 무너지지 않는다.</li>
+</ul>
+</li>
+<li><em>WIKI: &quot;People lineup to wait for goods.&quot;</em><ul>
+<li>1, 2번의 특징을 묘사하는 이야기로, 깊게 생각하면, 접시는 전부 다 치워야 근원의 문제, 대전제가 해결되는 반면,</li>
+<li><em>Data누적 순서간에 계층구조가 존재하지 않는다.</em></li>
+</ul>
+</li>
+</ol>
+</div>
+<div class="section" id="cmp-with-stack">
+<h2>CMP With Stack</h2>
+<img alt="Queue basic note" src="https://lh3.googleusercontent.com/pw/AM-JKLW7ceFA69OWmnL8-FcPkPh0uMMdrSZzVCGgeFlyzqT32QWqSlh07ngG6mnyBZo3J502Vk5x_6bAAOo0ihDZPsMfk-OQGPwNSC7hEH8vW28R8u0vps7jxabayuXzv67dJk-hRTbjt5MudQLB26Rq9T4=w701-h934-no?authuser=0" />
+<ol class="arabic simple">
+<li>스택은 컴퓨터의 메모리, 그리고 등장배경과 마찬가지로 <em>MAIN-&gt;SUB1-&gt;SUB2-&gt;GET BACK</em> 의 구조와 정확히 맞아 떨어져서, 동작방식이 매우 컴퓨팅과 상호작용한다고 볼 수 있다.</li>
+<li><strong>순서가 유지면서 수평적인 관계로 접근을 하는지 혹은, 계층적으로 구성되어 모든 문제가 다른 문제의 연속으로 볼 수 있는지?</strong></li>
+<li>자연상태의 것이라면 Queue의 ADT가 그 사이의 순서는 유의미하며 중간의 어떤 것도 주인공이 될 수 있거나 모두 동등한 관계를 묘사하기 적절할 것이고,
+Stack이라면 연계된 작업 혹은 첫 문제를 해결하기 위한 것으로 단계적으로 문제를 분산해 나갈 것인지, 그래서 결국 해소해야하는 대상은 첫 문제로 돌아가는지 등을 생각해서 판단해야 할 것이다.</li>
+<li>적재해야할 필요가 없다면, 다른 문제에 파상된 문제가 아니라면, For 문에서 순차적으로 아래로 가면서 이전에 for block과는 동등한 실행자이고, 이전 것은 그의 <em>dequeue</em>에서 이미 사라졌고, 지금은 내가 적합한 대상인지가 더 중요한..?</li>
+</ol>
+</div>
+                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://github.com/junehan-dev">github</a></li>
+                            <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
 
+                            <li><a href="https://github.com/junehan-dev/">github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
 
-    </maincontent>
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
 
-  <!-- Analytics -->
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
 
-  </div>
 </body>
-
 </html>

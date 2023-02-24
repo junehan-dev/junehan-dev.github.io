@@ -1,121 +1,214 @@
-<!doctype html>
-<html lang="en" itemscope itemtype="http://schema.org/Person">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-      <meta charset="utf-8">
-  <!-- Site Meta Data -->
-  <title>junehan.dev.log - sql-select</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="junehan">
-
-  <link rel="shortcut icon" href="">
-
-  <!-- schema.org -->
-  <meta itemprop="name" content="junehan.dev.log">
-  <meta itemprop="image" content="">
-  <meta itemprop="description" content="">
-
-  <!-- Style Meta Data -->
-  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
-  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
-
-  <!-- Feed Meta Data -->
-
-  <!-- Twitter Feed -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:site" content="">
-  <meta name="twitter:image" content="">
-
-  <meta name="twitter:creator" content="">
-  <meta name="twitter:url" content="">
-  <meta name="twitter:title" content="junehan.dev.log">
-  <meta name="twitter:description" content="">
-
-  <!-- Facebook Meta Data -->
-  <meta property="og:title" content="junehan.dev.log" />
-  <meta property="og:description" content="" />
-  <meta property="og:image" content="" />
-
-    <meta name="twitter:creator" content="">
-    <meta name="twitter:url" content="/tag/sql-select.html">
-    <meta name="twitter:title" content="junehan.dev.log || sql-select">
-    <meta name="twitter:description" content="Articles with the tag 'sql-select'">
-
-    <!-- Facebook Meta Data -->
-    <meta property="og:title" content="junehan.dev.log || sql-select"/>
-    <meta property="og:description" content="Articles with the tag 'sql-select'"/>
-    <meta property="og:image" content=""/>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>junehan.dev.log - sql-select</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
 </head>
 
-<body>
-    <div class="container">
-
-    <!-- Navbar -->
-      <div class="navbar">
-        <ul>
-            <div>
-                <li>
-                    <a href=""><h3>junehan.dev.log</h3></a>
-                </li>
-                <li>
-                </li>
-            </div>
-        </ul>
-      </div>
-
-  <!-- Sidebar -->
-    <sidebar>
-        <ul class="static-item">
-
-        </ul>        
-
-        <ul>
-                <div class="cat-border">
-                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">junehan.dev.log</a></h1>
+                <nav><ul>
                     <li><a href="/category/algorithm.html">algorithm</a></li>
                     <li><a href="/category/database.html">database</a></li>
                     <li><a href="/category/datastructure.html">datastructure</a></li>
                     <li><a href="/category/diary.html">diary</a></li>
                     <li><a href="/category/math.html">math</a></li>
-                </div>
-        </ul>
+                </ul></nav>
+        </header><!-- /#banner -->
 
-            <h2><br/>BLOGROLLS</h2>
-            <ul>
-                    <li><a href="https://github.com/junehan-dev">github</a></li>
-                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
-            </ul> 
-   
-        <p> 
-                <span>
-                    <a href="https://github.com/junehan-dev/" target="_blank">
-                        <img class="social-icons-m" src="/theme/images/icons/github.png">
-                    </a>
-                </span>
-        </p>
-        <p>
-        </p>
-        <p>
-        </p>
-    </sidebar>
-    
-    <maincontent>
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/posts/database/2022/08/05/sql-query-select">Query Primer 2. select</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2022-08-05T15:35:00+09:00">
+                Published: Fri 05 August 2022
+        </abbr>
+		<br />
+        <abbr class="modified" title="2022-08-05T15:35:00+09:00">
+                Updated: Fri 05 August 2022
+        </abbr>
 
-    <ol>
-    <h2>Tag: sql-select</h2>
-        <hr>
-        <li>
-            <h5><a href="/posts/database/2022/08/05/sql-query-select" rel="bookmark" title="Permalink to Query Primer 2. select">Query Primer 2. select</a></h5>
-            By:<a href="/author/junehan.html">junehan</a><br />On:Fri 05 August 2022<br />In:<a href="/category/database.html" rel="bookmark" title="Permalink to database">database</a>
-        </li>
-    </ol>
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/database.html">database</a>.</p>
+<p>tags: <a href="/tag/sql-select.html">sql-select</a> <a href="/tag/sql.html">sql</a> </p>
+</footer><!-- /.post-info --><div class="section" id="subject-select">
+<h2>SUBJECT: select문을 파악하고 이해하자</h2>
+<blockquote>
+<ul>
+<li><p class="first">References</p>
+<blockquote>
+<ul class="simple">
+<li>text book, Learning sql 3rd edition</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="select-clause">
+<h2>Select Clause</h2>
+<p>SYNTAX</p>
+<blockquote>
+<tt class="docutils literal">SELECT [Columns] FROM ...</tt></blockquote>
+<p>INTRO</p>
+<blockquote>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">select</tt> 구문이 select 진술에서 첫 부분을 차지하고 있으나,</div>
+<div class="line">database가 최종으로 평가하는 구문들 중의 하나이다.::</div>
+</div>
+<blockquote>
+<div class="line-block">
+<div class="line">왜냐하면 무슨 데이터를 포함할지 결정하기 전에,</div>
+<div class="line">어떤 데이터인지 (어떤 필드들이 결과 테이블에 포함될 수 있는지) 확인하는 것이 우선되기 때문이다.</div>
+</div>
+</blockquote>
+<div class="line-block">
+<div class="line">그렇기 때문에, <tt class="docutils literal">select</tt>구문을 이해하기 위해선 <tt class="docutils literal">from</tt>을 이해하는 것이 선행된다.</div>
+</div>
+</blockquote>
+<p>Column Argument TYPES</p>
+<blockquote>
+<ul class="simple">
+<li>Literals, <tt class="docutils literal">amount</tt> 같은 문자열 혹은 숫자</li>
+<li>Expressions, <tt class="docutils literal">amount * 10</tt> 같은 연산 표현</li>
+<li>Built-in function calls, <tt class="docutils literal">ROUND(amount, 2)</tt> 같은 함수</li>
+<li>User-defined function calls</li>
+</ul>
+</blockquote>
+<p>EXAMPLE</p>
+<blockquote>
+<ul>
+<li><p class="first"><em>&quot;language 테이블의 모든 row의 데이터들과 모든 column 의 데이터를&quot;</em></p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="k">language</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<ol class="arabic simple">
+<li>FROM: language 테이블 1개</li>
+<li>SELECT: all columns, 모든 필드</li>
+</ol>
+</blockquote>
+</li>
+<li><p class="first"><em>language 테이블의 모든 row 데이터들에 대해</em></p>
+<blockquote>
+<ul class="simple">
+<li>language_id: 행을 그대로 포함한다.</li>
+<li>language_name: name 행의 값을 대문자로 변환해 포함한다.</li>
+<li>language_usage: &quot;COMMON&quot; 이라는 값으로 결과 테이블에 포함한다.</li>
+<li>lang_pi_value: lauguage_id에 3.14 를 곱한 값을 연산해 포함한다.</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">language_id</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="k">column</span><span class="w"></span>
+<span class="w">   </span><span class="s1">&#39;COMMON&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">language_usage</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">literal</span><span class="w"></span>
+<span class="w">   </span><span class="k">UPPER</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">language_name</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">Builtin</span><span class="w"> </span><span class="k">function</span><span class="w"></span>
+<span class="w">   </span><span class="n">language_id</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">lang_pi_value</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">Expression</span><span class="w"></span>
+<span class="k">from</span><span class="w"> </span><span class="o">`</span><span class="k">language</span><span class="o">`</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</blockquote>
+</li>
+<li><p class="first"><em>내장함수 사용</em></p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="k">VERSION</span><span class="p">(),</span><span class="w"></span>
+<span class="w">   </span><span class="k">USER</span><span class="p">(),</span><span class="w"></span>
+<span class="w">   </span><span class="k">DATABASE</span><span class="p">();</span><span class="w"></span>
 
+<span class="cm">/*</span>
+<span class="cm">* | VERSION()      | USER()         | DATABASE() |</span>
+<span class="cm">* | 10.8.3-MariaDB | root@localhost | sakila     |</span>
+<span class="cm">*/</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">테이블에 의존하지 않는 정보를 추출하는 내장함수를 사용하였기 때문에,</div>
+<div class="line"><tt class="docutils literal">FROM</tt>구문을 사용할 필요가 없다.</div>
+</div>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="column-aliase">
+<h2>Column Aliase</h2>
+<p>INTRO</p>
+<blockquote>
+<div class="line-block">
+<div class="line"><em>(mysql같은 도구는 우리가 희망하는 column에 대해서 label을 생성해 주지만,)</em></div>
+<div class="line">스스로 label을 할당하고 싶을 수 있다.</div>
+<div class="line">SELECT 구문의 각 요소에 대해서 <tt class="docutils literal">AS</tt>column alias를 더하는 것으로 변경이 가능하다.</div>
+</div>
+</blockquote>
+<p>PURPOSE</p>
+<blockquote>
+<div class="line-block">
+<div class="line">데이터베이스에서 column의 명칭은 너무 길지 않으면서도, 약어 표현을 삼가하는 경우가 많다.</div>
+<div class="line">이것을 우리의 python, java 프로그램으로 가져와서 처리할 때에, 더 손에 쥐기 간편한 표현으로 변경하는 것으로 가독성을 증대시킬 수 있다.</div>
+</div>
+</blockquote>
+</div>
+<div class="section" id="removing-duplicate">
+<h2>Removing Duplicate</h2>
+<p>INTRO</p>
+<blockquote>
+<div class="line-block">
+<div class="line">특정 column의 데이터가 중첩되지 않는 것을 보장할 수 있다면, <tt class="docutils literal">ALL</tt> 키워드를 사용하여 가져올 수 있다.</div>
+<div class="line">그러나 <tt class="docutils literal">ALL</tt> 키워드는 기본옵션에 해당하는 것이기에 명시할 필요가 없다.</div>
+</div>
+</blockquote>
+<p>EXAMPLE</p>
+<blockquote>
+<ul>
+<li><p class="first"><em>&quot;영화출연 로그 중에서, 배우의 아이디를 고유하게 처리하여 리스트업&quot;</em></p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">actor_id</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">file_actor</span><span class="w"></span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">actor_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<div class="last line-block">
+<div class="line">DISTINCT 키워드를 사용하여 result set을 생성하기 위해선, 데이터가 정렬되어있어야 한다.</div>
+<div class="line">굳이 중복을 한번 더 체크하기 위해서 DISTINCT 키워드를 사용하는 것은 비효율적이다.</div>
+<div class="line">그렇게 작성하기 보다는, 다루려고하는 데이터를 살펴보고 중복이 없을지 판단하는 것이 현명하다.</div>
+</div>
+</div>
+</div>
+                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://github.com/junehan-dev">github</a></li>
+                            <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
 
-    </maincontent>
+                            <li><a href="https://github.com/junehan-dev/">github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
 
-  <!-- Analytics -->
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
 
-  </div>
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
 </body>
-
 </html>

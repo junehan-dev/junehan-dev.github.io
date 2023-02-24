@@ -1,121 +1,188 @@
-<!doctype html>
-<html lang="en" itemscope itemtype="http://schema.org/Person">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-      <meta charset="utf-8">
-  <!-- Site Meta Data -->
-  <title>junehan.dev.log - stack</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="junehan">
-
-  <link rel="shortcut icon" href="">
-
-  <!-- schema.org -->
-  <meta itemprop="name" content="junehan.dev.log">
-  <meta itemprop="image" content="">
-  <meta itemprop="description" content="">
-
-  <!-- Style Meta Data -->
-  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
-  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
-
-  <!-- Feed Meta Data -->
-
-  <!-- Twitter Feed -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:site" content="">
-  <meta name="twitter:image" content="">
-
-  <meta name="twitter:creator" content="">
-  <meta name="twitter:url" content="">
-  <meta name="twitter:title" content="junehan.dev.log">
-  <meta name="twitter:description" content="">
-
-  <!-- Facebook Meta Data -->
-  <meta property="og:title" content="junehan.dev.log" />
-  <meta property="og:description" content="" />
-  <meta property="og:image" content="" />
-
-    <meta name="twitter:creator" content="">
-    <meta name="twitter:url" content="/tag/stack.html">
-    <meta name="twitter:title" content="junehan.dev.log || stack">
-    <meta name="twitter:description" content="Articles with the tag 'stack'">
-
-    <!-- Facebook Meta Data -->
-    <meta property="og:title" content="junehan.dev.log || stack"/>
-    <meta property="og:description" content="Articles with the tag 'stack'"/>
-    <meta property="og:image" content=""/>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>junehan.dev.log - stack</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
 </head>
 
-<body>
-    <div class="container">
-
-    <!-- Navbar -->
-      <div class="navbar">
-        <ul>
-            <div>
-                <li>
-                    <a href=""><h3>junehan.dev.log</h3></a>
-                </li>
-                <li>
-                </li>
-            </div>
-        </ul>
-      </div>
-
-  <!-- Sidebar -->
-    <sidebar>
-        <ul class="static-item">
-
-        </ul>        
-
-        <ul>
-                <div class="cat-border">
-                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">junehan.dev.log</a></h1>
+                <nav><ul>
                     <li><a href="/category/algorithm.html">algorithm</a></li>
                     <li><a href="/category/database.html">database</a></li>
                     <li><a href="/category/datastructure.html">datastructure</a></li>
                     <li><a href="/category/diary.html">diary</a></li>
                     <li><a href="/category/math.html">math</a></li>
-                </div>
-        </ul>
+                </ul></nav>
+        </header><!-- /#banner -->
 
-            <h2><br/>BLOGROLLS</h2>
-            <ul>
-                    <li><a href="https://github.com/junehan-dev">github</a></li>
-                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
-            </ul> 
-   
-        <p> 
-                <span>
-                    <a href="https://github.com/junehan-dev/" target="_blank">
-                        <img class="social-icons-m" src="/theme/images/icons/github.png">
-                    </a>
-                </span>
-        </p>
-        <p>
-        </p>
-        <p>
-        </p>
-    </sidebar>
-    
-    <maincontent>
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/posts/datastructure/2022/06/14/intro-to-Stack">Intro to STACK</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2022-06-14T14:49:00+09:00">
+                Published: Tue 14 June 2022
+        </abbr>
+		<br />
+        <abbr class="modified" title="2022-06-14T14:49:00+09:00">
+                Updated: Tue 14 June 2022
+        </abbr>
 
-    <ol>
-    <h2>Tag: stack</h2>
-        <hr>
-        <li>
-            <h5><a href="/posts/datastructure/2022/06/14/intro-to-Stack" rel="bookmark" title="Permalink to Intro to STACK">Intro to STACK</a></h5>
-            By:<a href="/author/junehan.html">junehan</a><br />On:Tue 14 June 2022<br />In:<a href="/category/datastructure.html" rel="bookmark" title="Permalink to datastructure">datastructure</a>
-        </li>
-    </ol>
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/datastructure.html">datastructure</a>.</p>
+<p>tags: <a href="/tag/interface.html">interface</a> <a href="/tag/stack.html">stack</a> </p>
+</footer><!-- /.post-info --><div class="section" id="subject">
+<h2>SUBJECT: 스택의 정의와 속성, 그리고 이해</h2>
+<p>Objectives</p>
+<blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Essentials:</th><td class="field-body"><ul class="first simple">
+<li>Stack은 ADT라는 정의를 명확히 이해한다.</li>
+<li>Stack의 구성 방법을 파악한다.</li>
+<li>Stack이 왜 사용되며 어떻게 쓰일 수 있는지 이해한다.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">TrackBacks:</th><td class="field-body"><ul class="first simple">
+<li>Stack은 왜 등장했는지 이해</li>
+<li>Stack은 왜 필요했는지 공감해본다.</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">References:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Stack_(abstract_data_type">https://en.wikipedia.org/wiki/Stack_(abstract_data_type</a>)</li>
+<li><a class="reference external" href="https://en.wikipedia.org/wiki/Turing_machine">https://en.wikipedia.org/wiki/Turing_machine</a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+</div>
+<div class="section" id="essentials">
+<h2>Essentials</h2>
+<img alt="hand note to stack 1" src="https://lh3.googleusercontent.com/pw/AM-JKLUY8o3uaENfy4tuk1IYzOmV0W52O-EyKgvHKYUpxlLELmZYENRx8Tty3JP-c9_IEQjvt_0d7MoQGNETOstJN4BrXBcZolgIiS_jduYtfLsY63_1O1xOzpfL1F07LBjLnXZfQHP3twKdY1vOR3sw_hA=w702-h936-no?authuser=0" />
+<dl class="docutils">
+<dt><strong>Stack as Collection Object</strong></dt>
+<dd>어떤 목적에 의하여 데이터가 집합되고, 그리고 그 집합을 하나의 객체가 포함하는 것.
+데이터가 같은 목적을 가지고 분류된 결과가 어떤 집합이라면,</dd>
+<dt><strong>Provides a sequnce for a group of data</strong></dt>
+<dd><p class="first">어떤 방식으로 객체를 저장하고, 어떤 API를 제공하는 지에 따라달라지지만,</p>
+<blockquote>
+<ul class="simple">
+<li><em>&quot;데이터를 보관할 수 있는 공간과 요소들의 수에 따라 길이 개념도 제공해야한다.</em></li>
+<li><tt class="docutils literal">int size(void)</tt></li>
+<li><tt class="docutils literal">int is_empty(void)</tt></li>
+</ul>
+</blockquote>
+<div class="line-block">
+<div class="line">컬렉션에 따라, 데이터를 보관한 이후, 추출하는 방식에서 가장 큰 차이가 있다.</div>
+<div class="line">어떤 목적에 직관적으로 이어지도록 도움을 줄 수 있는지에 가장 큰 설계 기반이 있다.::</div>
+</div>
+<blockquote class="last">
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Bag:</th><td class="field-body"><p class="first">[Store only]</p>
+<ul class="simple">
+<li><tt class="docutils literal">int add(void *Item)</tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Queue:</th><td class="field-body"><p class="first">[FIFO]</p>
+<ul class="simple">
+<li><tt class="docutils literal">void enque(void *Item)</tt></li>
+<li><tt class="docutils literal">void *deque(void)</tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Stack:</th><td class="field-body"><p class="first">[LIFO]</p>
+<ul class="last simple">
+<li><tt class="docutils literal">void push(void *Item)</tt></li>
+<li><tt class="docutils literal">void *pop(void *Item)</tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+</dd>
+<dt><strong>Stack&lt;T&gt;</strong></dt>
+<dd><ul class="first last simple">
+<li>일관된 배치의 데이터 묶음을 이 스택이 생성 시의 <tt class="docutils literal">stack_len</tt>을 관리하고 <em>PUSH, POP</em>의 API를 드러낸다.
+<em>(현대적인 의미에서는 내부구현 방식에 관계없이.)</em></li>
+<li>그래도 스택의 유래를 유지하는 언어들의 경우에는 Generic은 받되, Stack 생성 시점에 최대 길이(크기와는 구별)는 지정하도록 의미적으로 정의하고 있다.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="id1">
+<h2>유래와 사용성</h2>
+<img alt="hand note to stack 2" src="https://lh3.googleusercontent.com/pw/AM-JKLWpYSrN5JNbFZjV-1lvqG4SnGWmdvF1f_PglN6m-XbAoYaUluQD5epOKSkhLkQxoN6m86glDTjw8_GAQFQY88Gre0R8CbcjWvi5nZ1kTfS9RbZcnHnxzMM6droDzs47-SOzgA5NKZgZKzrrqkUfQUk=w702-h936-no?authuser=0&quot;" />
+<div class="line-block">
+<div class="line">파이썬 List에서 append, pop 메서드만 사용하는 것으로 스택을 사용해야 해결해야하는 문제풀이를 끝내고 나서 조금 시간이 흘렀다.</div>
+<div class="line">굳이 pointer operation으로 이미 존재하는 Collection을 유지하면서도 stack처럼 같은 효과를 낼 수 있는데 왜 이걸 덮어 씌워야 할까에 대해 고민했다.</div>
+</div>
+<div class="line-block">
+<div class="line">wikipedia에는 c로 array를 포함하는 Stack을 구현하는 코드가 있는데 그 지점까지 읽었을 때도,</div>
+<div class="line"><tt class="docutils literal">stack_max, stack_cur</tt> 에 size와 top에 대해 저장하고 그와 함께 <em>function parameter라는 훌륭한 인터페이스를 사용하면 해결될 것을 굳이 기본연산자들을 감출 이유를 공감하지 못했는데,</em></div>
+<div class="line">이 개념의 등장 시기에 대한 부분을 위키페디아에서 보고 필요성만큼은 납득할 수 있었다.</div>
+</div>
+<div class="section" id="wikipedia-stack-history">
+<h3>wikipedia stack/history</h3>
+<blockquote>
+<div class="line-block">
+<div class="line">앨런 튜링이 1946년 subroutine을 호출하고 돌아오는 과정을 bury, unbury라고 불렀다.</div>
+<div class="line">그리고 subroutine은 1945년 구현되었다.</div>
+</div>
+<div class="line-block">
+<div class="line">1960 ~ 1970년 중에 벨연구소에서 여전히 커다란 컴퓨터를 다루던 시기이고, assembly는 심지어 1949년에 처음 등장했다는 것과 그것보다도 4년은 더 이전의 시기인 점으로 생각하면, <tt class="docutils literal">PUSH EBP</tt> 루틴정도는 앞으로 눈감고 써야하지 않을까 생각이 들었다.</div>
+</div>
+</blockquote>
+</div>
+</div>
+<div class="section" id="edsger-w-dijkstra-s-algorithm">
+<h2>Edsger W. Dijkstra's Algorithm</h2>
+</div>
+<div class="section" id="pushdown-autonmation">
+<h2>Pushdown autonmation</h2>
+</div>
+                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://github.com/junehan-dev">github</a></li>
+                            <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
 
+                            <li><a href="https://github.com/junehan-dev/">github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
 
-    </maincontent>
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
 
-  <!-- Analytics -->
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
 
-  </div>
 </body>
-
 </html>

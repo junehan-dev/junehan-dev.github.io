@@ -1,121 +1,108 @@
-<!doctype html>
-<html lang="en" itemscope itemtype="http://schema.org/Person">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-      <meta charset="utf-8">
-  <!-- Site Meta Data -->
-  <title>junehan.dev.log - factorizations</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="junehan">
-
-  <link rel="shortcut icon" href="">
-
-  <!-- schema.org -->
-  <meta itemprop="name" content="junehan.dev.log">
-  <meta itemprop="image" content="">
-  <meta itemprop="description" content="">
-
-  <!-- Style Meta Data -->
-  <link rel="stylesheet" href="/theme/css/milligram.css" type="text/css" />
-  <link rel="stylesheet" href="/theme/css/custom.css" type="text/css" />
-
-  <!-- Feed Meta Data -->
-
-  <!-- Twitter Feed -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:site" content="">
-  <meta name="twitter:image" content="">
-
-  <meta name="twitter:creator" content="">
-  <meta name="twitter:url" content="">
-  <meta name="twitter:title" content="junehan.dev.log">
-  <meta name="twitter:description" content="">
-
-  <!-- Facebook Meta Data -->
-  <meta property="og:title" content="junehan.dev.log" />
-  <meta property="og:description" content="" />
-  <meta property="og:image" content="" />
-
-    <meta name="twitter:creator" content="">
-    <meta name="twitter:url" content="/tag/factorizations.html">
-    <meta name="twitter:title" content="junehan.dev.log || factorizations">
-    <meta name="twitter:description" content="Articles with the tag 'factorizations'">
-
-    <!-- Facebook Meta Data -->
-    <meta property="og:title" content="junehan.dev.log || factorizations"/>
-    <meta property="og:description" content="Articles with the tag 'factorizations'"/>
-    <meta property="og:image" content=""/>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>junehan.dev.log - factorizations</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
 </head>
 
-<body>
-    <div class="container">
-
-    <!-- Navbar -->
-      <div class="navbar">
-        <ul>
-            <div>
-                <li>
-                    <a href=""><h3>junehan.dev.log</h3></a>
-                </li>
-                <li>
-                </li>
-            </div>
-        </ul>
-      </div>
-
-  <!-- Sidebar -->
-    <sidebar>
-        <ul class="static-item">
-
-        </ul>        
-
-        <ul>
-                <div class="cat-border">
-                <li style="color: #F2F1EF; background-color: #6C7A89;">Categories</li>
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">junehan.dev.log</a></h1>
+                <nav><ul>
                     <li><a href="/category/algorithm.html">algorithm</a></li>
                     <li><a href="/category/database.html">database</a></li>
                     <li><a href="/category/datastructure.html">datastructure</a></li>
                     <li><a href="/category/diary.html">diary</a></li>
                     <li><a href="/category/math.html">math</a></li>
-                </div>
-        </ul>
+                </ul></nav>
+        </header><!-- /#banner -->
 
-            <h2><br/>BLOGROLLS</h2>
-            <ul>
-                    <li><a href="https://github.com/junehan-dev">github</a></li>
-                    <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
-            </ul> 
-   
-        <p> 
-                <span>
-                    <a href="https://github.com/junehan-dev/" target="_blank">
-                        <img class="social-icons-m" src="/theme/images/icons/github.png">
-                    </a>
-                </span>
-        </p>
-        <p>
-        </p>
-        <p>
-        </p>
-    </sidebar>
-    
-    <maincontent>
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/posts/math/2022/04/11/polynomial-and-factorization">3.3 polynomial and factorization</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2022-04-11T13:12:00+09:00">
+                Published: Mon 11 April 2022
+        </abbr>
+		<br />
+        <abbr class="modified" title="2022-04-11T13:12:00+09:00">
+                Updated: Mon 11 April 2022
+        </abbr>
 
-    <ol>
-    <h2>Tag: factorizations</h2>
-        <hr>
-        <li>
-            <h5><a href="/posts/math/2022/04/11/polynomial-and-factorization" rel="bookmark" title="Permalink to 3.3 polynomial and factorization">3.3 polynomial and factorization</a></h5>
-            By:<a href="/author/junehan.html">junehan</a><br />On:Mon 11 April 2022<br />In:<a href="/category/math.html" rel="bookmark" title="Permalink to math">math</a>
-        </li>
-    </ol>
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/math.html">math</a>.</p>
+<p>tags: <a href="/tag/factorizations.html">factorizations</a> </p>
+</footer><!-- /.post-info --><div class="section" id="terminologies">
+<h2>TERMINOLOGIES</h2>
+<dl class="docutils">
+<dt><em>polynomial</em></dt>
+<dd><div class="first last line-block">
+<div class="line">다항식(polynomial)은 indeterminates와 (addtion, subtraction, multiplication의 operations를 수행하는) coefficients로 구성된 expression을 의미한다.</div>
+<div class="line">그리고 indeterminates(미지의 대상)에 대해 non-negative integer exponentation을 전제로 한다.</div>
+<div class="line">예시) <tt class="docutils literal"><span class="pre">x**2</span> - 4*x + 7</tt>, <tt class="docutils literal"><span class="pre">x**3</span> - <span class="pre">2xyz**2</span> - yz + 7</tt></div>
+</div>
+</dd>
+<dt><em>base</em></dt>
+<dd><div class="first last line-block">
+<div class="line">거듭제곱에서 여러번 곱해지는 숫자나 문자를 뜻한다. <tt class="docutils literal"><span class="pre">2**4</span></tt>의 밑은 2이고 exponent(지수)는 4이다.</div>
+</div>
+</dd>
+<dt><em>factorization</em></dt>
+<dd><div class="first last line-block">
+<div class="line">수학적 object를 다수의 요소(factor)의 곱으로 작성하는 것을 의미한다.</div>
+<div class="line">주로 더 작거나 간단한 object로 변환하는 것이다.</div>
+<div class="line">예시) <tt class="docutils literal"><span class="pre">x**2</span> - 4 = (x + <span class="pre">2)(x</span> - 2)</tt></div>
+</div>
+</dd>
+<dt><em>integer factorization</em></dt>
+<dd><div class="first last line-block">
+<div class="line">구조화, 모든 양의 정수는 prime number의 product로 구조화 될 수 있다는 기초적인 이론을 증명하는 방법이다.</div>
+<div class="line">정수 구조화(소인수 분해)의 경우 RSA 암호화 시스템에서 public-key 암호화를 구현하는데에 사용된다.</div>
+<div class="line">예시) <tt class="docutils literal">32 = 2 * 2 * 2 * 2 * 2</tt></div>
+</div>
+</dd>
+</dl>
+</div>
+<div class="section" id="polynomial-factorization">
+<h2>polynomial factorization</h2>
+<img alt="note to polynomial factorization" src="https://lh3.googleusercontent.com/pw/AM-JKLWlM9CMrD1asD_D8hvveI2jKEWhPWtj0jTIBBVCOkaVuBObOMRT3O8mmfoJwT9wTlcKGpeTgAh-1HtFtpSNPoMG_F5f64v4csJuH13q-CAlFi8KxbZm3IWfsn-HYJwRrQqKG4b_eIB-gJXslklf31ty=w971-h1294-no?authuser=0" />
+<img alt="note to patterns to polynomial factorization" src="https://lh3.googleusercontent.com/pw/AL9nZEX77IKUgePslfe9qBCcfuwicUOXbIxX4x8holpBOkiU3l735UP5SP43tUxSBnKdk80Ucmx1HpJzHzjN_hJkFOaznlzq22ZRm7GRI2Ibxmj_k2nEL934O735ObRO65l77O-3h1sH6Y1AAEaT-jun9CKK=w1440-h1920-no?authuser=0" />
+</div>
+<div class="section" id="factorization-and-integer-factorization">
+<h2>factorization and integer factorization</h2>
+<img alt="note to factorization" src="https://lh3.googleusercontent.com/pw/AM-JKLV8dHifoMKPez2PX7rUUJmCD0yhVfJ_VjShYcKDhQqNOe7IYc5x5q367yrjCM84xouorzNKyrhem5YhAalNep-vuv0dy-3zm3ZxcbWOcVzMuBdSsyfgWdaieOJO7vXgBmP-_2KW4B65-26rOfkCo91m=w971-h1294-no?authuser=0" />
+</div>
+                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://github.com/junehan-dev">github</a></li>
+                            <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
 
+                            <li><a href="https://github.com/junehan-dev/">github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
 
-    </maincontent>
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
 
-  <!-- Analytics -->
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
 
-  </div>
 </body>
-
 </html>
