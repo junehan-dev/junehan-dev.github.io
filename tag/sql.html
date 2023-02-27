@@ -28,8 +28,8 @@
                 Published: Fri 10 February 2023
         </abbr>
 		<br />
-        <abbr class="modified" title="2023-02-13T18:57:00+09:00">
-                Updated: Mon 13 February 2023
+        <abbr class="modified" title="2023-02-24T23:57:00+09:00">
+                Updated: Fri 24 February 2023
         </abbr>
 
         <address class="vcard author">
@@ -666,8 +666,8 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal"><span class="pre">CAST('temporal</span> string format' AS type)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">문자열 양식에서 type에 대한 자료로 변형</p>
+<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal"><span class="pre">CAST(&lt;SRC&gt;</span> AS type)</tt>:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">SRC 양식에서 type에 대한 자료로 변형</p>
 <div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
 <span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;2019-09-17&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nb">DATE</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">date_field</span><span class="p">,</span><span class="w"></span>
 <span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;108:17:57&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nb">DATE</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">time_field</span><span class="p">;</span><span class="w"></span>
@@ -757,7 +757,7 @@
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">EXTRACT(UNIT FROM DATE)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">DATE로 부터 UNIT의</p>
+<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">DATE로 부터 UNIT의 수치를 반환한다.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -777,7 +777,58 @@
 </tbody>
 </table>
 </li>
+<li><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">DATEDIFF(DEST, SRC)</tt>:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">DATE DEST로 부터 SRC의 DAY DIFF를 반환한다.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">UNIT:</th><td class="field-body">YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, MICROSECOND</td>
+</tr>
+</tbody>
+</table>
+<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">DATEDIFF</span><span class="p">(</span><span class="s1">&#39;2019-09-03&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;2019-06-21 00:00:01&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="o">#</span><span class="w"> </span><span class="mi">74</span><span class="w"></span>
+</pre></div>
+</div></td>
+</tr>
+</tbody>
+</table>
+</li>
 </ul>
+</div>
+<div class="section" id="conversion-functions">
+<h3>Conversion Functions</h3>
+<div class="line-block">
+<div class="line">CAST()를 사용해서 string(date format)을 datetime 타입의 값으로 변환했었는데,</div>
+<div class="line">모든 데이터베이스 서버는 특정 데이터를 다른 타입으로 변경할 수 있는 내장함수들을 가지고 있지만,</div>
+<div class="line">CAST()를 사용할 것을 적극 추천한다.</div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal"><span class="pre">CAST(&lt;SRC&gt;</span> AS &lt;TYPE&gt;)</tt>:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">SRC를 내장 Type에 맞게 자료형을 변경한다.</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;2019-09-17&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nb">DATE</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">date_field</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;1456328&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">SIGNED</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">to_num</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;099ABC111&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">UNSIGNED</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">to_natural</span><span class="p">;</span><span class="w"></span>
+<span class="o">#</span><span class="w"> </span><span class="mi">2019</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1456328</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">99</span><span class="w"></span>
+</pre></div>
+<div class="last line-block">
+<div class="line">이 경우 마지막 쿼리에서 Warning이 발생하는데,</div>
+<div class="line">예상할 수 있는 정도의 경고로 크리티컬한 것이 아니므로</div>
+<div class="line">성공적으로 쿼리는 종료되지만 정책의 변경에 의해 금지하거나 할 수 있다.</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
                 </article>
