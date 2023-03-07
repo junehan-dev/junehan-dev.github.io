@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="generator" content="Pelican" />
-        <title>Query Primer 4. Fitering</title>
+        <title>Query Primer 4. Filtering</title>
         <link rel="stylesheet" href="/theme/css/main.css" />
         <meta name="description" content="intro to filtering in sql" />
 </head>
@@ -25,7 +25,7 @@
     <header>
       <h1 class="entry-title">
         <a href="/posts/database/2022/08/23/sql-filtering" rel="bookmark"
-           title="Permalink to Query Primer 4. Fitering">Query Primer 4. Fitering</a></h1>
+           title="Permalink to Query Primer 4. Filtering">Query Primer 4. Filtering</a></h1>
     </header>
 
     <div class="entry-content">
@@ -34,23 +34,31 @@
                 Published: Tue 23 August 2022
         </abbr>
 		<br />
-        <abbr class="modified" title="2022-08-25T14:57:00+09:00">
-                Updated: Thu 25 August 2022
+        <abbr class="modified" title="2023-03-03T22:21:00+09:00">
+                Updated: Fri 03 March 2023
         </abbr>
 
         <address class="vcard author">
                 By                         <a class="url fn" href="/author/junehan.html">junehan</a>
         </address>
 <p>In <a href="/category/database.html">database</a>.</p>
-<p>tags: <a href="/tag/sql-where.html">sql-where</a> <a href="/tag/sql.html">sql</a> </p>
+<p>tags: <a href="/tag/sql.html">sql</a> </p>
 </footer><!-- /.post-info -->      <div class="section" id="subject-filtering">
 <h2>SUBJECT: Filtering의 방법과 차이를 이해하자</h2>
 <blockquote>
 <ul>
 <li><p class="first">References</p>
 <blockquote>
+<ul>
+<li><p class="first">web</p>
+</li>
+<li><p class="first">text book</p>
+<blockquote>
 <ul class="simple">
-<li>text book, Learning sql 3rd edition</li>
+<li>Learning sql 3rd edition/Alan Beaulieu/9781492057611</li>
+</ul>
+</blockquote>
+</li>
 </ul>
 </blockquote>
 </li>
@@ -184,9 +192,11 @@
 <span class="p">...</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="section" id="wildcards">
-<h3>WildCards</h3>
-<p>부분적인 문자열을 검색할때, 아래 2가지 wildcard를 사용할 수 있다.</p>
+<div class="section" id="special-keywords">
+<h3>Special Keywords</h3>
+<ol class="arabic">
+<li><p class="first">WildCards
+부분적인 문자열을 검색할때, 아래 2가지 wildcard를 사용할 수 있다.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -197,12 +207,11 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="null">
-<h3>NULL</h3>
-<dl class="docutils">
+</li>
+<li><dl class="first docutils">
 <dt>NULL</dt>
-<dd>값이 존재하지 않음을 의미하는 값.</dd>
+<dd><p class="first last">값이 존재하지 않음을 의미하는 값.</p>
+</dd>
 </dl>
 <p>위처럼 단순한 명제이지만, 아래처럼 활용은 다양하다.</p>
 <blockquote>
@@ -234,6 +243,8 @@
 <span class="k">WHERE</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w"></span>
 </pre></div>
 <p>Null이라는 값을 넣은 것이 아니라, 값을 넣지 않은 것이다.</p>
+</li>
+</ol>
 </li>
 </ol>
 </div>

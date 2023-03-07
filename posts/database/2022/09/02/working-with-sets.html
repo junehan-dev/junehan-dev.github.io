@@ -34,8 +34,8 @@
                 Published: Fri 02 September 2022
         </abbr>
 		<br />
-        <abbr class="modified" title="2022-09-03T15:57:00+09:00">
-                Updated: Sat 03 September 2022
+        <abbr class="modified" title="2023-03-06T11:57:00+09:00">
+                Updated: Mon 06 March 2023
         </abbr>
 
         <address class="vcard author">
@@ -49,8 +49,17 @@
 <ul>
 <li><p class="first">References</p>
 <blockquote>
+<ul>
+<li><p class="first">web</p>
+</li>
+<li><p class="first">text book</p>
+<blockquote>
 <ul class="simple">
-<li>text book, Learning sql 3rd edition</li>
+<li>Learning sql 3rd edition/Alan Beaulieu/9781492057611</li>
+<li>SQL level up/Mic/9788968482519</li>
+</ul>
+</blockquote>
+</li>
 </ul>
 </blockquote>
 </li>
@@ -97,6 +106,261 @@
 <div class="line">복합된 테이블의 경우, Column을 순차적으로 첫 번째 테이블로 행을 합치는 식이 되기 때문에,</div>
 <div class="line">기준 테이블의 Column명을 기준으로 사용해야 한다.</div>
 </div>
+</div>
+</div>
+<div class="section" id="union-with-where-statement">
+<h2>UNION with WHERE statement</h2>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">UNION, INTERSECT, EXCEPT</tt>를 사용한 결과는 ROW(RECORD)에 대해서 COLUMN의 정보를 추가하는 개념이 아닌,</div>
+<div class="line">RESULT SET의 ROW의 수를 늘리는 것으로 결과 테이블에 COLUMN명이 동일하게 처리된다는 점에서</div>
+<div class="line">같은 테이블을 대상으로 사용할 가능성이 높다.</div>
+<div class="line">하지만, 같은 테이블에 대해서 두 집합의 교집합, 합집합을 사용해 결과테이블을 만들게 된다면,</div>
+<div class="line">2회의 FULL ACCESS가 일어나게되는데, 이는 조회 비용이 2배 높다는 의미를 가진다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">EXPLAIN</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">release_year</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">2006</span><span class="w"></span>
+<span class="k">UNION</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">release_year</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">2004</span><span class="err">\</span><span class="k">G</span><span class="p">;</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">33</span><span class="p">.</span><span class="mi">33</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">2</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">UNION</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">33</span><span class="p">.</span><span class="mi">33</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"></span>
+<span class="mi">2</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">위의 실행결과 분석처럼 film테이블의 1000개의 ROW를 두번의 SELECT에서 각각 개별적으로 조회하고 있다.</div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">goto구문의 사용을 피하라는 격언처럼 SQL에도 UNION의 사용을 피하라는 일종의 격언이 존재한다.
+UNION을 사용할 근거를 먼저 마련하고, 그것이 위 예제처럼 CASE를 통한 조건분기로 대체 가능하다면,
+대체하는 것이 좋다.
+SQL 구문이 길다는 것은 그만큼 추상화된 표현으로 인해 확장되는 내부적인 처리는 배로 늘어난 다는 것을 의미한다.</p>
+</div>
+</div>
+<div class="section" id="when-to-use-union">
+<h2>When to use UNION?</h2>
+<div class="line-block">
+<div class="line">두 개의 다른 테이블을 기준으로 결과를 합쳐야 하는 경우 UNION을 사용해야 하는 근거와 활용에 올바르다.</div>
+<div class="line">CASE를 통해서 WHERE을 대체하고, 동시에 FROM구에서 SUBQUERY를 사용하여 두 개의 테이블을 결합하여 사용할 수 있지만,</div>
+<div class="line">이는 불필요하게 중간테이블을 생성하는 과정을 포함하는 것을 의미하게 된다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">Sample</span><span class="w"> </span><span class="k">Table</span><span class="p">;</span><span class="w"></span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="n">Id</span><span class="w"> </span><span class="nb">BIGINT</span><span class="w"> </span><span class="n">UNSIGNED</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">date_1</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">flg_1</span><span class="w"> </span><span class="nb">BIT</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"></span>
+<span class="w">   </span><span class="n">date_2</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">flg_2</span><span class="w"> </span><span class="nb">BIT</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"></span>
+<span class="w">   </span><span class="n">date_3</span><span class="w"> </span><span class="nb">DATE</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">flg_3</span><span class="w"> </span><span class="nb">BIT</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">ThreeElements</span><span class="p">;</span><span class="w"></span>
+<span class="o">+</span><span class="c1">----+------------+--------------+------------+--------------+------------+--------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">Id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">date_1</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">flg_1</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">date_2</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">flg_2</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">date_3</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">flg_3</span><span class="w">        </span><span class="o">|</span><span class="w"></span>
+<span class="o">+</span><span class="c1">----+------------+--------------+------------+--------------+------------+--------------+</span>
+<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">2013</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">01</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="n">x01</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">2013</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">01</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="n">x01</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">2013</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">01</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="n">x00</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">2013</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">30</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="n">x01</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">2013</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">01</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="n">x01</span><span class="w">         </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">  </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">         </span><span class="o">|</span><span class="w"> </span><span class="mi">2013</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">01</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">0</span><span class="n">x00</span><span class="w">         </span><span class="o">|</span><span class="w"></span>
+<span class="o">+</span><span class="c1">----+------------+--------------+------------+--------------+------------+--------------+</span>
+</pre></div>
+<div class="line-block">
+<div class="line">위 테이블에서, <em>date_n, flg_n</em>의 n에 대해서 날짜가 131101이며, 플래그가 TRUE인 행을 찾는다 라고 했을때,</div>
+<div class="line">UNION을 사용한 방법은 아래와 같다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"></span>
+<span class="w">      </span><span class="n">date_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;2013-11-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">flg_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="w"></span>
+<span class="k">UNION</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">      </span><span class="k">WHERE</span><span class="w"></span>
+<span class="w">         </span><span class="n">date_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;2013-11-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">flg_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="w"></span>
+<span class="k">UNION</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">      </span><span class="k">WHERE</span><span class="w"></span>
+<span class="w">         </span><span class="n">date_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;2013-11-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">flg_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">위 구문에 대한 실행 평가는 아래와 같다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="o">***************************</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">.</span><span class="mi">67</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">2</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">UNION</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">.</span><span class="mi">67</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">UNION</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">.</span><span class="mi">67</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">4</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">UNION</span><span class="w"> </span><span class="k">RESULT</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">union1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">temporary</span><span class="w"></span>
+<span class="mi">4</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">이때 쿼리를 최적을 성능으로 수행하기 위해 필드 조합에 대해 INDEX를 설정하고</div>
+<div class="line">다시 동일한 구문에 대해 실행과정을 평가 할 경우, 아래와 같은 결과를 얻을 수 있는데,</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">IDX_1</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"> </span><span class="p">(</span><span class="n">date_1</span><span class="p">,</span><span class="w"> </span><span class="n">flg_1</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">IDX_2</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"> </span><span class="p">(</span><span class="n">date_2</span><span class="p">,</span><span class="w"> </span><span class="n">flg_2</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">IDX_3</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"> </span><span class="p">(</span><span class="n">date_3</span><span class="p">,</span><span class="w"> </span><span class="n">flg_3</span><span class="p">);</span><span class="w"></span>
+
+<span class="o">***************************</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ref</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="n">IDX_1</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="n">IDX_1</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="n">const</span><span class="p">,</span><span class="n">const</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">2</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">UNION</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ref</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="n">IDX_2</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="n">IDX_2</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="n">const</span><span class="p">,</span><span class="n">const</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">UNION</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ref</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="n">IDX_3</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="n">IDX_3</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="n">const</span><span class="p">,</span><span class="n">const</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">4</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">UNION</span><span class="w"> </span><span class="k">RESULT</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">union1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">temporary</span><span class="w"></span>
+<span class="mi">4</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">ref: const, const</tt>는 table에서 rows를 select하기 위해 index에 대해서 어떤 값이 비교되었는지를 의미한다.</div>
+<div class="line">즉 index로 설정된 행을 가져오면서, 비교한 값은 두개의 상수(날짜와 TRUE)이다.</div>
+<div class="line">이 3개의 index 기반 select 테이블을 UNION RESULT로 합치는 것으로 결과 테이블이 생성된다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"></span>
+<span class="w">      </span><span class="p">(</span><span class="n">date_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;2013-11-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">flg_1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="k">OR</span><span class="w"></span>
+<span class="w">         </span><span class="p">(</span><span class="n">date_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;2013-11-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">flg_2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="k">OR</span><span class="w"></span>
+<span class="w">         </span><span class="p">(</span><span class="n">date_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;2013-11-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">flg_3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="p">);</span><span class="w"></span>
+
+<span class="o">***************************</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">ThreeElements</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="n">index_merge</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="n">IDX_1</span><span class="p">,</span><span class="n">IDX_2</span><span class="p">,</span><span class="n">IDX_3</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="n">IDX_1</span><span class="p">,</span><span class="n">IDX_2</span><span class="p">,</span><span class="n">IDX_3</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">union</span><span class="p">(</span><span class="n">IDX_1</span><span class="p">,</span><span class="n">IDX_2</span><span class="p">,</span><span class="n">IDX_3</span><span class="p">);</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"></span>
+<span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">쿼리 옵티마이저에 의해서 UNION을 사용하도록 변경된 WHERE구로 적용되었으며,</div>
+<div class="line">3개의 UNION의 결과를 WHERE를 사용하여 ROW를 구하는 결과.</div>
+<div class="line">3개의 INDEX를 전부 가져와 UNION을(<tt class="docutils literal">index_merge</tt>) 수행하여 중간테이블을 생성하고,</div>
+<div class="line">결과테이블에서는 WHERE를 적용하여 종료된다.</div>
+<div class="line">결과적으로는 3개의 UNION을 사용한다는 점에서 변화가 없는데,</div>
+<div class="line">INDEX를 온전히 사용하는 케이스이기 때문에 위와 같은 변형이 있었던 것으로 추측된다.</div>
 </div>
 </div>
 

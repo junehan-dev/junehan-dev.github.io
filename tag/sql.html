@@ -22,814 +22,194 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/posts/database/2023/02/10/Data-generation-manipulation-conversion">Query Primer 7. Data Generation, Manipulation, and Conversion</a></h1>
+                    <h1 class="entry-title"><a href="/posts/database/2023/02/28/grouping-and-aggregates">Query Primer 8. Grouping and Aggregates</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2023-02-10T18:18:00+09:00">
-                Published: Fri 10 February 2023
+        <abbr class="published" title="2023-02-28T14:04:00+09:00">
+                Published: Tue 28 February 2023
         </abbr>
 		<br />
-        <abbr class="modified" title="2023-02-24T23:57:00+09:00">
-                Updated: Fri 24 February 2023
+        <abbr class="modified" title="2023-02-28T16:41:00+09:00">
+                Updated: Tue 28 February 2023
         </abbr>
 
         <address class="vcard author">
                 By                         <a class="url fn" href="/author/junehan.html">junehan</a>
         </address>
 <p>In <a href="/category/database.html">database</a>.</p>
-<p>tags: <a href="/tag/sql.html">sql</a> </p>
+<p>tags: <a href="/tag/sql.html">sql</a> <a href="/tag/set.html">set</a> </p>
 </footer><!-- /.post-info --><div class="section" id="subject">
 <h2>SUBJECT: 데이터 타입과 데이터 조작 방법에 대해 알아보자</h2>
 <blockquote>
 <ul>
 <li><p class="first">References</p>
 <blockquote>
+<ul>
+<li><p class="first">web</p>
+</li>
+<li><p class="first">text book</p>
+<blockquote>
 <ul class="simple">
-<li>text book, Learning sql 3rd edition</li>
+<li>Learning sql 3rd edition/Alan Beaulieu/9781492057611</li>
+<li>SQL level up/Mic/9788968482519</li>
+</ul>
+</blockquote>
+</li>
 </ul>
 </blockquote>
 </li>
 </ul>
 </blockquote>
 </div>
-<div class="section" id="string-data">
-<h2>String Data</h2>
-<div class="section" id="types">
-<h3>TYPES</h3>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">CHAR</tt>:</th><td class="field-body"><div class="first last line-block">
-<div class="line">고정된 길이로, blank-padded strings.</div>
-<div class="line">MYSQL에서는 255, Oracle에서는 2000길이 까지 허용한다.</div>
-</div>
-</td>
-</tr>
-<tr class="field"><th class="field-name"><tt class="docutils literal">VARCHAR</tt>:</th><td class="field-body"><div class="first last line-block">
-<div class="line">variable-length. 길이와, 문자열을 동시에 가진 string.</div>
-<div class="line">MYSQL-65,535 Oracle 4000</div>
-</div>
-</td>
-</tr>
-<tr class="field"><th class="field-name"><tt class="docutils literal">TEXT</tt>:</th><td class="field-body"><div class="first last line-block">
-<div class="line">굉장히 긴 VARCHAR문자열 데이터.</div>
-<div class="line">MYSQL-MAX 4GB(tinytext, text, midiumtext, longtext), ORACLE(clob type)-128TB</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="section" id="string-generation">
-<h2>String Generation</h2>
+<div class="section" id="intro">
+<h2>Intro</h2>
 <div class="line-block">
-<div class="line">정해진 데이터의 제약(길이제한 등)에 맞지 않게 데이터를 입력할 경우,</div>
-<div class="line">서버는 예외를 발생시킨다.</div>
-<div class="line">이는 모든 DB서버에서 동일한 현상이지만, MYSQL 등 일부 서버의 경우 잘라진 길이로 입력되도록 하는 등</div>
-<div class="line">예외가 아닌 처리가 가능하도록 정책을 변경할 수 도 있다.</div>
-<div class="line"><br /></div>
-<div class="line">MYSQL 6.0(현 8.032), 이후 기본 행동은 &quot;strict&quot; mode 로 설정되어 있다.</div>
-<div class="line">이는 문제 생겼을때 예외를 발생시키는 것으로, 반면 구 버전의 경우</div>
-<div class="line">문자는 잘려지고, 경고가 전달된다.</div>
+<div class="line">데이터는 일반적으로 사용자가 필요로 하는 '작은 디테일들로 구성된(granularity)' 수준의 하위레벨에 저장되어 있다.</div>
+<div class="line">만약 세고있는 도중의 데이터들이 개별적인 고객관련 transaction을 살펴볼 필요가 있다면,</div>
+<div class="line">개별적인 transaction을 저장하고 있는 테이블이 필요할 것이다.</div>
+<div class="line">하지만 이것은 모든 유저가 데이터를 데이터베이스에 저장된 것처럼 다뤄야 한다는 것은 아니다.</div>
+<div class="line">이 챕터에서의 중점은, 유저가 무엇이 데이터베이스에 저장되었냐가 아닌,</div>
+<div class="line">사용자가 고수준의 디테일들에 있는 것들과 상호작용할 수 있도록, 어떻게 데이터가 그룹화되고 집계되는지에 관한 것이다.</div>
 </div>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">sql_mode</span><span class="p">;</span><span class="w"></span>
-<span class="o">+</span><span class="c1">-----------------------------------------------------------------------------------------------------------------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">sql_mode</span><span class="w">                                                                                                    </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">-----------------------------------------------------------------------------------------------------------------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">ONLY_FULL_GROUP_BY</span><span class="p">,</span><span class="n">STRICT_TRANS_TABLES</span><span class="p">,</span><span class="n">NO_ZERO_IN_DATE</span><span class="p">,</span><span class="n">NO_ZERO_DATE</span><span class="p">,</span><span class="n">ERROR_FOR_DIVISION_BY_ZERO</span><span class="p">,</span><span class="n">NO_ENGINE_SUBSTITUTION</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">-----------------------------------------------------------------------------------------------------------------------+</span>
+<div class="section" id="aggregate-functions">
+<h3>Aggregate functions</h3>
+<ul class="simple">
+<li><tt class="docutils literal">MAX()</tt>: Set 내부에서 최대의 value를 return</li>
+<li><tt class="docutils literal">MIN()</tt>: Set 내부에서 최소의 value를 return</li>
+<li><tt class="docutils literal">AVG()</tt>: Set 내부에서 평균의 value를 return</li>
+<li><tt class="docutils literal">SUM()</tt>: Set 내부에서 총합의 value를 return</li>
+<li><tt class="docutils literal">COUNT()</tt>: Set 내부에서 value의 수를 return</li>
+</ul>
+</div>
+</div>
+<div class="section" id="grouping-concept">
+<h2>Grouping Concept</h2>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">RENTAL</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">40</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="p">;</span><span class="w"></span>
 
-<span class="k">SET</span><span class="w"> </span><span class="n">sql_mode</span><span class="o">=</span><span class="ss">&quot;ansi&quot;</span><span class="p">;</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">sql_mode</span><span class="p">;</span><span class="w"></span>
-<span class="o">+</span><span class="c1">--------------------------------------------------------------------------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="o">@@</span><span class="k">session</span><span class="p">.</span><span class="n">sql_mode</span><span class="w">                                                             </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">--------------------------------------------------------------------------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">REAL_AS_FLOAT</span><span class="p">,</span><span class="n">PIPES_AS_CONCAT</span><span class="p">,</span><span class="n">ANSI_QUOTES</span><span class="p">,</span><span class="n">IGNORE_SPACE</span><span class="p">,</span><span class="n">ONLY_FULL_GROUP_BY</span><span class="p">,</span><span class="n">ANSI</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">--------------------------------------------------------------------------------+</span>
-
-<span class="k">update</span><span class="w"> </span><span class="n">string_tbl</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">vchar_fld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;THIS IS very long of vchar field data&#39;</span><span class="p">;</span><span class="w"></span>
-<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
-<span class="k">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
-
-<span class="k">SHOW</span><span class="w"> </span><span class="n">warnings</span><span class="p">;</span><span class="w"></span>
-<span class="o">+</span><span class="c1">---------+------+------------------------------------------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="k">Level</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">Code</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Message</span><span class="w">                                        </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">---------+------+------------------------------------------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">Warning</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1265</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Data</span><span class="w"> </span><span class="n">truncated</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="s1">&#39;vchar_fld&#39;</span><span class="w"> </span><span class="k">at</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">---------+------+------------------------------------------------+</span>
+<span class="n">ERROR</span><span class="w"> </span><span class="mi">1111</span><span class="p">:</span><span class="w"> </span><span class="n">Invalid</span><span class="w"> </span><span class="n">use</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">function</span><span class="w"></span>
 </pre></div>
 <div class="line-block">
-<div class="line">실제로 위처럼 구문에 대한 모드를 변경했을때,</div>
-<div class="line">ANSI_QUOTES 라는 규칙에 의해 &quot; 는 제대로 동작하지 않는다.</div>
+<div class="line"><tt class="docutils literal">WHERE</tt>구 내에 <tt class="docutils literal"><span class="pre">COUNT(*)</span></tt>집계함수를 사용할 수 없는데,</div>
+<div class="line">왜냐하면, <tt class="docutils literal">WHERE</tt>구가 평가되는 시점에는 아직 그룹이 생성되지 않은 시점이기 때문이다.</div>
+<div class="line"><tt class="docutils literal">WHERE</tt>는 FROM 테이블을 대상으로 COLUMN등을 평가하는 구문으로</div>
+<div class="line"><tt class="docutils literal">GROUP BY</tt>로 생성된 결과테이블을 대상으로 필터링하려면 <tt class="docutils literal">HAVING</tt>을 사용한다.</div>
 </div>
-<blockquote>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><em>subquery나 FROM구를 제외하면 대부분 순차적으로 작성된 그대로 실행순서를 가진다고 보아야한다.</em></p>
+<ol class="last arabic simple">
+<li>FROM 참조</li>
+<li>SELECT 행 설정</li>
+<li>WHERE 조건 검사</li>
+<li>결과테이블 작성</li>
+<li>ORDER BY 재정렬</li>
+</ol>
+</div>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">SUCCESS</span><span class="w"></span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">RENTAL</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">200</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="k">HAVING</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">40</span><span class="p">;</span><span class="w"></span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cnt</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">RENTAL</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="k">HAVING</span><span class="w"> </span><span class="n">cnt</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">40</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="implicit-vs-explicit-groups">
+<h2>Implicit vs Explicit groups</h2>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">amount</span><span class="p">),</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="p">;</span><span class="w"></span>
+
+<span class="n">ERROR</span><span class="w"> </span><span class="mi">1140</span><span class="w"> </span><span class="p">(</span><span class="mi">42000</span><span class="p">):</span><span class="w"> </span><span class="k">In</span><span class="w"> </span><span class="n">aggregated</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="k">without</span><span class="w"> </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="p">,</span><span class="w"> </span><span class="n">expression</span><span class="w"> </span><span class="o">#</span><span class="mi">1</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="k">contains</span><span class="w"> </span><span class="n">nonaggregated</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="s1">&#39;sakila.payment.customer_id&#39;</span><span class="p">;</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">incompatible</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">sql_mode</span><span class="o">=</span><span class="n">only_full_group_by</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">위처럼 시도하면 에러가 발생하게 되는데, GROUP BY를 제외하고 없이 집계함수를 사용했을때</div>
+<div class="line">Implicit Group(모든 rows를 대상으로 결과를 취합하는)으로 동작하게 되어,</div>
+<div class="line">특정 조건을 대상으로 그룹을 분리하지 않은 결과로 <em>customer_id</em>를 그룹에 대한 대표값으로 설정 할 수 없기 때문이다.</div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name"><em>ANSI_QUOTES</em>:</th><td class="field-body">&quot;기호를 `와 같은 구분자 문자로 사용하고 문자열 기호로 사용하지 않는다.</td>
+<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">ONLY_FULL_GROUP_BY</tt>:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body"><tt class="docutils literal">SELECT &lt;COLUMNS&gt;</tt>, <tt class="docutils literal">HAVING</tt>, <tt class="docutils literal">ORDER BY</tt>등에서 <tt class="docutils literal">GROUP BY</tt>로 이름지어진 집계된 COLUMNS가 아니라면 쿼리를 거절하라.</td>
 </tr>
 </tbody>
 </table>
-</blockquote>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">amount</span><span class="p">),</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">custoer_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
 <div class="line-block">
-<div class="line">문자열이 잘려지는 것은, 결론적으로는 규약에 따라 재입력된 것으로</div>
-<div class="line">원하는 결과와는 다르게 적용된 것이라서, varchar를 사용하면서 충분히</div>
-<div class="line">큰 길이의 문자열을 담을 수 있도록 제약을 수정하는 것이 좋은 해결법이다.</div>
+<div class="line"><tt class="docutils literal">group by</tt>구문에 의한 포함관계에 의해서 서버는 각 행들을 어떻게 집계해야할 지 파악하게 되고,</div>
 </div>
 <blockquote>
+<ol class="arabic simple">
+<li>그룹마다 동일한 <em>customer_id</em>열을 기준으로 각 행을 집계한 뒤</li>
+<li>나머지 집계함수를 실행하여 결과테이블을 생성한다.</li>
+</ol>
+</blockquote>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
-<p class="last"><em>서버는 문자열이 저장되기 위한 공간만 사용하는 것이기 때문에,
-충분히 큰 크기로 데이터의 제약을 설정하는 것은 낭비라고 볼 수 없다.</em></p>
-</div>
-</blockquote>
-<div class="section" id="including-single-quotes">
-<h3>including single quotes</h3>
-<div class="line-block">
-<div class="line">홑따옴표가 문자열의 구분자로 사용되기 때문에 apostrophe로 활용하기 위해서</div>
-<div class="line">아래와 같이 사용할 수 있다.</div>
-</div>
-<div class="highlight"><pre><span></span><span class="k">UPDATE</span><span class="w"> </span><span class="n">string_tbl</span><span class="w"></span>
-<span class="k">SET</span><span class="w"> </span><span class="n">text_fld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;This string didn&#39;&#39;t work, but it does now&#39;</span><span class="p">;</span><span class="w"></span>
-
-<span class="k">UPDATE</span><span class="w"> </span><span class="n">string_tbl</span><span class="w"></span>
-<span class="k">SET</span><span class="w"> </span><span class="n">text_fld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;This string didn\&#39;</span><span class="n">t</span><span class="w"> </span><span class="k">work</span><span class="p">,</span><span class="w"> </span><span class="n">but</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="n">does</span><span class="w"> </span><span class="n">now</span><span class="err">&#39;</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="string-manipulation">
-<h2>String Manipulation</h2>
-<div class="section" id="functions-return-numbers">
-<h3>Functions return numbers</h3>
-<ul>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">LENGTH(str)</tt>:</th><td class="field-body"><p class="first">문자열의 현재 길이를 반환.</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="w"> </span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">    </span><span class="k">LENGTH</span><span class="p">(</span><span class="n">char_fld</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">char_data</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="k">LENGTH</span><span class="p">(</span><span class="n">vchar_fld</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">VCHAR_DATA</span><span class="w"></span>
-<span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">string_tbl</span><span class="p">;</span><span class="w"></span>
-
-<span class="w"> </span><span class="o">+</span><span class="c1">-----------+------------+</span>
-<span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">char_data</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">VCHAR_DATA</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="w"> </span><span class="o">+</span><span class="c1">-----------+------------+</span>
-<span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">9</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">10</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="w"> </span><span class="o">+</span><span class="c1">-----------+------------+</span>
-
-<span class="o">#</span><span class="n">char_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;char data&#39;</span><span class="w"></span>
-<span class="o">#</span><span class="n">vchar_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;vchar data&#39;</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">POSITION(substr IN str)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">synonym for <tt class="docutils literal">LOCATE(substr, str, 1)</tt>. LOCATE는 3번째 param으로 탐색 위치를 지정할 수 있으며, SQL에서는 0을 위치가 아닌 부정의 의미로만 사용한다.</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="k">POSITION</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="n">vchar_fld</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">DATA_POS</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">string_tbl</span><span class="p">;</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">LOCATE</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">vchar_fld</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">DATA_POS</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">string_tbl</span><span class="p">;</span><span class="w"></span>
-
-<span class="o">+</span><span class="c1">----------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">DATA_POS</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">----------+</span>
-<span class="o">|</span><span class="w">        </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">----------+</span>
-
-<span class="o">#</span><span class="n">vchar_fld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;vchar6data&#39;</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">STRCMP(expr1, expr2)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">문자열 비교, string.h의 strcmp함수와 동일하게 동작한다. 문자열화 가능한 모든 것에 사용가능하며, NULL이 표현으로 들어올 경우 무조건 NULL이 반환된다.</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">STRCMP</span><span class="p">(</span><span class="s1">&#39;123&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;123&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s1">&#39;equ&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">STRCMP</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;bcd&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s1">&#39;smaller&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">STRCMP</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;a&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s1">&#39;bigger&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">STRCMP</span><span class="p">(</span><span class="s1">&#39;q&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s1">&#39;null&#39;</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">STRCMP</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span><span class="w"> </span><span class="mi">23</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="s1">&#39;smaller2&#39;</span><span class="p">;</span><span class="w"></span>
-
-<span class="w">   </span><span class="o">+</span><span class="c1">-----+---------+--------+------+----------+</span>
-<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">equ</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">smaller</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">bigger</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">null</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">smaller2</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="w">   </span><span class="o">+</span><span class="c1">-----+---------+--------+------+----------+</span>
-<span class="w">   </span><span class="o">|</span><span class="w">   </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="o">-</span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="w">   </span><span class="o">+</span><span class="c1">-----+---------+--------+------+----------+</span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><p class="first">REGEXP, LIKE operator in SELECT</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;%y&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ends_in_y</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">category</span><span class="p">;</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="n">REGEXP</span><span class="w"> </span><span class="s1">&#39;y$&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ends_in_y</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">category</span><span class="p">;</span><span class="w"></span>
-
-<span class="o">+</span><span class="c1">-------------+-----------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">Action</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Animation</span><span class="w">   </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Children</span><span class="w">    </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Classics</span><span class="w">    </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Comedy</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Documentary</span><span class="w"> </span><span class="o">|</span><span class="w">         </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Drama</span><span class="w">       </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Family</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="k">Foreign</span><span class="w">     </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Games</span><span class="w">       </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Horror</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Music</span><span class="w">       </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="k">New</span><span class="w">         </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Sci</span><span class="o">-</span><span class="n">Fi</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Sports</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">Travel</span><span class="w">      </span><span class="o">|</span><span class="w">         </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">-------------+-----------+</span>
-</pre></div>
-</blockquote>
-</li>
-</ul>
-</div>
-<div class="section" id="functions-return-strings">
-<h3>Functions return strings</h3>
-<ul>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">CONCAT(str1, str2, <span class="pre">...)</span></tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">generate string with strings.</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">UPDATE</span><span class="w"> </span><span class="n">string_tbl</span><span class="w"></span>
-<span class="w">   </span><span class="k">SET</span><span class="w"> </span><span class="n">text_fld</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CONCAT</span><span class="p">(</span><span class="n">text_fld</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;, but now it&#39;&#39;s more longer&#39;</span><span class="p">);</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">&#39; &#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">&#39; has been a customer since ` || date(create_date)</span>
-<span class="s1">/*</span>
-<span class="s1"> * &#39;</span><span class="o">||</span><span class="err">&#39;</span><span class="w"> </span><span class="err">기호를</span><span class="w"> </span><span class="n">concat으로</span><span class="w"> </span><span class="err">받아들이는</span><span class="w"> </span><span class="err">경우는</span><span class="w"> </span><span class="n">sql_mode에</span><span class="w"> </span><span class="n">PIPES_AS_CONCAT가</span><span class="w"> </span><span class="err">있어야</span><span class="w"> </span><span class="err">한다</span><span class="p">.(</span><span class="n">ansi로</span><span class="w"> </span><span class="err">설정시</span><span class="w"> </span><span class="err">추가됨</span><span class="p">)</span><span class="w"></span>
-<span class="w"> </span><span class="o">*/</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">INSERT(dest_str, pos, offset, <span class="pre">src-str)</span></tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">generate with inserting src into dest</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">INSERT</span><span class="p">(</span><span class="s1">&#39;Helloworld&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;, &#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">string</span><span class="p">;</span><span class="w"></span>
-
-<span class="o">+</span><span class="c1">--------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">string</span><span class="w">       </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">--------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">hello</span><span class="p">,</span><span class="w"> </span><span class="n">world</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">--------------+</span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><p class="first"><tt class="docutils literal">REPLACE(str, search, replace)</tt>: generate string with replacing the search string to replace string.</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">REPLACE</span><span class="p">(</span><span class="s1">&#39;goodbye world&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;goodbye&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;hello&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="n">hello</span><span class="w"> </span><span class="n">world</span><span class="w"></span>
-</pre></div>
-</blockquote>
-</li>
-<li><p class="first"><tt class="docutils literal">SUBSTRING(str, start, length)</tt>: generate string extracted from start to length.</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">SUBSTRING</span><span class="p">(</span><span class="s1">&#39;goodbye cruel world&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="n">cruel</span><span class="w"></span>
-</pre></div>
-</blockquote>
-</li>
-</ul>
-</div>
-</div>
-<div class="section" id="working-with-numeric-data">
-<h2>Working with Numeric Data</h2>
-<div class="line-block">
-<div class="line">문자열과 다르게 숫자형 데이터는 단순하다.</div>
-<div class="line">숫자를 입력하고, 값을 추출하고, 계산을 통해 값을 생성한다.</div>
-<div class="line">모든 일반적인 숫자 연산이 가능하며, 괄호를 통해 우선순위를 지정할 수 있다.</div>
-</div>
-<div class="section" id="id1">
-<h3>Types</h3>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">tinyint:</th><td class="field-body">-128 ~ 127 / 1byte</td>
-</tr>
-<tr class="field"><th class="field-name">smallint:</th><td class="field-body">-32,768 ~ 32,767 / 2byte</td>
-</tr>
-<tr class="field"><th class="field-name">mediumint:</th><td class="field-body">-8,388,608 ~ 8,388,607 / 3byte</td>
-</tr>
-<tr class="field"><th class="field-name">int:</th><td class="field-body">-2,147,483,648 ~ 2,147,483,647 / 4byte</td>
-</tr>
-<tr class="field"><th class="field-name">bigint:</th><td class="field-body">-2^63 ~ -2^63 - 1 / 8byte</td>
-</tr>
-<tr class="field"><th class="field-name">float(p, s):</th><td class="field-body">4byte single presion (unsignable)</td>
-</tr>
-<tr class="field"><th class="field-name">double(p, s):</th><td class="field-body">8byte double precision (unsignable)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="controlling-number-precision">
-<h3>Controlling Number Precision</h3>
-<ul>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">CEIL(number)</tt>:</th><td class="field-body">Round up to integer.</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">FLOOR(number)</tt>:</th><td class="field-body">Round down to integer.</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">ROUND(number, pos)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body">Round at next to number of <em>pos(negative pos means interger portion)</em>.</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">TRUNCATE(number, pos)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">Truncate the number of <em>pos(same as usage of pos in ROUND function)</em>.</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">ROUND</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="k">TRUNCATE</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
-
-<span class="o">#</span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
-</div>
-</div>
-<div class="section" id="generation-temporal-data">
-<h2>Generation Temporal Data</h2>
-<p>시간 데이터를 생성하는 방법</p>
-<blockquote>
-<ul class="simple">
-<li>이미 존재하는 date, datetime, time열의 데이터에서 복사</li>
-<li>date, datetime, time을 생성하는 내장 함수를 사용</li>
-<li>서버에서 평가할 수 있도록, 시간 데이터를 의미하는 문자열을 구성</li>
-</ul>
-</blockquote>
-<div class="section" id="string-representation-of-temporal-data">
-<h3>String representation of temporal data</h3>
-<ul>
-<li><p class="first">Date Format Components</p>
-<blockquote>
-<ul class="simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">YYYY:</th><td class="field-body">1000 ~ 9999</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">MM:</th><td class="field-body">01 ~ 12</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">DD:</th><td class="field-body">01 ~ 31</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">HH:</th><td class="field-body">00 ~ 23</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">HHH(elapsed):</th><td class="field-body">-838 ~ 838</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">MI:</th><td class="field-body">00 ~ 59</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">SS:</th><td class="field-body">00 ~ 59</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
-</blockquote>
-</li>
-<li><p class="first">Required Date Components Formats</p>
-<blockquote>
-<ul class="simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">DATE</tt>:</th><td class="field-body">YYYY-MM-DD, date part only</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">DATETIME</tt>:</th><td class="field-body">YYYY-MM-DD HH:MI:SS, date and time (1000-01-01 ~ 9999-01-01)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">TIMESTAMP</tt>:</th><td class="field-body">YYYY-MM-DD HH:MI:SS, date and time in UTC ONLY (1970-01-01 ~ 2038-01-19)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">TIME</tt>:</th><td class="field-body">HHH:MI:SS</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
-</blockquote>
-</li>
-<li><p class="first">Date Format components</p>
-<blockquote>
-<ul class="simple">
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%M</tt>:</th><td class="field-body">Month name(January ~ December)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%m</tt>:</th><td class="field-body">Month (01 ~ 12)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%d</tt>:</th><td class="field-body">Day (01 ~ 31)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%j</tt>:</th><td class="field-body">Day of year (001 ~ 366)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%W</tt>:</th><td class="field-body">Weekday name (Sunday ~ Saturday)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%Y</tt>:</th><td class="field-body">Year in 4 digit (2023)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%y</tt>:</th><td class="field-body">Year in 2 digit (23)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%H</tt>:</th><td class="field-body">Hour (00 ~ 23)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%h</tt>:</th><td class="field-body">Hour (01 ~ 12)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%i</tt>:</th><td class="field-body">Minutes (00 ~ 59)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%s</tt>:</th><td class="field-body">Seconds (00 ~ 59)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%f</tt>:</th><td class="field-body">Microseconds (000000 ~ 999999)</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">%p</tt>:</th><td class="field-body">A.M or P.M.</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-</div>
-<div class="section" id="generation-dates">
-<h3>Generation Dates</h3>
-<ul>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal"><span class="pre">CAST(&lt;SRC&gt;</span> AS type)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">SRC 양식에서 type에 대한 자료로 변형</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;2019-09-17&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nb">DATE</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">date_field</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;108:17:57&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nb">DATE</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">time_field</span><span class="p">;</span><span class="w"></span>
-
-<span class="o">#</span><span class="w"> </span><span class="mi">2019</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">108</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">57</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="k">Type</span><span class="w"> </span><span class="n">has</span><span class="w"> </span><span class="n">changed</span><span class="p">.</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal"><span class="pre">STR_TO_DATE('temporal</span> string format' AS format_expr)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">문자열 양식에서 format_expr에 해당하는 부분을 구성요소에 맞게 변형</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">STR_TO_DATE</span><span class="p">(</span><span class="s1">&#39;Septempber 17,..HI 2019&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;%M %d,..HI %Y&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">2019</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">17</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="n">STR_TO_DATE</span><span class="p">(</span><span class="s1">&#39;Septempber 17,..HI 2019 12&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;%M %d,..HI %Y %H&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">2019</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">17</span><span class="w"> </span><span class="mi">12</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal"><span class="pre">DATE_ADD(SRC-DATE,</span> INTERVAL <span class="pre">n-amount</span> <span class="pre">AMOUNT-TYPE)</span></tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">SRC-DATE로 부터 Interval만큼 더한 날짜를 반환하는데, INTERVAL 형태에 따라 DATETIME으로 변형</p>
-<ul>
-<li><p class="first">Interval types</p>
-<blockquote>
-<ul class="simple">
-<li><tt class="docutils literal">second</tt></li>
-<li><tt class="docutils literal">minute</tt></li>
-<li><tt class="docutils literal">hour</tt></li>
-<li><tt class="docutils literal">day</tt></li>
-<li><tt class="docutils literal">month</tt></li>
-<li><tt class="docutils literal">year</tt></li>
-<li><tt class="docutils literal">minute_second</tt>: m:s sepeated by ':'</li>
-<li><tt class="docutils literal">hour_second</tt>: h:m:s sepeated by ':'</li>
-<li><tt class="docutils literal">year_month</tt>: sepeated by '-'</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">DATE_ADD</span><span class="p">(</span><span class="k">CURRENT_DATE</span><span class="p">(),</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="k">DAY</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">2023</span><span class="o">-</span><span class="mi">03</span><span class="o">-</span><span class="mi">05</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="n">DATE_ADD</span><span class="p">(</span><span class="k">CURRENT_DATE</span><span class="p">(),</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="s1">&#39;9:33:34&#39;</span><span class="w"> </span><span class="n">HOUR_SECOND</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">2023</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">24</span><span class="w"> </span><span class="mi">09</span><span class="p">:</span><span class="mi">33</span><span class="p">:</span><span class="mi">34</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
-</div>
-<div class="section" id="manipulate-dates">
-<h3>Manipulate Dates</h3>
-<ul>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><tt class="docutils literal">DAYNAME(DATE)</tt>:</th><td class="field-body"><p class="first">DATE로 부터 day name of week를 추출한다.</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">DAYNAME</span><span class="p">(</span><span class="k">CURRENT_DATE</span><span class="p">());</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="n">Friday</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="n">DAYNAME</span><span class="p">(</span><span class="s1">&#39;2019-09-18&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="n">Wednesday</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">EXTRACT(UNIT FROM DATE)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">DATE로 부터 UNIT의 수치를 반환한다.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">UNIT:</th><td class="field-body">YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, MICROSECOND</td>
-</tr>
-</tbody>
-</table>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">EXTRACT</span><span class="p">(</span><span class="n">HOUR</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">NOW</span><span class="p">());</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">23</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="k">EXTRACT</span><span class="p">(</span><span class="k">DAY</span><span class="w"> </span><span class="s1">&#39;2019-09-18&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">18</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-<li><table class="first docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">DATEDIFF(DEST, SRC)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">DATE DEST로 부터 SRC의 DAY DIFF를 반환한다.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name">UNIT:</th><td class="field-body">YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, MICROSECOND</td>
-</tr>
-</tbody>
-</table>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">DATEDIFF</span><span class="p">(</span><span class="s1">&#39;2019-09-03&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;2019-06-21 00:00:01&#39;</span><span class="p">);</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">74</span><span class="w"></span>
-</pre></div>
-</div></td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
-</div>
-<div class="section" id="conversion-functions">
-<h3>Conversion Functions</h3>
-<div class="line-block">
-<div class="line">CAST()를 사용해서 string(date format)을 datetime 타입의 값으로 변환했었는데,</div>
-<div class="line">모든 데이터베이스 서버는 특정 데이터를 다른 타입으로 변경할 수 있는 내장함수들을 가지고 있지만,</div>
-<div class="line">CAST()를 사용할 것을 적극 추천한다.</div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal"><span class="pre">CAST(&lt;SRC&gt;</span> AS &lt;TYPE&gt;)</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">SRC를 내장 Type에 맞게 자료형을 변경한다.</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;2019-09-17&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="nb">DATE</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">date_field</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;1456328&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">SIGNED</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">to_num</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="k">CAST</span><span class="p">(</span><span class="s1">&#39;099ABC111&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">UNSIGNED</span><span class="w"> </span><span class="nb">INTEGER</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">to_natural</span><span class="p">;</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">2019</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">1456328</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">99</span><span class="w"></span>
-</pre></div>
 <div class="last line-block">
-<div class="line">이 경우 마지막 쿼리에서 Warning이 발생하는데,</div>
-<div class="line">예상할 수 있는 정도의 경고로 크리티컬한 것이 아니므로</div>
-<div class="line">성공적으로 쿼리는 종료되지만 정책의 변경에 의해 금지하거나 할 수 있다.</div>
+<div class="line">DISTINCT의 경우 aggregation이 아니고, 결과테이블을 생성하는 과정에서 고유한 값의 수만 세는 과정이 포함된 것으로,</div>
+<div class="line">quite simple하게는 별도 테이블을 하나 더 만들어서 중복 값 집계를 한다고 보아야 해서,</div>
+<div class="line">어떤 select 쿼리에 다수로 사용해도 문제없이 동작한다.</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">ROW가 존재하지만 특정 집계 대상 COLUMN에서 값이 NULL일 경우 COLUMN에 대한 집계 대상에서 제외된다.</p>
+</div>
+</div>
+<div class="section" id="generating-rollups">
+<h2>Generating Rollups</h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">GROUP BY &lt;COLUMNS&gt; WITH ROLLUP</tt>:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">GROUP BY 분류에 대해서 COLUMNS 수에 따른 분류 레벨에 따른 집계를 포함한다.</p>
+<div class="last line-block">
+<div class="line">COLUMNS가 1개라면 NULL 항목으로 총 개수를,</div>
+<div class="line">COLUMNS가 2개 이상이라면 A-a, A-b 에 따른 분류를 진행하면서</div>
+<div class="line">A-NULL이라는 항목으로 대분류 A에 대한 총 row수를 표시한다.</div>
 </div>
 </td>
 </tr>
 </tbody>
 </table>
-</div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">fa</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">rating</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film_actor</span><span class="w"> </span><span class="n">fa</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="n">f</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">fa</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">film_id</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">fa</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">rating</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">ROLLUP</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"></span>
+
+<span class="o">+</span><span class="c1">----------+--------+----------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">actor_id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">+</span><span class="c1">----------+--------+----------+</span>
+<span class="o">|</span><span class="w">     </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="mi">5462</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">   </span><span class="o">|</span><span class="w">       </span><span class="mi">19</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w">        </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">NC</span><span class="o">-</span><span class="mi">17</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">PG</span><span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">PG</span><span class="o">-</span><span class="mi">13</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">R</span><span class="w">      </span><span class="o">|</span><span class="w">        </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">   </span><span class="o">|</span><span class="w">       </span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w">        </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w">        </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">NC</span><span class="o">-</span><span class="mi">17</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">+</span><span class="c1">----------+--------+----------+</span>
+<span class="mi">10</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+</pre></div>
 </div>
                 </article>
             </aside><!-- /#featured -->
@@ -837,6 +217,33 @@
                     <h1>Other articles</h1>
                     <hr />
                     <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/posts/database/2023/02/10/Data-generation-manipulation-conversion" rel="bookmark"
+                           title="Permalink to Query Primer 7. Data Generation, Manipulation, and Conversion">Query Primer 7. Data Generation, Manipulation, and Conversion</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2023-02-10T18:18:00+09:00">
+                Published: Fri 10 February 2023
+        </abbr>
+		<br />
+        <abbr class="modified" title="2023-02-27T19:41:00+09:00">
+                Updated: Mon 27 February 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/database.html">database</a>.</p>
+<p>tags: <a href="/tag/sql.html">sql</a> </p>
+</footer><!-- /.post-info -->                <p class="first last">intro to data manipulates and DDL</p>
+
+                <a class="readmore" href="/posts/database/2023/02/10/Data-generation-manipulation-conversion">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -850,8 +257,8 @@
                 Published: Fri 02 September 2022
         </abbr>
 		<br />
-        <abbr class="modified" title="2022-09-03T15:57:00+09:00">
-                Updated: Sat 03 September 2022
+        <abbr class="modified" title="2023-03-06T11:57:00+09:00">
+                Updated: Mon 06 March 2023
         </abbr>
 
         <address class="vcard author">
@@ -895,7 +302,7 @@
             <li><article class="hentry">
                 <header>
                     <h1><a href="/posts/database/2022/08/23/sql-filtering" rel="bookmark"
-                           title="Permalink to Query Primer 4. Fitering">Query Primer 4. Fitering</a></h1>
+                           title="Permalink to Query Primer 4. Filtering">Query Primer 4. Filtering</a></h1>
                 </header>
 
                 <div class="entry-content">
@@ -904,15 +311,15 @@
                 Published: Tue 23 August 2022
         </abbr>
 		<br />
-        <abbr class="modified" title="2022-08-25T14:57:00+09:00">
-                Updated: Thu 25 August 2022
+        <abbr class="modified" title="2023-03-03T22:21:00+09:00">
+                Updated: Fri 03 March 2023
         </abbr>
 
         <address class="vcard author">
                 By                         <a class="url fn" href="/author/junehan.html">junehan</a>
         </address>
 <p>In <a href="/category/database.html">database</a>.</p>
-<p>tags: <a href="/tag/sql-where.html">sql-where</a> <a href="/tag/sql.html">sql</a> </p>
+<p>tags: <a href="/tag/sql.html">sql</a> </p>
 </footer><!-- /.post-info -->                <p class="first last">intro to filtering in sql</p>
 
                 <a class="readmore" href="/posts/database/2022/08/23/sql-filtering">read more</a>
