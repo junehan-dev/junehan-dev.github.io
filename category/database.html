@@ -15,30 +15,30 @@
                     <li><a href="/category/algorithm.html">algorithm</a></li>
                     <li class="active"><a href="/category/database.html">database</a></li>
                     <li><a href="/category/datastructure.html">datastructure</a></li>
-                    <li><a href="/category/diary.html">diary</a></li>
                     <li><a href="/category/math.html">math</a></li>
+                    <li><a href="/category/writting.html">writting</a></li>
                 </ul></nav>
         </header><!-- /#banner -->
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/posts/database/2023/02/28/grouping-and-aggregates">Query Primer 8. Grouping and Aggregates</a></h1>
+                    <h1 class="entry-title"><a href="/posts/database/2023/03/07/timing-for-subquery-uses">Query Primer 9. Subqueries</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2023-02-28T14:04:00+09:00">
-                Published: Tue 28 February 2023
+        <abbr class="published" title="2023-03-07T22:04:00+09:00">
+                Published: Tue 07 March 2023
         </abbr>
 		<br />
-        <abbr class="modified" title="2023-03-07T22:06:00+09:00">
-                Updated: Tue 07 March 2023
+        <abbr class="modified" title="2023-03-24T20:01:00+09:00">
+                Updated: Fri 24 March 2023
         </abbr>
 
         <address class="vcard author">
                 By                         <a class="url fn" href="/author/junehan.html">junehan</a>
         </address>
 <p>In <a href="/category/database.html">database</a>.</p>
-<p>tags: <a href="/tag/sql.html">sql</a> <a href="/tag/set.html">set</a> </p>
+<p>tags: <a href="/tag/sql.html">sql</a> </p>
 </footer><!-- /.post-info --><div class="section" id="subject">
-<h2>SUBJECT: 데이터를 가공하는 그룹화와 집계 함수들에 대해</h2>
+<h2>SUBJECT: 서브쿼리를 사용하여 필터, 값 추출, 임시 테이블 생성하기</h2>
 <blockquote>
 <ul>
 <li><p class="first">References</p>
@@ -60,156 +60,594 @@
 </ul>
 </blockquote>
 </div>
-<div class="section" id="intro">
-<h2>Intro</h2>
+<div class="section" id="subquery">
+<h2>Subquery란 무엇인가?</h2>
 <div class="line-block">
-<div class="line">데이터는 일반적으로 사용자가 필요로 하는 '작은 디테일들로 구성된(granularity)' 수준의 하위레벨에 저장되어 있다.</div>
-<div class="line">만약 세고있는 도중의 데이터들이 개별적인 고객관련 transaction을 살펴볼 필요가 있다면,</div>
-<div class="line">개별적인 transaction을 저장하고 있는 테이블이 필요할 것이다.</div>
-<div class="line">하지만 이것은 모든 유저가 데이터를 데이터베이스에 저장된 것처럼 다뤄야 한다는 것은 아니다.</div>
-<div class="line">이 챕터에서의 중점은, 유저가 무엇이 데이터베이스에 저장되었냐가 아닌,</div>
-<div class="line">사용자가 고수준의 디테일들에 있는 것들과 상호작용할 수 있도록, 어떻게 데이터가 그룹화되고 집계되는지에 관한 것이다.</div>
+<div class="line">쿼리 내부에 포함되는 다른 SQL문이며, 대부분 포함하는 구문보다 먼저 수행된다.</div>
+<div class="line">일반 쿼리구문과 동일하게, 아래와 같은 결과를 얻을 수 있다.</div>
 </div>
-<div class="section" id="aggregate-functions">
-<h3>Aggregate functions</h3>
+<blockquote>
 <ul class="simple">
-<li><tt class="docutils literal">MAX()</tt>: Set 내부에서 최대의 value를 return</li>
-<li><tt class="docutils literal">MIN()</tt>: Set 내부에서 최소의 value를 return</li>
-<li><tt class="docutils literal">AVG()</tt>: Set 내부에서 평균의 value를 return</li>
-<li><tt class="docutils literal">SUM()</tt>: Set 내부에서 총합의 value를 return</li>
-<li><tt class="docutils literal">COUNT()</tt>: Set 내부에서 value의 수를 return</li>
+<li>하나의 행의 데이터를 가지는 단일 Row</li>
+<li>하나의 행의 데이터를 가지는 다수의 Rows</li>
+<li>다수의 행의 데이터를 가지는 다수의 Rows</li>
 </ul>
-</div>
-</div>
-<div class="section" id="grouping-concept">
-<h2>Grouping Concept</h2>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">RENTAL</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">40</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="p">;</span><span class="w"></span>
-
-<span class="n">ERROR</span><span class="w"> </span><span class="mi">1111</span><span class="p">:</span><span class="w"> </span><span class="n">Invalid</span><span class="w"> </span><span class="n">use</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">function</span><span class="w"></span>
-</pre></div>
+</blockquote>
 <div class="line-block">
-<div class="line"><tt class="docutils literal">WHERE</tt>구 내에 <tt class="docutils literal"><span class="pre">COUNT(*)</span></tt>집계함수를 사용할 수 없는데,</div>
-<div class="line">왜냐하면, <tt class="docutils literal">WHERE</tt>구가 평가되는 시점에는 아직 그룹이 생성되지 않은 시점이기 때문이다.</div>
-<div class="line"><tt class="docutils literal">WHERE</tt>는 FROM 테이블을 대상으로 COLUMN등을 평가하는 구문으로</div>
-<div class="line"><tt class="docutils literal">GROUP BY</tt>로 생성된 결과테이블을 대상으로 필터링하려면 <tt class="docutils literal">HAVING</tt>을 사용한다.</div>
+<div class="line">이는 선언스코프에서 임시테이블과 같은 역할을 한다.</div>
+<div class="line">즉, subquery를 포함하는 SQL구문 전체가 종료되면 DB서버는 해당 메모리를 해제한다.</div>
+<div class="line">서브쿼리는 쿼리를 나눠서 해야할 것을 single transaction에 처리한 다는 점에서 성능상 이점이 있다.</div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p><em>subquery나 FROM구를 제외하면 대부분 순차적으로 작성된 그대로 실행순서를 가진다고 보아야한다.</em></p>
-<ol class="last arabic simple">
-<li>FROM 참조</li>
-<li>SELECT 행 설정</li>
-<li>WHERE 조건 검사</li>
-<li>결과테이블 작성</li>
-<li>ORDER BY 재정렬</li>
-</ol>
-</div>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">SUCCESS</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">RENTAL</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">200</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
-<span class="k">HAVING</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">40</span><span class="p">;</span><span class="w"></span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cnt</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">RENTAL</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
-<span class="k">HAVING</span><span class="w"> </span><span class="n">cnt</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">40</span><span class="p">;</span><span class="w"></span>
-</pre></div>
-</div>
-<div class="section" id="implicit-vs-explicit-groups">
-<h2>Implicit vs Explicit groups</h2>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">amount</span><span class="p">),</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="p">;</span><span class="w"></span>
-
-<span class="n">ERROR</span><span class="w"> </span><span class="mi">1140</span><span class="w"> </span><span class="p">(</span><span class="mi">42000</span><span class="p">):</span><span class="w"> </span><span class="k">In</span><span class="w"> </span><span class="n">aggregated</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="k">without</span><span class="w"> </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="p">,</span><span class="w"> </span><span class="n">expression</span><span class="w"> </span><span class="o">#</span><span class="mi">1</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="k">contains</span><span class="w"> </span><span class="n">nonaggregated</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="s1">&#39;sakila.payment.customer_id&#39;</span><span class="p">;</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">incompatible</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">sql_mode</span><span class="o">=</span><span class="n">only_full_group_by</span><span class="w"></span>
-</pre></div>
-<div class="line-block">
-<div class="line">위처럼 시도하면 에러가 발생하게 되는데, GROUP BY를 제외하고 없이 집계함수를 사용했을때</div>
-<div class="line">Implicit Group(모든 rows를 대상으로 결과를 취합하는)으로 동작하게 되어,</div>
-<div class="line">특정 조건을 대상으로 그룹을 분리하지 않은 결과로 <em>customer_id</em>를 그룹에 대한 대표값으로 설정 할 수 없기 때문이다.</div>
-</div>
+<div class="section" id="subqueury-types">
+<h3>Subqueury Types</h3>
+<p>크게는 두 가지 종류로 나뉠 수 있다.</p>
+<blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">ONLY_FULL_GROUP_BY</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><tt class="docutils literal">SELECT &lt;COLUMNS&gt;</tt>, <tt class="docutils literal">HAVING</tt>, <tt class="docutils literal">ORDER BY</tt>등에서 <tt class="docutils literal">GROUP BY</tt>로 이름지어진 집계된 COLUMNS가 아니라면 쿼리를 거절하라.</td>
+<tr class="field"><th class="field-name" colspan="2"><em>noncorrelated subqueries</em>:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body">독자적으로 실행되는 구문, <em>scalar subquery</em>라고 불려진다.</td>
+</tr>
+<tr class="field"><th class="field-name" colspan="2"><em>correlated subqueries</em>:</th></tr>
+<tr class="field"><td>&nbsp;</td><td class="field-body">외부 구문과 연관되어 실행되는 구문</td>
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">amount</span><span class="p">),</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">custoer_id</span><span class="p">;</span><span class="w"></span>
-</pre></div>
+</blockquote>
+</div>
+</div>
+<div class="section" id="noncorrelated-subqueries">
+<h2>nonCorrelated Subqueries</h2>
 <div class="line-block">
-<div class="line"><tt class="docutils literal">group by</tt>구문에 의한 포함관계에 의해서 서버는 각 행들을 어떻게 집계해야할 지 파악하게 되고,</div>
+<div class="line">메인 쿼리의 FROM 테이블에 대한 스코프를 사용하지 않는, 연관없이 진행되는 부수적인 것이라</div>
+<div class="line">임시테이블을 생성하고 잠시 사용한다는 개념 정도의 활용성을 가진다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="cm">/* Simple Usage */</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+
+<span class="cm">/* MultiColumn Subquery */</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">actor_id</span><span class="p">,</span><span class="w"> </span><span class="n">film_id</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film_actor</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="p">(</span><span class="n">actor_id</span><span class="p">,</span><span class="w"> </span><span class="n">film_id</span><span class="p">)</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">film_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">actor</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">      </span><span class="k">CROSS</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="n">f</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;MONROE&#39;</span><span class="w"></span>
+<span class="w">   </span><span class="k">AND</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">rating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;PG&#39;</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="k">EXPLAIN</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">   </span><span class="p">)</span><span class="w"></span>
+<span class="err">\</span><span class="k">G</span><span class="p">;</span><span class="w"></span>
+
+<span class="o">***************************</span><span class="w"> </span><span class="mi">2</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">subquery2</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="n">eq_ref</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">auto_distinct_key</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="o">&lt;</span><span class="n">auto_distinct_key</span><span class="o">&gt;</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="n">sakila</span><span class="p">.</span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="p">;</span><span class="w"> </span><span class="k">Not</span><span class="w"> </span><span class="k">exists</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="n">MATERIALIZED</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">payment</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="n">idx_fk_customer_id</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">15813</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"></span>
+<span class="mi">3</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<div class="last line-block">
+<div class="line"><tt class="docutils literal">NOT IN</tt> 또는 동일한 표현인 <tt class="docutils literal">&lt;&gt; ALL</tt>를 사용할떄, NULL 값이 우측항에 있는지 꼭 확인해야한다.</div>
+<div class="line">특정 값이 NULL(비어있는 상태의 값)과 비교되는 순간, 서버는 알 수 없다라는 결과를 내기 때문에</div>
+<div class="line">NULL을 제외하고 일치하는 대상이 없는 경우에도 문제가 되며,</div>
+<div class="line">마찬가지로 NULL과 NULL의 비교도 인정되지 않는다. (판명 불가)</div>
+</div>
+</div>
+</div>
+<div class="section" id="correlated-subqueries">
+<h2>Correlated Subqueries</h2>
+<div class="line-block">
+<div class="line">이전의 서브쿼리는 독립적으로 실행될 수 있는 것이었기 때문에,</div>
+<div class="line">메인 쿼리가 수행되기 이전에 먼저 준비가 되어도 상관이 없는 것이었다.</div>
+<div class="line">반면 이 타입의 서브쿼리는, 개별 행에 대해서 매회 실행된다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">   </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="k">EXPLAIN</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">      </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">   </span><span class="p">)</span><span class="w"></span>
+<span class="err">\</span><span class="k">G</span><span class="p">;</span><span class="w"></span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">2</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span><span class="w"></span>
+<span class="w">           </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="w">  </span><span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="n">DEPENDENT</span><span class="w"> </span><span class="n">SUBQUERY</span><span class="w"></span>
+<span class="w">        </span><span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="w">   </span><span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span><span class="w"></span>
+<span class="w">         </span><span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="k">ref</span><span class="w"></span>
+<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="n">idx_fk_customer_id</span><span class="w"></span>
+<span class="w">          </span><span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="n">idx_fk_customer_id</span><span class="w"></span>
+<span class="w">      </span><span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="w">          </span><span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="n">sakila</span><span class="p">.</span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">         </span><span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">26</span><span class="w"></span>
+<span class="w">     </span><span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"></span>
+<span class="w">        </span><span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"></span>
+<span class="mi">2</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">warnings</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+</pre></div>
+<div class="admonition caution">
+<p class="first admonition-title">Caution!</p>
+<div class="last line-block">
+<div class="line">의존적인 서브쿼리는 각 행에 대해서 매회 평가되는 구문으로,</div>
+<div class="line">해당 메인 쿼리가 얼마나 많은 행을 반환하는 지에 따라 성능 이슈를 가질 수 있다.</div>
+</div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Subquery와 자주 사용하는 연산자</h2>
+<div class="line-block">
+<div class="line">여기에 등장하는 연산자는 모두 WHERE과 결합되며,</div>
+<div class="line">SUBQUERY를 피연산 대상으로 동작하기에 매우 적합한 목록이다.</div>
+</div>
+<div class="section" id="in-and-not-in-operator">
+<h3>IN and NOT IN operator</h3>
+<div class="line-block">
+<div class="line">하나의 값을 대상 집합에 대해서 직접 비교 할 수 없기 때문에,</div>
+<div class="line">하나의 값이 대상 집합에 포함되는지를 통한 비교로 <tt class="docutils literal">IN</tt>을 사용한다.</div>
 </div>
 <blockquote>
-<ol class="arabic simple">
-<li>그룹마다 동일한 <em>customer_id</em>열을 기준으로 각 행을 집계한 뒤</li>
-<li>나머지 집계함수를 실행하여 결과테이블을 생성한다.</li>
-</ol>
+<div class="highlight"><pre><span></span><span class="cm">/* 1. ARRAY와 비교되는 IN의 활용 */</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">country_id</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">country</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Canada&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">Mexico</span><span class="err">&#39;</span><span class="p">);</span><span class="w"></span>
+</pre></div>
 </blockquote>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<div class="last line-block">
-<div class="line">DISTINCT의 경우 aggregation이 아니고, 결과테이블을 생성하는 과정에서 고유한 값의 수만 세는 과정이 포함된 것으로,</div>
-<div class="line">quite simple하게는 별도 테이블을 하나 더 만들어서 중복 값 집계를 한다고 보아야 해서,</div>
-<div class="line">어떤 select 쿼리에 다수로 사용해도 문제없이 동작한다.</div>
+<p>하지만,</p>
+<blockquote>
+<ul class="simple">
+<li>비교할 대상 집합이 갯수가 적거나 (쿼리 구문의 간소화)</li>
+<li>대상 집합의 값을 지정할 수 있는 경우라면 (다른 테이블과 무관하거나, 알고 있는)</li>
+</ul>
+</blockquote>
+<p>단순히 아래와 같이 <tt class="docutils literal">WHERE <span class="pre">CONDITION-A</span>&nbsp; OR <span class="pre">CONDITION-B</span></tt>의 형태로 작성하는 것이 더 합리적이다.</p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="cm">/* 2. 피연산 대상이 갯수가 적은 경우 Reasonable */</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">country_id</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">country</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Canada&#39;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;Mexico&#39;</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</blockquote>
+<div class="line-block">
+<div class="line">특정하게 지정할 수 있는 문자열, 날짜, 숫자로 비교하는 경우도 있겠지만,</div>
+<div class="line">다른 테이블에서 추출한 값에서 그 대상을 찾는 경우가 조금 더 많을 것이다.</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="cm">/* 3. 피연산 대상이 많거나 불분명할때 Subquery와 조합 */</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">country_id</span><span class="p">,</span><span class="w"> </span><span class="n">city</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">city</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">country_id</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">country_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">country</span><span class="w"></span>
+<span class="w">   </span><span class="n">country</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Canada&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Mexico&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+</blockquote>
+</div>
+<div class="section" id="all-operator">
+<h3>ALL operator</h3>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">ALL</tt>연산자는 하나의 값과 집합의 모든 값에 대한 비교를 가능하게 한다.</div>
+<div class="line"><tt class="docutils literal">WHERE &lt;VALUE OR COLUMN&gt; ANY &lt;CMP operator&gt; &lt;SUBQUERY&gt;</tt></div>
+<div class="line"><em>(=, &lt;&gt;, &lt;, &gt;, etc.)</em>등의 연산자와 함께 조합되어 사용되어야 한다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="cm">/* &lt;&gt; 연산자와 결합, NOT IN과 동일 */</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="k">HAVING</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="w"></span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span><span class="w"></span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="w"></span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="n">co</span><span class="w"></span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">country_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">co</span><span class="p">.</span><span class="n">country_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">co</span><span class="p">.</span><span class="n">country</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;United States&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Mexico&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Canada&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="any-operator">
+<h3>ANY operator</h3>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">ALL</tt>연산자와 동일하게 <tt class="docutils literal">WHERE &lt;VALUE OR COLUMN&gt; ANY &lt;CMP operator&gt; &lt;SUBQUERY&gt;</tt>의 형태로, 값 집합을 대상으로 특정값을 비교할 때 사용된다.</div>
+<div class="line">그러나 차이점이 있다면, 집합 내에 하나의 대상이라도 <em>&lt;CMP operator&gt;</em> 조건에 부합한다면 true로 평가된다는 점이다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="cm">/* 구매를 한 유저의 구매 총합과 유저 */</span><span class="w"></span>
+<span class="cm">/* 구매 총합이 3개의 국가별 구매내역 총합 중 최소보다 큰*/</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">paid</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="k">HAVING</span><span class="w"> </span><span class="n">paid</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="k">ANY</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">amount</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"> </span><span class="n">p</span><span class="w"></span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="w"></span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span><span class="w"></span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="w"></span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="n">co</span><span class="w"></span>
+<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">country_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">co</span><span class="p">.</span><span class="n">country_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">co</span><span class="p">.</span><span class="n">country</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Bolivia&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Paraguay&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Chile&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="w">   </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">co</span><span class="p">.</span><span class="n">country</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="section" id="exists-operator">
+<h3>EXISTS Operator</h3>
+<div class="line-block">
+<div class="line">Correlated subquery를 사용하면서 가장 흔히 사용되는 연산자이다.</div>
+<div class="line">서브쿼리의 결과인 temporary 테이블에 row가 있는지 없는지를 검사하는 것으로 <tt class="docutils literal">WHERE</tt>과 결합되어 사용된다.</div>
+<div class="line">즉, EXISTS에 사용된 서브쿼리에서 SELECT 구의 COLUMN에 대한 명시는 유효할 수 있는 것 이기만 하면 무엇이건 상관없다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">last_name</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">actor</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">film_actor</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">film</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">film_actor</span><span class="p">.</span><span class="n">film_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">film_actor</span><span class="p">.</span><span class="n">actor_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">actor</span><span class="p">.</span><span class="n">actor_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">AND</span><span class="w"> </span><span class="n">film</span><span class="p">.</span><span class="n">rating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;R&#39;</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">film이 'R'등급인 영화에 출연한 actor 정보만 추출할 수 있도록 하는데,</div>
+<div class="line"><tt class="docutils literal">WHERE [NOT] EXISTS SUBQUERY</tt>로 SUBQUERY와만 결합되어 사용될 수 있는 연산자이며</div>
+<div class="line">결과가 하나라도 있는지의 기준으로 평가된다는 점으로 효율이 좋다.</div>
 </div>
 </div>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">ROW가 존재하지만 특정 집계 대상 COLUMN에서 값이 NULL일 경우 COLUMN에 대한 집계 대상에서 제외된다.</p>
+</div>
+<div class="section" id="common-usages-of-subqueries">
+<h2>Common usages of Subqueries</h2>
+<div class="section" id="update-using-correlated-subquries">
+<h3>UPDATE using Correlated Subquries</h3>
+<div class="line-block">
+<div class="line">이전에는 <tt class="docutils literal">SELECT</tt>구문만이 등작하였고, 성능적인 이슈가 있다는 점에서 이것이 유용하지 못한 것은 아니다.</div>
+<div class="line">Subquery는 주로 <tt class="docutils literal">UPDATE, DELETE, INSERT</tt>문에서 특히 자주 사용되는데, <strong>correlated의 경우 update, delete에서 특히 유용하다.</strong></div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">UPDATE</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="k">SET</span><span class="w"> </span><span class="n">last_update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">rental_date</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">위 쿼리에서는 UPDATE에서 주어지는 customer_id에 대해 rental 정보가 존재하지 않는 경우 NULL(EMPTY SET) 으로 처리되므로,</div>
+<div class="line">사전에 반드시 1회 이상 대여기록이 있는지 확인하거나, 아래와 같은 쿼리의 개선이 필요하다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="cm">/* My Version */</span><span class="w"></span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="k">SET</span><span class="w"> </span><span class="n">last_update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="k">CASE</span><span class="w"> </span><span class="k">WHEN</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">rental_date</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+
+<span class="cm">/* Book Version */</span><span class="w"></span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="k">SET</span><span class="w"> </span><span class="n">last_update</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="k">MAX</span><span class="p">(</span><span class="n">rental_date</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">책에서 사용된 쿼리가 조금 더 나은 성능을 가지게 된다.</div>
+<div class="line">BookVersion의 경우 두 개의 쿼리는 다른 별개의 실행을 가지는 독립적인 쿼리이지만,</div>
+<div class="line">두번째 WHERE에 해당하는 구문이 먼저 실행되고, 이 조건에 부합할때만 SET에 있는 SELECT 쿼리가 동작하게 되는 반면</div>
+<div class="line">내가 작성한 쿼리는 NULL에 대한 처리를 강제하기 위해 <tt class="docutils literal">CASE WHEN <span class="pre">COUNT(*)</span></tt> 를 사용하는 것으로 인해</div>
+<div class="line">모든 행에 대해서 집계가 발생한다.</div>
 </div>
 </div>
-<div class="section" id="generating-rollups">
-<h2>Generating Rollups</h2>
+<div class="section" id="delete-using-correlated-subquries">
+<h3>DELETE using Correlated Subquries</h3>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">DELETE</tt>구문에서도 연결된 서브쿼리는 유용하게 사용된다.</div>
+<div class="line">예를 들어서 데이터를 유지하는 스크립트를 매달 실행한다고 했을때, 아래와 같은 구문으로 구성될 수 있다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
+<span class="k">WHERE</span><span class="w"> </span><span class="mi">365</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">datediff</span><span class="p">(</span><span class="n">now</span><span class="p">(),</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">rental_date</span><span class="p">)</span><span class="w"> </span><span class="n">rental_days</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"> </span><span class="n">r</span><span class="w"></span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="powerful-ways-to-use-subquries">
+<h2>Powerful ways to use Subquries</h2>
+<div class="line-block">
+<div class="line">이제부터 서브쿼리를 사용해서 유용한 SQL구문을 작성해볼 것이다.</div>
+<div class="line">다음 세 챕터에 걸쳐서 서브쿼리를 통해,</div>
+</div>
+<blockquote>
+<ul class="simple">
+<li>커스텀 테이블 생성</li>
+<li>조건문 생성</li>
+<li>결과 테이블에 Column Value 생성</li>
+</ul>
+</blockquote>
+<p>등을 알아볼 것이다.</p>
+</div>
+<div class="section" id="subquries-as-data-sources">
+<h2>Subquries as Data sources</h2>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"></span>
+<span class="w">   </span><span class="n">pymnt</span><span class="p">.</span><span class="n">num_rentals</span><span class="p">,</span><span class="w"> </span><span class="n">pymnt</span><span class="p">.</span><span class="n">tot_payments</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">num_rentals</span><span class="p">,</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="n">tot_payments</span><span class="w"></span>
+<span class="w">         </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"></span>
+<span class="w">         </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">   </span><span class="p">)</span><span class="w"> </span><span class="n">pymnt</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pymnt</span><span class="p">.</span><span class="n">customer_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<p>데이터 소스인 FROM 테이블로 사용된 서브쿼리는 반드시 &quot;non correlated&quot; 이어야 한다.</p>
+<blockquote>
+<ul class="simple">
+<li>여기서 서브쿼리는 먼저 실행되고,</li>
+<li>해당 쿼리가 종료될 때까지 메모리에서 대기상태를 가진다.</li>
+</ul>
+</blockquote>
+<div class="line-block">
+<div class="line">서브쿼리는 엄청난 유연성을 제공하는데,</div>
+<div class="line">SQL작성자는 목표로 하는 가상의 그 어떤 view라도 생성할 수 있도록</div>
+<div class="line">유효한 테이블을 훨씬 넘어갈 수 있고,</div>
+<div class="line">이후 결과를 다른 테이블 혹은 서브쿼리로 연결할 수 있기 때문이다.</div>
+<div class="line">서브쿼리의 유연성 덕분에, 과거에는 다수의 쿼리나 절차형 언어를 사용했던 것을 하나의 쿼리로 대체할 수 있다.</div>
+</div>
+<div class="section" id="data-fabrication">
+<h3>Data fabrication</h3>
+<div class="line-block">
+<div class="line">실재하는 데이터를 요약하는 서브쿼리를 사용하는 방법처럼,</div>
+<div class="line">서브쿼리를 사용하여 존재하지 않는 형태의 테이블을 생성할 수 있다.</div>
+</div>
+<table border="1" class="docutils">
+<caption>Customer payment groups</caption>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Group name</th>
+<th class="head">Lower limit</th>
+<th class="head">Upper limit</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Small</td>
+<td>0</td>
+<td>74.99</td>
+</tr>
+<tr><td>Average</td>
+<td>75</td>
+<td>149.99</td>
+</tr>
+<tr><td>Heavy</td>
+<td>150</td>
+<td>999999.99</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><span class="k">with</span><span class="w"> </span><span class="n">pymnt_grps</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="s1">&#39;Small&#39;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">low_limit</span><span class="p">,</span><span class="w"> </span><span class="mi">74</span><span class="p">.</span><span class="mi">99</span><span class="w"> </span><span class="n">upper_limit</span><span class="w"></span>
+<span class="w">   </span><span class="k">UNION</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="s1">&#39;Average&#39;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="mi">75</span><span class="w"> </span><span class="n">low_limit</span><span class="p">,</span><span class="w"> </span><span class="mi">149</span><span class="p">.</span><span class="mi">99</span><span class="w"> </span><span class="n">upper_limit</span><span class="w"></span>
+<span class="w">   </span><span class="k">UNION</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="s1">&#39;Heavy&#39;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="mi">150</span><span class="w"> </span><span class="n">low_limit</span><span class="p">,</span><span class="w"> </span><span class="mi">999999</span><span class="p">.</span><span class="mi">99</span><span class="w"> </span><span class="n">upper_limit</span><span class="p">;</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">pymnt_grp</span><span class="p">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">num_customers</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">num_rentals</span><span class="p">,</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="n">tot_payments</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"></span>
+<span class="w">   </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">)</span><span class="w"> </span><span class="n">pymnt</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">pymnt_grps</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">pymnt</span><span class="p">.</span><span class="n">tot_payments</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="n">pymnt_grps</span><span class="p">.</span><span class="n">low_limit</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">pymnt_grps</span><span class="p">.</span><span class="n">upper_limit</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">pymnt_grps</span><span class="p">.</span><span class="n">name</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line">물론 영구적인 혹은 임시 테이블을 생성해서 사용할 수 도 있다.</div>
+<div class="line">하지만 그럴 경우, 데이터베이스를 임시적으로 필요한, 혹은 덜 중요한 것들이 흩뿌려진(littered) 모습으로 만들어</div>
+<div class="line">이 파편들은 존재 자체도 잊을만한 대상이 될 것이다.</div>
+</div>
+<div class="line-block">
+<div class="line">반면, 서브쿼리를 사용하면</div>
+<div class="line"><strong>&quot;데이터베이스에 추가되는 테이블은 오직 분명한 필요가 존재하는 경우에만 추가되어야 한다.&quot;</strong></div>
+<div class="line">라는 정책에 달라붙게(adhere) 될 수 있다.</div>
+</div>
+</div>
+<div class="section" id="task-oriented-subqueries">
+<h3>Task-oriented Subqueries</h3>
+<p><tt class="docutils literal">SELECT * FROM <span class="pre">&lt;HEART-TABLE&gt;</span> INNER JOIN <span class="pre">&lt;ADDITIONAL-TABLES&gt;</span></tt></p>
+<div class="line-block">
+<div class="line">TABLE들에 분포된 데이터가 Normalized 되어 있어서,</div>
+<div class="line">특정 정보에 부가적인 정보를 더해 Rich하게 데이터를 구성해야하는 경우,</div>
+<div class="line">heart of the query(Minimum data For purpose only and no duplicates)를 Subquery에 작성하여 분리하고,</div>
+<div class="line">나머지 heart of query를 기반으로 확장될 수 있는 부가적인 정보는 이어지는 JOIN 등으로 두는 방식으로 구성하는 것이</div>
+<div class="line">저자의 입장에서는 SQL Statement구성이 Clear하다고 판단된다 <a class="citation-reference" href="#idiom01" id="id2">[idiom01]</a>.</div>
+</div>
+<table class="docutils citation" frame="void" id="idiom01" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[idiom01]</a></td><td><div class="first last line-block">
+<div class="line">beauty is in the eye of the beholder</div>
+<div class="line">미에대한 기준은 사람의 눈에 달려 있다.</div>
+</div>
+</td></tr>
+</tbody>
+</table>
+<div class="line-block">
+<div class="line">예를 들어 도시정보가 포함된 유저의 정보를 가져온다고 했을때,</div>
+<div class="line">CITY-ADDRESS-USER 순서로 INNER JOIN을 할 수 도 있지만,</div>
+<div class="line">USER-ADDRESS-CITY 순서로 바꿔주는 것이 해당 SQL의 목적을 조금 더 분명히 드러낼 수 있다는 장점이 있다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="cm">/* Not clear for describing the purpose of query */</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="n">paid</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">cnt</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">payemnt</span><span class="w"> </span><span class="n">p</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="w"></span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span><span class="p">;</span><span class="w"></span>
+
+<span class="cm">/* Better clear for understanding the heart of SQL */</span><span class="w"></span>
+<span class="k">with</span><span class="w"> </span><span class="n">main_tbl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">SUM</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="n">paid</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">cnt</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payemnt</span><span class="w"> </span><span class="n">p</span><span class="w"></span>
+<span class="w">   </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">main_tbl</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">main_tbl</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">main_tbl</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span><span class="w"></span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">SELECT <span class="pre">main_tbl.*,</span> ct.city_id, a.address_id</tt>만으로도,</div>
+<div class="line">원하는 정보는 대부분 main_tbl에 존재하고 이후 연결되는 부분은 부수적인 정보임을 추측하기 용이하다.</div>
+<div class="line">또한 id값만 포함하는 것으로, 최소한의 식별정보만 유지하도록 하는 부분도 주목할만 하다.</div>
+</div>
+</div>
+<div class="section" id="common-table-expressions-with-statements">
+<h3>Common table expressions(with statements)</h3>
+<div class="line-block">
+<div class="line"><em>Common table expression</em>은 쿼리의 상단부에, <tt class="docutils literal">WITH</tt>구와 함께 사용되는 이름이 있는 서브쿼리를 말한다.</div>
+<div class="line">WITH로 선언되는 테이블은 뒤에 있는 것이 앞에 있는 CTE의 이름을 그대로 사용할 수 있다.</div>
+</div>
+</div>
+</div>
+<div class="section" id="subqueries-as-expression-generators">
+<h2>Subqueries as Expression Generators</h2>
+<div class="line-block">
+<div class="line"><em>With single-column, single row scarlar subqueries.</em></div>
+<div class="line">단일 값의 결과를 반환하는 scarlar 서브쿼리는 아래와 같다.</div>
+</div>
+<blockquote>
+<ul class="simple">
+<li>filter condition, <tt class="docutils literal">WHERE v = (Subquery)</tt></li>
+<li><tt class="docutils literal">SELECT (Subquery)</tt></li>
+<li><tt class="docutils literal">ORDER BY (Subquery)</tt></li>
+<li><tt class="docutils literal">INSERT INTO (A, B, C) VALUES <span class="pre">((Subquery-A),</span> <span class="pre">(Subquery-B),</span> <span class="pre">(Subquery-C))</span></tt></li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="better-to-use-subquery">
+<h2>Better to use subquery</h2>
+<div class="line-block">
+<div class="line">결합과 관련된 쿼리를 수행할때, 성능측면에서 서브쿼리를 사용하는 것이 도움이 된다.</div>
+<div class="line">결합할때 중요한 것은 <strong>최대한 결합 대상 레코드 수를 줄이는 것이 중요하다.</strong></div>
+<div class="line">결합을 통해 얻고자 하는 데이터가 어떤 결과인지를 최대한 염두하여,</div>
+<div class="line">대표적인 예로 집약 처리가 포함된다면, 아래와 같은 두 가지 방법이 존재한다.</div>
+</div>
+<ol class="arabic simple">
+<li>결합을 먼저 수행</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">films</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">actor</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">film_actor</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">fa</span><span class="w"></span>
+<span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">actor_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fa</span><span class="p">.</span><span class="n">actor_id</span><span class="w"></span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">actor_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<ol class="arabic simple">
+<li>집약을 먼저 수행</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="k">WITH</span><span class="w"> </span><span class="n">fa</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">   </span><span class="k">SELECT</span><span class="w"> </span><span class="n">actor_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">films</span><span class="w"></span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">film_actor</span><span class="w"></span>
+<span class="w">   </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">actor_id</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">fa</span><span class="p">.</span><span class="n">films</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">actor</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">fa</span><span class="w"></span>
+<span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">actor_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fa</span><span class="p">.</span><span class="n">actor_id</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+<ul class="simple">
+<li>actor table rows : 200</li>
+<li>film_actor table rows : 5462</li>
+</ul>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><tt class="docutils literal">GROUP BY &lt;COLUMNS&gt; WITH ROLLUP</tt>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">GROUP BY 분류에 대해서 COLUMNS 수에 따른 분류 레벨에 따른 집계를 포함한다.</p>
-<div class="last line-block">
-<div class="line">COLUMNS가 1개라면 NULL 항목으로 총 개수를,</div>
-<div class="line">COLUMNS가 2개 이상이라면 A-a, A-b 에 따른 분류를 진행하면서</div>
-<div class="line">A-NULL이라는 항목으로 대분류 A에 대한 총 row수를 표시한다.</div>
+<tr class="field"><th class="field-name">결합을 먼저하는 경우:</th><td class="field-body"><div class="first last line-block">
+<div class="line">JOIN 결합의 결과인 중간 테이블에서(5462개의 rows)</div>
+<div class="line">group by를 실행해서 200개로 줄어드는 결과 테이블을 생성한다.</div>
+<div class="line"><em>group by 비용을 줄일 수 있는 장점</em></div>
+</div>
+</td>
+</tr>
+<tr class="field"><th class="field-name">집약을 먼저하는 경우:</th><td class="field-body"><div class="first last line-block">
+<div class="line">GROUP BY 집약의 결과인 중간 테이블에서(200개의 rows)</div>
+<div class="line">이를 join하여 결과 테이블을 생성한다.</div>
+<div class="line"><em>I/O 비용을 줄일 수 있는 장점</em></div>
 </div>
 </td>
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">fa</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">rating</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">film_actor</span><span class="w"> </span><span class="n">fa</span><span class="w"></span>
-<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="n">f</span><span class="w"></span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">fa</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">film_id</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">fa</span><span class="p">.</span><span class="n">actor_id</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">rating</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">ROLLUP</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"></span>
-
-<span class="o">+</span><span class="c1">----------+--------+----------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">actor_id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">----------+--------+----------+</span>
-<span class="o">|</span><span class="w">     </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">   </span><span class="o">|</span><span class="w">     </span><span class="mi">5462</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">   </span><span class="o">|</span><span class="w">       </span><span class="mi">19</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w">        </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">NC</span><span class="o">-</span><span class="mi">17</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="mi">5</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">PG</span><span class="w">     </span><span class="o">|</span><span class="w">        </span><span class="mi">6</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">PG</span><span class="o">-</span><span class="mi">13</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">R</span><span class="w">      </span><span class="o">|</span><span class="w">        </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">   </span><span class="o">|</span><span class="w">       </span><span class="mi">25</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w">        </span><span class="mi">7</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w">        </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">NC</span><span class="o">-</span><span class="mi">17</span><span class="w">  </span><span class="o">|</span><span class="w">        </span><span class="mi">8</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">+</span><span class="c1">----------+--------+----------+</span>
-<span class="mi">10</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
-</pre></div>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<ul class="last simple">
+<li><strong>옵티마이저가 잘 판별하지 못할때에는</strong> 사람이 직접 연산순서를 명시해주면 성능적으로 좋은 결과를 얻을 수 있다.</li>
+<li>I/O는 SQL 성능의 가장 큰 평가 요인</li>
+<li>서브쿼리와 결합을 윈도우 함수로 대체하면 성능을 개선할 가능성이 있음.</li>
+</ul>
+</div>
 </div>
                 </article>
             </aside><!-- /#featured -->
@@ -217,6 +655,33 @@
                     <h1>Other articles</h1>
                     <hr />
                     <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/posts/database/2023/02/28/grouping-and-aggregates" rel="bookmark"
+                           title="Permalink to Query Primer 8. Grouping and Aggregates">Query Primer 8. Grouping and Aggregates</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2023-02-28T14:04:00+09:00">
+                Published: Tue 28 February 2023
+        </abbr>
+		<br />
+        <abbr class="modified" title="2023-03-07T22:06:00+09:00">
+                Updated: Tue 07 March 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/database.html">database</a>.</p>
+<p>tags: <a href="/tag/sql.html">sql</a> <a href="/tag/set.html">set</a> </p>
+</footer><!-- /.post-info -->                <p class="first last">Aggregations in database</p>
+
+                <a class="readmore" href="/posts/database/2023/02/28/grouping-and-aggregates">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
