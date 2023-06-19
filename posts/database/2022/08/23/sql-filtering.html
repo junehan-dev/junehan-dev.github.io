@@ -158,38 +158,38 @@
 <div class="section" id="membership-conditions-in-operator">
 <h3>Membership Conditions (IN Operator)</h3>
 <p><tt class="docutils literal">IN</tt>연산자를 통해서, member를 추가적인 연산자 사용 없이 표기할 수 있다.</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;G&quot;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;G&quot;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span><span class="p">;</span>
 </pre></div>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;G&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;R&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;FG&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">&quot;</span><span class="n">GPR</span><span class="p">);</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="ss">&quot;G&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;R&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;FG&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">&quot;</span><span class="n">GPR</span><span class="p">);</span>
 </pre></div>
 </div>
 <div class="section" id="using-subqueries">
 <h3>Using Subqueries</h3>
 <p><tt class="docutils literal">(&quot;G&quot;, &quot;PG&quot;)</tt>와 같이 멤버요소를 표현할때 Subquery를 사용해서 배열을 생성할 수 있다.</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">   </span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">      </span><span class="n">rating</span><span class="w"></span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"></span>
-<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="ss">&quot;%PET%&quot;</span><span class="w"></span>
-<span class="p">);</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="ss">&quot;G&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">rating</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span>
+<span class="w">   </span><span class="k">SELECT</span>
+<span class="w">      </span><span class="n">rating</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">film</span>
+<span class="w">   </span><span class="k">WHERE</span><span class="w"> </span><span class="n">title</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="ss">&quot;%PET%&quot;</span>
+<span class="p">);</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="ss">&quot;G&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;PG&quot;</span>
 
 <span class="o">+</span><span class="c1">---------------------------+--------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">title</span><span class="w">                     </span><span class="o">|</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="n">title</span><span class="w">                     </span><span class="o">|</span><span class="w"> </span><span class="n">rating</span><span class="w"> </span><span class="o">|</span>
 <span class="o">+</span><span class="c1">---------------------------+--------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">ACADEMY</span><span class="w"> </span><span class="n">DINOSAUR</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">PG</span><span class="w">     </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">ACE</span><span class="w"> </span><span class="n">GOLDFINGER</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">AFFAIR</span><span class="w"> </span><span class="n">PREJUDICE</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">AFRICAN</span><span class="w"> </span><span class="n">EGG</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span><span class="w"></span>
-<span class="p">...</span><span class="w"></span>
+<span class="o">|</span><span class="w"> </span><span class="n">ACADEMY</span><span class="w"> </span><span class="n">DINOSAUR</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">PG</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">ACE</span><span class="w"> </span><span class="n">GOLDFINGER</span><span class="w">            </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">AFFAIR</span><span class="w"> </span><span class="n">PREJUDICE</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">AFRICAN</span><span class="w"> </span><span class="n">EGG</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="k">G</span><span class="w">      </span><span class="o">|</span>
+<span class="p">...</span>
 </pre></div>
 </div>
 <div class="section" id="special-keywords">
@@ -230,17 +230,17 @@
 </div>
 <ol class="arabic">
 <li><p class="first">Normal Usage</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">rental</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span>
 </pre></div>
 </li>
 <li><p class="first">NULL Is NOT A Value</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">rental</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span>
 </pre></div>
 <p>Null이라는 값을 넣은 것이 아니라, 값을 넣지 않은 것이다.</p>
 </li>

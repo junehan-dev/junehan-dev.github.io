@@ -86,8 +86,8 @@
 <ul>
 <li><p class="first"><em>&quot;language 테이블의 모든 row의 데이터들과 모든 column 의 데이터를&quot;</em></p>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="k">language</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="k">language</span><span class="p">;</span>
 </pre></div>
 <ol class="arabic simple">
 <li>FROM: language 테이블 1개</li>
@@ -103,26 +103,26 @@
 <li>language_usage: &quot;COMMON&quot; 이라는 값으로 결과 테이블에 포함한다.</li>
 <li>lang_pi_value: lauguage_id에 3.14 를 곱한 값을 연산해 포함한다.</li>
 </ul>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">language_id</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="k">column</span><span class="w"></span>
-<span class="w">   </span><span class="s1">&#39;COMMON&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">language_usage</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">literal</span><span class="w"></span>
-<span class="w">   </span><span class="k">UPPER</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">language_name</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">Builtin</span><span class="w"> </span><span class="k">function</span><span class="w"></span>
-<span class="w">   </span><span class="n">language_id</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">lang_pi_value</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">Expression</span><span class="w"></span>
-<span class="k">from</span><span class="w"> </span><span class="o">`</span><span class="k">language</span><span class="o">`</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="n">language_id</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="k">column</span>
+<span class="w">   </span><span class="s1">&#39;COMMON&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">language_usage</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">literal</span>
+<span class="w">   </span><span class="k">UPPER</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">language_name</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">Builtin</span><span class="w"> </span><span class="k">function</span>
+<span class="w">   </span><span class="n">language_id</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="mi">14</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">lang_pi_value</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">Expression</span>
+<span class="k">from</span><span class="w"> </span><span class="o">`</span><span class="k">language</span><span class="o">`</span><span class="p">;</span>
 </pre></div>
 </blockquote>
 </li>
 <li><p class="first"><em>내장함수 사용</em></p>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="k">VERSION</span><span class="p">(),</span><span class="w"></span>
-<span class="w">   </span><span class="k">USER</span><span class="p">(),</span><span class="w"></span>
-<span class="w">   </span><span class="k">DATABASE</span><span class="p">();</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="k">VERSION</span><span class="p">(),</span>
+<span class="w">   </span><span class="k">USER</span><span class="p">(),</span>
+<span class="w">   </span><span class="k">DATABASE</span><span class="p">();</span>
 
 <span class="cm">/*</span>
 <span class="cm">* | VERSION()      | USER()         | DATABASE() |</span>
 <span class="cm">* | 10.8.3-MariaDB | root@localhost | sakila     |</span>
-<span class="cm">*/</span><span class="w"></span>
+<span class="cm">*/</span>
 </pre></div>
 <div class="line-block">
 <div class="line">테이블에 의존하지 않는 정보를 추출하는 내장함수를 사용하였기 때문에,</div>
@@ -165,10 +165,10 @@
 <ul>
 <li><p class="first"><em>&quot;영화출연 로그 중에서, 배우의 아이디를 고유하게 처리하여 리스트업&quot;</em></p>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">actor_id</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">file_actor</span><span class="w"></span>
-<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">actor_id</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">actor_id</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">file_actor</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">actor_id</span><span class="p">;</span>
 </pre></div>
 </blockquote>
 </li>

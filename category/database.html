@@ -324,11 +324,11 @@
 <div class="line">ORACLE처럼 기본 SQL의 처리방식을 transaction으로 다루게 할 수 있다.</div>
 </div>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="n">MSSQL</span><span class="w"></span>
-<span class="k">SET</span><span class="w"> </span><span class="n">IMPLICIT_TRANSACTIONS</span><span class="w"> </span><span class="k">ON</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="n">MSSQL</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">IMPLICIT_TRANSACTIONS</span><span class="w"> </span><span class="k">ON</span>
 
-<span class="o">#</span><span class="n">MYSQL</span><span class="w"></span>
-<span class="k">SET</span><span class="w"> </span><span class="n">AUTOCOMMIT</span><span class="o">=</span><span class="mi">0</span><span class="w"></span>
+<span class="o">#</span><span class="n">MYSQL</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">AUTOCOMMIT</span><span class="o">=</span><span class="mi">0</span>
 </pre></div>
 <div class="admonition important">
 <p class="first admonition-title">Important</p>
@@ -354,20 +354,20 @@
 <ul>
 <li><p class="first">설정에 의한 자동 Transaction처리</p>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">MYSQL</span><span class="w"></span>
-<span class="k">SET</span><span class="w"> </span><span class="n">AUTOCOMMIT</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
-<span class="cm">/* SELECT QUERY 생략 */</span><span class="w"></span>
-<span class="cm">/* INSERT QUERY 생략 */</span><span class="w"></span>
-<span class="k">COMMIT</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">MYSQL</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">AUTOCOMMIT</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+<span class="cm">/* SELECT QUERY 생략 */</span>
+<span class="cm">/* INSERT QUERY 생략 */</span>
+<span class="k">COMMIT</span><span class="p">;</span>
 </pre></div>
 </blockquote>
 </li>
 <li><p class="first">SQL구문에서 명시적으로 Transaction실행</p>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span><span class="w"></span>
-<span class="cm">/* SELECT QUERY 생략 */</span><span class="w"></span>
-<span class="cm">/* INSERT QUERY 생략 */</span><span class="w"></span>
-<span class="k">COMMIT</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
+<span class="cm">/* SELECT QUERY 생략 */</span>
+<span class="cm">/* INSERT QUERY 생략 */</span>
+<span class="k">COMMIT</span><span class="p">;</span>
 </pre></div>
 </blockquote>
 </li>
@@ -462,19 +462,19 @@
 <div class="line">이런 상황에 대비하여 transaction내에 중간 지점을 가리키는 <em>savepoints</em>들을 설정하면,</div>
 <div class="line">특점 지점까지만 rollback하는 방식으로 활용될 수 있다.</div>
 </div>
-<div class="highlight"><pre><span></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span><span class="w"></span>
-<span class="k">UPDATE</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
-<span class="k">SET</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">()</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">rental_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">rental</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">()</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rental_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 
-<span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">before_update_rental</span><span class="p">;</span><span class="w"></span>
+<span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">before_update_rental</span><span class="p">;</span>
 
-<span class="k">UPDATE</span><span class="w"> </span><span class="n">rental</span><span class="w"></span>
-<span class="k">SET</span><span class="w"> </span><span class="n">update_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">()</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">rental_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">rental</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">update_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">()</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">rental_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 
-<span class="k">ROLLBACK</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">before_update_rental</span><span class="p">;</span><span class="w"></span>
-<span class="k">COMMIT</span><span class="p">;</span><span class="w"></span>
+<span class="k">ROLLBACK</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">before_update_rental</span><span class="p">;</span>
+<span class="k">COMMIT</span><span class="p">;</span>
 </pre></div>
 </div>
                 </article>

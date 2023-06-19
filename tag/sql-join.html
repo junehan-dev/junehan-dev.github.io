@@ -83,22 +83,22 @@
 </div>
 <div class="section" id="inner-joins">
 <h2>Inner joins</h2>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
-<span class="w">   </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">361</span><span class="p">,</span><span class="mi">197</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span>
+<span class="w">   </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="o">#</span><span class="w"> </span><span class="mi">361</span><span class="p">,</span><span class="mi">197</span>
 
-<span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
-<span class="w">   </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">599</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span>
+<span class="w">   </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span>
+<span class="o">#</span><span class="w"> </span><span class="mi">599</span>
 
-<span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"></span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
-<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span><span class="w"></span>
-<span class="o">#</span><span class="w"> </span><span class="mi">599</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span>
+<span class="o">#</span><span class="w"> </span><span class="mi">599</span>
 </pre></div>
 <div class="line-block">
 <div class="line"><tt class="docutils literal">INNER</tt>를 명시하지 않아도 기본적으로 <tt class="docutils literal">INNER JOIN</tt>을 의미한다.</div>
@@ -106,13 +106,13 @@
 </div>
 <div class="section" id="joining-three-or-more-tables">
 <h2>Joining Three or More Tables</h2>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
-<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="w"></span>
-<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span><span class="w"></span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="p">;</span>
 </pre></div>
 <div class="line-block">
 <div class="line">위 쿼리에서 3개의 테이블이 있고 2개의 join타입이 있다.</div>
@@ -131,13 +131,13 @@
 <div class="line"><tt class="docutils literal">STRAIGHT_JOIN</tt> 키워드를 사용하여, force order 옵션을 요청할 수 있다.</div>
 <div class="line">이 경우 첫번쨰의 명시하는 테이블을 기점(as driving table)으로 정렬 순서를 보장한다.</div>
 </div>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">STRAIGHT_JOIN</span><span class="w"></span>
-<span class="w">   </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">_last_name</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span><span class="w"></span>
-<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span><span class="w"></span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span><span class="w"></span>
-<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span><span class="w"></span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">STRAIGHT_JOIN</span>
+<span class="w">   </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">_last_name</span><span class="p">,</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="n">ct</span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="n">a</span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">c</span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span><span class="p">;</span>
 </pre></div>
 </blockquote>
 </div>
@@ -147,12 +147,12 @@
 <div class="line-block">
 <div class="line">일부 테이블들은 자신을 foreign key로 사용하는 경우가 있기 때문에, 이런 경우에 self join이 사용된다.</div>
 </div>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"></span>
-<span class="w">   </span><span class="n">f</span><span class="p">.</span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">f_prnt</span><span class="p">.</span><span class="n">title</span><span class="w"> </span><span class="n">prequel</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="n">f</span><span class="w"></span>
-<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w">  </span><span class="n">film</span><span class="w"> </span><span class="n">f_prnt</span><span class="w"></span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">f_prnt</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">prequel_file_id</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="k">self</span><span class="w"> </span><span class="k">Foreign</span><span class="w"> </span><span class="k">key</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">prequel_film_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span>
+<span class="w">   </span><span class="n">f</span><span class="p">.</span><span class="n">title</span><span class="p">,</span><span class="w"> </span><span class="n">f_prnt</span><span class="p">.</span><span class="n">title</span><span class="w"> </span><span class="n">prequel</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">film</span><span class="w"> </span><span class="n">f</span>
+<span class="w">   </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w">  </span><span class="n">film</span><span class="w"> </span><span class="n">f_prnt</span>
+<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="n">f_prnt</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">prequel_file_id</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="k">self</span><span class="w"> </span><span class="k">Foreign</span><span class="w"> </span><span class="k">key</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">prequel_film_id</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span>
 </pre></div>
 <p>위 쿼리는 file 테이블이 자신의 prequel_file_id 외래키를 스스로의 테이블을 join한다.</p>
 </div>

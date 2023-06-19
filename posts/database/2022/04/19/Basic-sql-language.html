@@ -131,17 +131,17 @@
 <div class="line">데이터베이스에서 데이터 구조를 정의하는데 사용된다.</div>
 <div class="line">모든 데이터베이스 요소들은 이것으로 생성되며, <em>data dictionary</em>라고 불리는 데이터베이스를 위한 데이터에 저장된다.</div>
 </div>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">corporation</span><span class="w"></span>
-<span class="w">   </span><span class="p">(</span><span class="n">corp_id</span><span class="w"> </span><span class="nb">SMALLINT</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">),</span><span class="w"></span>
-<span class="w">    </span><span class="n">CONTRAINT</span><span class="w"> </span><span class="n">pk_corporation</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">corp_id</span><span class="p">)</span><span class="w"></span>
-<span class="w">   </span><span class="p">);</span><span class="w"></span>
+<div class="last"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">corporation</span>
+<span class="w">   </span><span class="p">(</span><span class="n">corp_id</span><span class="w"> </span><span class="nb">SMALLINT</span><span class="p">,</span>
+<span class="w">    </span><span class="n">name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">30</span><span class="p">),</span>
+<span class="w">    </span><span class="n">CONTRAINT</span><span class="w"> </span><span class="n">pk_corporation</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">corp_id</span><span class="p">)</span>
+<span class="w">   </span><span class="p">);</span>
 </pre></div>
 </div></dd>
 <dt>SQL data statement (DML)</dt>
 <dd><p class="first">데이터베이스에서 데이터 구조를 조작한는데 사용된다.</p>
-<div class="last"><div class="highlight"><pre><span></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">coporation</span><span class="w"> </span><span class="p">(</span><span class="n">corp_id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"></span>
-<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">27</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Acme Paper Corporation&#39;</span><span class="p">);</span><span class="w"></span>
+<div class="last"><div class="highlight"><pre><span></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">coporation</span><span class="w"> </span><span class="p">(</span><span class="n">corp_id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
+<span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">27</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Acme Paper Corporation&#39;</span><span class="p">);</span>
 </pre></div>
 </div></dd>
 <dt>SQL transaction statement</dt>
@@ -167,10 +167,10 @@
 </dd>
 </dl>
 <p>SYNTAX</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">column_name</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">column_name</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="section" id="order-by">
@@ -184,9 +184,9 @@
 </dd>
 </dl>
 <p>SYNTAX</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">column1</span><span class="p">,</span><span class="w"> </span><span class="n">column2</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
-<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">column1</span><span class="p">,</span><span class="w"> </span><span class="n">column2</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="k">ASC</span><span class="o">|</span><span class="k">DESC</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">column1</span><span class="p">,</span><span class="w"> </span><span class="n">column2</span><span class="p">,</span><span class="w"> </span><span class="p">...</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">column1</span><span class="p">,</span><span class="w"> </span><span class="n">column2</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="k">ASC</span><span class="o">|</span><span class="k">DESC</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="section" id="min-max-function">
@@ -200,9 +200,9 @@
 </dd>
 </dl>
 <p>SYNTAX</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">MIN</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">MIN</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="section" id="count-function">
@@ -215,9 +215,9 @@
 </dd>
 </dl>
 <p>SYNTAX</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="section" id="avg-function">
@@ -230,9 +230,9 @@
 </dd>
 </dl>
 <p>SYNTAX</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">TYPE</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="n">by와</span><span class="w"> </span><span class="err">다르다</span><span class="p">.</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="k">column_name</span><span class="p">)</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">STRING</span><span class="w"> </span><span class="k">TYPE</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="n">by와</span><span class="w"> </span><span class="err">다르다</span><span class="p">.</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="section" id="aliases">
@@ -248,11 +248,11 @@
 </dd>
 </dl>
 <p>SYNTAX</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">alias_name</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">alias_name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="p">;</span>
 </pre></div>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">alias_name</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="k">column_name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">table_name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">alias_name</span><span class="p">;</span>
 </pre></div>
 </div>
 <div class="section" id="join">
@@ -326,18 +326,18 @@
 </dd>
 </dl>
 <p>EXAMPLE</p>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">City</span><span class="p">,</span><span class="w"> </span><span class="n">CustormName</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"></span>
-<span class="k">UNION</span><span class="w"></span>
-<span class="k">SELECT</span><span class="w"> </span><span class="n">City</span><span class="p">,</span><span class="w"> </span><span class="n">SupplierName</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Suppliers</span><span class="w"></span>
-<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">City</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">City</span><span class="p">,</span><span class="w"> </span><span class="n">CustormName</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span>
+<span class="k">UNION</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">City</span><span class="p">,</span><span class="w"> </span><span class="n">SupplierName</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Name</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Suppliers</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">City</span><span class="p">;</span>
 </pre></div>
-<div class="highlight"><pre><span></span><span class="n">Name</span><span class="w"> </span><span class="n">City</span><span class="w"></span>
-<span class="n">Drachenblut</span><span class="w"> </span><span class="n">Delikatessend</span><span class="w">    </span><span class="n">Aachen</span><span class="w"></span>
-<span class="n">Rattlesnake</span><span class="w"> </span><span class="n">Canyon</span><span class="w"> </span><span class="n">Grocery</span><span class="w">   </span><span class="n">Albuquerque</span><span class="w"></span>
-<span class="k">Old</span><span class="w"> </span><span class="n">World</span><span class="w"> </span><span class="n">Delicatessen</span><span class="w">       </span><span class="n">Anchorage</span><span class="w"></span>
-<span class="n">Grandma</span><span class="w"> </span><span class="n">Kelly</span><span class="err">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">Homestead</span><span class="w">    </span><span class="n">Ann</span><span class="w"> </span><span class="n">Arbor</span><span class="w"></span>
-<span class="n">Gai</span><span class="w"> </span><span class="n">pâturage</span><span class="w"> </span><span class="n">Annecy</span><span class="w"></span>
-<span class="n">Vaffeljernet</span><span class="w"> </span><span class="err">Å</span><span class="n">rhus</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="n">Name</span><span class="w"> </span><span class="n">City</span>
+<span class="n">Drachenblut</span><span class="w"> </span><span class="n">Delikatessend</span><span class="w">    </span><span class="n">Aachen</span>
+<span class="n">Rattlesnake</span><span class="w"> </span><span class="n">Canyon</span><span class="w"> </span><span class="n">Grocery</span><span class="w">   </span><span class="n">Albuquerque</span>
+<span class="k">Old</span><span class="w"> </span><span class="n">World</span><span class="w"> </span><span class="n">Delicatessen</span><span class="w">       </span><span class="n">Anchorage</span>
+<span class="n">Grandma</span><span class="w"> </span><span class="n">Kelly</span><span class="err">&#39;</span><span class="n">s</span><span class="w"> </span><span class="n">Homestead</span><span class="w">    </span><span class="n">Ann</span><span class="w"> </span><span class="n">Arbor</span>
+<span class="n">Gai</span><span class="w"> </span><span class="n">pâturage</span><span class="w"> </span><span class="n">Annecy</span>
+<span class="n">Vaffeljernet</span><span class="w"> </span><span class="err">Å</span><span class="n">rhus</span>
 </pre></div>
 </div>
 <div class="section" id="subquery">
@@ -356,25 +356,25 @@
 <ul class="simple">
 <li>고용자의 임금과 고용자의 학과별 임금을 한꺼번에 표시</li>
 </ul>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">employee_number</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">employee</span><span class="w"> </span><span class="n">emps</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">salary</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="err">고용인의</span><span class="w"> </span><span class="err">평균임금</span><span class="w"></span>
-<span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">emps</span><span class="p">.</span><span class="n">department</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">department</span><span class="w">  </span><span class="o">#</span><span class="w"> </span><span class="err">학과별로</span><span class="w"> </span><span class="err">골라서</span><span class="w"></span>
-<span class="p">);</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">employee_number</span><span class="p">,</span><span class="w"> </span><span class="n">name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">employee</span><span class="w"> </span><span class="n">emps</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">salary</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">(</span>
+<span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="err">고용인의</span><span class="w"> </span><span class="err">평균임금</span>
+<span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">emps</span><span class="p">.</span><span class="n">department</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">department</span><span class="w">  </span><span class="o">#</span><span class="w"> </span><span class="err">학과별로</span><span class="w"> </span><span class="err">골라서</span>
+<span class="p">);</span>
 <span class="cm">/*</span>
 <span class="cm">* INNER JOIN으로 학과별로 GROUP BY 를 학과별로 연결해서 처리할 수 있는데,</span>
 <span class="cm">* 동적으로 매 루프마다 employees 테이블을 1회씩 풀스캔합니다.</span>
-<span class="cm">*/</span><span class="w"></span>
+<span class="cm">*/</span>
 
-<span class="k">SELECT</span><span class="w"> </span><span class="n">employee_number</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">salary</span><span class="p">,</span><span class="w"> </span><span class="n">survey</span><span class="p">.</span><span class="n">avg_salary</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">employee</span><span class="w"></span>
-<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="err">전공별</span><span class="w"> </span><span class="err">임금</span><span class="w"> </span><span class="err">취합</span><span class="w"></span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">department</span><span class="p">,</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_salary</span><span class="w"></span>
-<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">employee</span><span class="w"></span>
-<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">department</span><span class="w"></span>
-<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">survey</span><span class="w"></span>
-<span class="k">ON</span><span class="w"> </span><span class="n">employee</span><span class="p">.</span><span class="n">department</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">survey</span><span class="p">.</span><span class="n">department</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">employee_number</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">salary</span><span class="p">,</span><span class="w"> </span><span class="n">survey</span><span class="p">.</span><span class="n">avg_salary</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">employee</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="err">전공별</span><span class="w"> </span><span class="err">임금</span><span class="w"> </span><span class="err">취합</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">department</span><span class="p">,</span><span class="w"> </span><span class="k">AVG</span><span class="p">(</span><span class="n">salary</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">avg_salary</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">employee</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">department</span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">survey</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">employee</span><span class="p">.</span><span class="n">department</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">survey</span><span class="p">.</span><span class="n">department</span>
 </pre></div>
 </blockquote>
 <div class="line-block">
@@ -429,66 +429,66 @@
 </blockquote>
 <p><em>(4-3 6:20)에서 왜인지 from구에서 사용하는게 가장 많이 사용한다고 한다.</em></p>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">point</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">avg_likes</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">point_user</span><span class="w"> </span><span class="n">pu</span><span class="w"></span>
-<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">ROUND</span><span class="p">(</span><span class="k">AVG</span><span class="p">(</span><span class="n">likes</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">avg_likes</span><span class="w"> </span><span class="k">FROM</span><span class="w"></span>
-<span class="w">    </span><span class="n">checkins</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">user_id</span><span class="p">)</span><span class="w"></span>
-<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">user_id</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">point</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">avg_likes</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">point_user</span><span class="w"> </span><span class="n">pu</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">ROUND</span><span class="p">(</span><span class="k">AVG</span><span class="p">(</span><span class="n">likes</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">avg_likes</span><span class="w"> </span><span class="k">FROM</span>
+<span class="w">    </span><span class="n">checkins</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">user_id</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">pu</span><span class="p">.</span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">.</span><span class="n">user_id</span>
 </pre></div>
 </blockquote>
 </div>
 <div class="section" id="subquery-from-with">
 <h3>SubQuery FROM을 해결하기 위한 WITH</h3>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="err">코스별</span><span class="w"> </span><span class="err">시작</span><span class="w"> </span><span class="err">유저</span><span class="w"> </span><span class="err">분포</span><span class="w"></span>
-<span class="k">SELECT</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">ch</span><span class="p">.</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">checkins</span><span class="w"> </span><span class="n">ch</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="err">코스별</span><span class="w"> </span><span class="err">시작</span><span class="w"> </span><span class="err">유저</span><span class="w"> </span><span class="err">분포</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span>
+<span class="w">   </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">ch</span><span class="p">.</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">checkins</span><span class="w"> </span><span class="n">ch</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span>
 
-<span class="o">#</span><span class="w"> </span><span class="err">코스별</span><span class="w"> </span><span class="err">주문</span><span class="w"> </span><span class="err">수</span><span class="w"></span>
-<span class="k">SELECT</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="k">COUNT</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"></span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="w"></span>
-<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span><span class="w"></span>
+<span class="o">#</span><span class="w"> </span><span class="err">코스별</span><span class="w"> </span><span class="err">주문</span><span class="w"> </span><span class="err">수</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span>
+<span class="w">   </span><span class="k">COUNT</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span>
 </pre></div>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="err">두</span><span class="w"> </span><span class="err">개를</span><span class="w"> </span><span class="err">합쳐서</span><span class="w"> </span><span class="err">총</span><span class="w"> </span><span class="err">주문</span><span class="w"> </span><span class="err">수에</span><span class="w"> </span><span class="err">대한</span><span class="w"> </span><span class="err">사용</span><span class="w"> </span><span class="err">유저의</span><span class="w"> </span><span class="err">비율을</span><span class="w"> </span><span class="err">계산합니다</span><span class="p">.</span><span class="w"></span>
-<span class="k">SELECT</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
-<span class="n">ch</span><span class="p">.</span><span class="n">c_users</span><span class="p">,</span><span class="w"></span>
-<span class="n">o</span><span class="p">.</span><span class="n">o_orders</span><span class="p">,</span><span class="w"></span>
-<span class="p">(</span><span class="n">ch</span><span class="p">.</span><span class="n">c_users</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">o_orders</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ratio</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span><span class="w"></span>
-<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">checkins</span><span class="w"></span>
-<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
-<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"></span>
-<span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span><span class="w"></span>
-<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"></span>
-<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
-<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
-<span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span><span class="w"></span>
-<span class="o">##</span><span class="w"> </span><span class="err">복잡합니다</span><span class="p">.</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="err">두</span><span class="w"> </span><span class="err">개를</span><span class="w"> </span><span class="err">합쳐서</span><span class="w"> </span><span class="err">총</span><span class="w"> </span><span class="err">주문</span><span class="w"> </span><span class="err">수에</span><span class="w"> </span><span class="err">대한</span><span class="w"> </span><span class="err">사용</span><span class="w"> </span><span class="err">유저의</span><span class="w"> </span><span class="err">비율을</span><span class="w"> </span><span class="err">계산합니다</span><span class="p">.</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span>
+<span class="n">ch</span><span class="p">.</span><span class="n">c_users</span><span class="p">,</span>
+<span class="n">o</span><span class="p">.</span><span class="n">o_orders</span><span class="p">,</span>
+<span class="p">(</span><span class="n">ch</span><span class="p">.</span><span class="n">c_users</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">o_orders</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ratio</span>
+<span class="k">FROM</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span>
+<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">checkins</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
+<span class="p">(</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">course_id</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span>
+<span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">ch</span><span class="p">.</span><span class="n">course_id</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span>
+<span class="o">##</span><span class="w"> </span><span class="err">복잡합니다</span><span class="p">.</span>
 </pre></div>
-<div class="highlight"><pre><span></span><span class="k">WITH</span><span class="w"> </span><span class="n">user_table</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="n">SUBQUERY1</span><span class="w"></span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span><span class="w"></span>
-<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">Checkins</span><span class="w"></span>
-<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
-<span class="p">),</span><span class="w"> </span><span class="n">order_table</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="n">SUBQUERY2</span><span class="w"></span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span><span class="w"></span>
-<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">Orders</span><span class="w"></span>
-<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
-<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span><span class="w"></span>
-<span class="p">)</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">이</span><span class="w"> </span><span class="err">부분부터</span><span class="w"></span>
-<span class="w">    </span><span class="n">user_table</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">user_table</span><span class="p">.</span><span class="n">c_users</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">order_table</span><span class="p">.</span><span class="n">o_orders</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="p">(</span><span class="n">user_table</span><span class="p">.</span><span class="n">c_users</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">order_table</span><span class="p">.</span><span class="n">o_orders</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ratio</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">결과</span><span class="w"> </span><span class="err">필드</span><span class="w"> </span><span class="err">정의</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">user_table</span><span class="w"></span>
-<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">order_table</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">테이블</span><span class="w"> </span><span class="err">조합</span><span class="w"></span>
-<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">user_table</span><span class="p">.</span><span class="n">course_id</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">order_table</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">WITH</span><span class="w"> </span><span class="n">user_table</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="n">SUBQUERY1</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span>
+<span class="w">    </span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span><span class="p">(</span><span class="n">user_id</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">c_users</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">Checkins</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span>
+<span class="p">),</span><span class="w"> </span><span class="n">order_table</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">#</span><span class="n">SUBQUERY2</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">course_id</span><span class="p">,</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">o_orders</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">Orders</span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="n">course_id</span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">course_id</span>
+<span class="p">)</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">이</span><span class="w"> </span><span class="err">부분부터</span>
+<span class="w">    </span><span class="n">user_table</span><span class="p">.</span><span class="n">course_id</span><span class="p">,</span>
+<span class="w">    </span><span class="n">user_table</span><span class="p">.</span><span class="n">c_users</span><span class="p">,</span>
+<span class="w">    </span><span class="n">order_table</span><span class="p">.</span><span class="n">o_orders</span><span class="p">,</span>
+<span class="w">    </span><span class="p">(</span><span class="n">user_table</span><span class="p">.</span><span class="n">c_users</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">order_table</span><span class="p">.</span><span class="n">o_orders</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ratio</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">결과</span><span class="w"> </span><span class="err">필드</span><span class="w"> </span><span class="err">정의</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">user_table</span>
+<span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">order_table</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="err">테이블</span><span class="w"> </span><span class="err">조합</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">user_table</span><span class="p">.</span><span class="n">course_id</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="n">order_table</span><span class="p">.</span><span class="n">course_id</span><span class="p">;</span>
 </pre></div>
 <ul class="simple">
 <li>메인 SQL은 테이블에서 필드를 가져오거나 테이블을 조합하는 것으루 이루어지는데, 필드 정의에 Sub SQL이 들어와서 난잡했었습니다.</li>
@@ -502,18 +502,18 @@
 <ul class="simple">
 <li>Target의 delimiter로부터 indexto까지 index를 잘라내 줍니다.</li>
 </ul>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">king123</span><span class="o">@</span><span class="n">google</span><span class="p">.</span><span class="n">com</span><span class="w"></span>
-<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;@&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">account</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">king123</span><span class="w"></span>
-<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;@&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">domain</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">google</span><span class="p">.</span><span class="n">com</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">king123</span><span class="o">@</span><span class="n">google</span><span class="p">.</span><span class="n">com</span>
+<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;@&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">account</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">king123</span>
+<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;@&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">domain</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">google</span><span class="p">.</span><span class="n">com</span>
 </pre></div>
 </li>
 <li><p class="first"><tt class="docutils literal">SUBSTRING(Target, indexFrom, count)</tt></p>
 <ul class="simple">
 <li>Target의 indexFrom로부터 count만큼 문자열을 반환합니다.</li>
 </ul>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">king123</span><span class="o">@</span><span class="n">google</span><span class="p">.</span><span class="n">com</span><span class="w"></span>
-<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">account</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">king123</span><span class="w"></span>
-<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">domain</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">google</span><span class="p">.</span><span class="n">com</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">king123</span><span class="o">@</span><span class="n">google</span><span class="p">.</span><span class="n">com</span>
+<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">account</span><span class="p">,</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">king123</span>
+<span class="n">SUBSTRINGINDEX</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">domain</span><span class="w"> </span><span class="o">#</span><span class="w"> </span><span class="n">google</span><span class="p">.</span><span class="n">com</span>
 </pre></div>
 </li>
 </ol>
@@ -527,13 +527,13 @@
 <li>WHEN의 조건을 만났을때, 값을 평가하고 CASE를 벗어납니다.</li>
 </ul>
 </blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">OrderID</span><span class="p">,</span><span class="w"> </span><span class="n">Quantity</span><span class="p">,</span><span class="w"></span>
-<span class="k">CASE</span><span class="w"></span>
-<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="n">Quantity</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;The quantity is greater than 30&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="n">Quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;The quantity is 30&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="k">ELSE</span><span class="w"> </span><span class="s1">&#39;The quantity is under 30&#39;</span><span class="w"></span>
-<span class="k">END</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">QuantityText</span><span class="w"></span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">OrderDetails</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">OrderID</span><span class="p">,</span><span class="w"> </span><span class="n">Quantity</span><span class="p">,</span>
+<span class="k">CASE</span>
+<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="n">Quantity</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;The quantity is greater than 30&#39;</span>
+<span class="w">    </span><span class="k">WHEN</span><span class="w"> </span><span class="n">Quantity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="k">THEN</span><span class="w"> </span><span class="s1">&#39;The quantity is 30&#39;</span>
+<span class="w">    </span><span class="k">ELSE</span><span class="w"> </span><span class="s1">&#39;The quantity is under 30&#39;</span>
+<span class="k">END</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">QuantityText</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">OrderDetails</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>

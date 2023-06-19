@@ -106,26 +106,26 @@
 <ul>
 <li><p class="first">빈 테이블</p>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="w"></span>
-<span class="w">   </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"></span>
-<span class="w">   </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;ZIEGLER&#39;</span><span class="p">;</span><span class="w"></span>
-<span class="n">Empty</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span>
+<span class="w">   </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span>
+<span class="w">   </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;ZIEGLER&#39;</span><span class="p">;</span>
+<span class="n">Empty</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
 </pre></div>
 </blockquote>
 </li>
 <li><p class="first">유효한 result set</p>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
-<span class="o">-&gt;</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">category</span><span class="p">;</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span>
+<span class="o">-&gt;</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">category</span><span class="p">;</span>
 <span class="w">   </span><span class="o">+</span><span class="c1">-------------+-------------+---------------------+</span>
-<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">category_id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">name</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">last_update</span><span class="w">         </span><span class="o">|</span><span class="w"></span>
+<span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">category_id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">name</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">last_update</span><span class="w">         </span><span class="o">|</span>
 <span class="w">   </span><span class="o">+</span><span class="c1">-------------+-------------+---------------------+</span>
-<span class="w">   </span><span class="o">|</span><span class="w">           </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Action</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mi">2006</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">15</span><span class="w"> </span><span class="mi">04</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="w">   </span><span class="o">|</span><span class="w">           </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Animation</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="mi">2006</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">15</span><span class="w"> </span><span class="mi">04</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="w">   </span><span class="o">|</span><span class="w">          </span><span class="mi">16</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Travel</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mi">2006</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">15</span><span class="w"> </span><span class="mi">04</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
+<span class="w">   </span><span class="o">|</span><span class="w">           </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Action</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mi">2006</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">15</span><span class="w"> </span><span class="mi">04</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">           </span><span class="mi">2</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Animation</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="mi">2006</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">15</span><span class="w"> </span><span class="mi">04</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span>
+<span class="w">   </span><span class="o">|</span><span class="w">          </span><span class="mi">16</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Travel</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mi">2006</span><span class="o">-</span><span class="mi">02</span><span class="o">-</span><span class="mi">15</span><span class="w"> </span><span class="mi">04</span><span class="p">:</span><span class="mi">46</span><span class="p">:</span><span class="mi">27</span><span class="w"> </span><span class="o">|</span>
 <span class="w">   </span><span class="o">+</span><span class="c1">-------------+-------------+---------------------+</span>
 
-<span class="mi">16</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"></span>
+<span class="mi">16</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
 </pre></div>
 </blockquote>
 </li>
@@ -133,7 +133,7 @@
 </li>
 </ol>
 </div>
-<div class="section" id="id1">
+<div class="section" id="query-1">
 <h2>Query 구문</h2>
 <ul class="simple">
 <li><dl class="first docutils">
