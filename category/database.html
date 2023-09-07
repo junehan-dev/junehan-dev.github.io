@@ -22,24 +22,28 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/posts/database/2023/03/28/how-to-transaction">Query Primer 12. Transactions</a></h1>
+                    <h1 class="entry-title"><a href="/posts/database/2023/09/04/indexes-and-constraints">Query Primer 13. Indexes and Constraints</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2023-03-28T22:04:00+09:00">
-                Published: Tue 28 March 2023
+        <abbr class="published" title="2023-09-04T18:04:00+09:00">
+                Published: Mon 04 September 2023
         </abbr>
 		<br />
-        <abbr class="modified" title="2023-03-31T21:10:00+09:00">
-                Updated: Fri 31 March 2023
+        <abbr class="modified" title="2023-09-07T23:38:00+09:00">
+                Updated: Thu 07 September 2023
         </abbr>
 
         <address class="vcard author">
                 By                         <a class="url fn" href="/author/junehan.html">junehan</a>
         </address>
 <p>In <a href="/category/database.html">database</a>.</p>
-<p>tags: <a href="/tag/database.html">database</a> <a href="/tag/transaction.html">transaction</a> </p>
-</footer><!-- /.post-info --><div class="section" id="subject-database-transaction">
-<h2>SUBJECT: Database의 transaction의 이해와 활용</h2>
+<p>tags: <a href="/tag/database.html">database</a> </p>
+</footer><!-- /.post-info --><div class="section" id="subject-index-constraints">
+<h2>SUBJECT: index와 constraints를 이해하고 사용해보자</h2>
 <blockquote>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">select, insert, update, delete</tt>등의 SQL을 사용하는 것과 별개로,</div>
+<div class="line">SQL의 사용에 영향을 주는 다른 기능들을 알아보자.</div>
+</div>
 <ul>
 <li><p class="first">References</p>
 <blockquote>
@@ -60,422 +64,190 @@
 </ul>
 </blockquote>
 </div>
-<div class="section" id="multiuser-databases">
-<h2>Multiuser Databases</h2>
+<div class="section" id="indexes">
+<h2>Indexes</h2>
+<div class="line-block">
+<div class="line">테이블에 데이터를 추가하는 경우에, DB는 이 데이터를 특정한 위치로 놓도록 순서를 조정하거나 하지 않고 단순히 테이블의 남은 공간의 첫 위치에 놓을 뿐이다.</div>
+<div class="line">따라서 테이블에 query를 한다면 서버는 <em>table scan</em>(테이블 풀 스캔)을 통해 원하는 응답을 생성한다.</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;Y%&#39;</span><span class="p">;</span>
+
+<span class="o">+</span><span class="c1">------------+-----------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">first_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">------------+-----------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">LUIS</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">YANEZ</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">MARVIN</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">YEE</span><span class="w">       </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">CYNTHIA</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">YOUNG</span><span class="w">     </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">------------+-----------+</span>
+<span class="mi">3</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+</pre></div>
+<div class="line-block">
+<div class="line">매우 많은 데이터를 대상으로 table scan을 진행할 때,</div>
+<div class="line">서버는 추가적인 도움없이 합리적인 시간 내에 결과를 생성할 수 없을 것이다.</div>
+<div class="line">이때에 필요한 도움은 테이블 내의 하나 혹은 다수의 <em>indexes</em>의 형태로 받을 수 있다.</div>
+</div>
+</blockquote>
 <dl class="docutils">
-<dt><em>transactions</em></dt>
-<dd>SQL 구문들을 그룹화하여, 그룹 전체를 성공, 실패하도록 관리하는 매커니즘.</dd>
-</dl>
-<div class="line-block">
-<div class="line">DBMS는 한명의 유저가 데이터를 수정하고, 데이터를 읽는 것을 허용하지만</div>
-<div class="line">다수의 유저가 DB에 동시적으로 접근하고 수정이 일어난다.</div>
-<div class="line">예를 들어 이번주의 영화 대여정보를 집계하려고 하는데,</div>
-</div>
-<blockquote>
-<ul class="simple">
-<li>고객이 영화를 새로 대여하는 상황</li>
-<li>고객이 대여한 것을 반납하는 상황</li>
-</ul>
-</blockquote>
-<div class="line-block">
-<div class="line">이렇게 추가와 수정이 같이 일어난다면,</div>
-<div class="line">내가 원하는 집계결과는 어떻게 나와할까?</div>
-</div>
-<p>정답은, 어떻게 DBMS가 <em>locking</em>을 다루는 지에 달려있다.</p>
-</div>
-<div class="section" id="locking">
-<h2>Locking</h2>
-<div class="line-block">
-<div class="line">Lock은 동시 접근을 제어하기 위한 메커니즘이다.</div>
-<div class="line">이미 수정이 일어나고 있거나, 접근 중인 데이터에 수정을 하려면 lock이 해제되는 것을 기다려야 한다.</div>
-<div class="line">대부분의 DBMS는 아래 두 가지 <em>locking strateies</em>중 하나를 사용한다.</div>
-</div>
-<blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2"><em>read lock, write lock</em>:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><div class="first line-block">
-<div class="line">Database Writer는 <em>write lock</em>을 DBMS로부터 습득해야 데이터를 수정할 수 있고,</div>
-<div class="line">Database Reader는 <em>read lock</em>을 DBMS로부터 습득해야 데이터를 읽을 수 있다.</div>
-<div class="line"><em>Read lock</em>은 동시에 여러 유저에게 전달될 수 있지만,</div>
-<div class="line"><em>Write lock</em>은 각 테이블에 하나만 발행될 수 있고, 발행된 동안 <em>read requests</em>는 막힌상태로 대기한다.</div>
-</div>
-<blockquote>
-<ul>
-<li><p class="first">pro</p>
-<blockquote>
-<p>순차적으로 잘 반영된 데이터를 보장할 수 있다.</p>
-</blockquote>
-</li>
-<li><p class="first">con</p>
-<blockquote>
-<p>많은 요청을 처리할 때, write 요청의 처리 속도에 따라 전체적인 속도가 좌우된다.</p>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</td>
-</tr>
-<tr class="field"><th class="field-name"><em>versioning</em>:</th><td class="field-body"><div class="first line-block">
-<div class="line">Database Writers는 <em>write lock</em>을 요청하고 습득해야 데이터를 수정할 수 있지만,</div>
-<div class="line">Database Reader는 어떠한 타입의 lock도 필요로 하지 않는다.</div>
-<div class="line">대신, 서버는 Reader의 쿼리가 시작된 시점에서 종료되는 시점사이에 일어나는 어떠한 수정도 반영되지 않은,</div>
-<div class="line">균일한 view의 데이터를 보장해야한다.</div>
-<div class="line">이 접근법은 <em>versioning</em>이라고 알려져 있다.</div>
-</div>
-<blockquote class="last">
-<ul>
-<li><p class="first">pro</p>
-<blockquote>
-<p>많은 요청을 허용할 수 있다.</p>
-</blockquote>
-</li>
-<li><p class="first">con</p>
-<blockquote>
-<p>특정 read 요청이 길어질 경우 그 사이 많은 수정사항이 종료되었다면 version과 version사이에 차이가 많이 벌어진다.</p>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</blockquote>
-<div class="line-block">
-<div class="line">위 전략의 사용사례로는 아래와 같다.</div>
-</div>
-<blockquote>
-<ul class="simple">
-<li>Microsoft SQL Server: 첫 번째, <em>read lock, write lock</em> strategy</li>
-<li>Oracle Server: 두 번째, <em>versioning</em> strategy</li>
-<li>MYSQL SERVER: 선택가능, strategy depend on <em>storage engine</em></li>
-</ul>
-</blockquote>
-<div class="section" id="lock-granularities-level-of-lock">
-<h3>Lock Granularities: Level of lock</h3>
-<div class="line-block">
-<div class="line">lock을 활용하는 방식에서도 다양한 전략이 존재한다.</div>
-<div class="line">서버는 lock에 단위레벨을 부여하는 것으로 세밀한 조정을 구현할 수 있다.</div>
-</div>
-<ul>
-<li><dl class="first docutils">
-<dt><em>Table locks</em></dt>
-<dd><p class="first last">한 테이블에서 다수의 유저가 동시에 수정하는 것을 막는다.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><em>Page locks</em></dt>
+<dt><em>index</em></dt>
 <dd><div class="first last line-block">
-<div class="line">한 테이블의 동일한 페이지(2KB ~ 16KB의 크기를 가지는 메모리 세그먼트)에서</div>
-<div class="line">동시에 다수의 유저가 수정하는 것을 막는다.</div>
+<div class="line">출판물의 앞 혹은 뒤에 있는 목차, 용어 목록과 다르지 않게</div>
+<div class="line">db서버는 <em>indexes</em>를 사용하여 테이블의 특정 행을 가리킨다.</div>
+<div class="line"><em>indexes</em>는 일반적인 테이블과 다르게 특정한 순서가 유지되는 테이블이다.</div>
+<div class="line">그들은 데이터 entity를 전부 포함하는 대신, 특정 행을 가리키기 위한 데이터를 포함하며,
+거기에는 특정하는 행의 물리적인 위치정보도 포함된다.</div>
+<div class="line">그러므로, <em>indexes</em>의 역할은 테이블의 데이터 subset을 추적하는 시설을 갖추어</div>
+<div class="line">모든 테이블을 탐색하지 않도록 하는 것이다.</div>
 </div>
 </dd>
 </dl>
-</li>
-<li><dl class="first docutils">
-<dt><em>Row locks</em></dt>
-<dd><p class="first last">동일한 row의 데이터에 대해서 동시에 다수의 유저가 수정하는 것을 막는다.</p>
-</dd>
-</dl>
-</li>
-</ul>
-<div class="line-block">
-<div class="line">또한 lock의 단위를 지정하는 방식은 각각 장단점이 존재하는데,</div>
-<div class="line"><em>table lock</em>의 경우 전체 테이블들을 lock 하는데에 매우 적은 오버헤드가 발생하지만</div>
-<div class="line">사용자가 증가할 수록 납득할 수 없는 대기시간이 발생하게 된다.</div>
-</div>
-<div class="line-block">
-<div class="line">반면, <em>row lock</em>은 오버헤드(lock에 대해 기록되는 정보)가 훨씬 커지는 대신</div>
-<div class="line">많은 유저가 같은 테이블을 동시에 수정할 수 있다는 장점이 있다.</div>
-</div>
-<div class="line-block">
-<div class="line">MYSQL, MSSQL은 row lock, page lock, table lock을 전환하는 방식으로 사용한다.</div>
-<div class="line">ORACLE의 경우 row lock만을 사용하고, 중간에 레벨 변경은 일어나지 않는다.</div>
-</div>
-</div>
-</div>
-<div class="section" id="what-is-transaction">
-<h2>What is transaction?</h2>
-<div class="line-block">
-<div class="line">만약 DBMS가 절떄 종료되지 않고, 프로그램이 실행을 멈추게하는 에러 없이 항상 잘 종료된다면,</div>
-<div class="line">동시적인 DB의 접근은 고려하지 않아도 괜찮을 것이다.</div>
-<div class="line">하지만 위에 요소들을 생각하지 않을 수 없고,</div>
-<div class="line">따라서 하나 이상의 구성요소에서 다수의 유저가 같은 데이터에 접근하는 것을 고려하지 않을 수 없다.</div>
-<div class="line">이 동시성의 문제를 해결하는 단서가 <em>transaction</em>에 있다.</div>
-</div>
-<p><em>transaction</em></p>
+<div class="section" id="index">
+<h3>INDEX 생성</h3>
 <blockquote>
-<div class="line-block">
-<div class="line">복수의 SQL구문들을 그룹화 하여, 전부 성공 혹은 전혀 성공하지 못하도록 하는 장치이다. (<em>atomicity</em>)</div>
-<div class="line">transaction은 정의상 아래 4가지 property로 그 기능과 원칙을 충족해야 한다.</div>
-</div>
-<ul>
-<li><dl class="first docutils">
-<dt><em>atomicity</em></dt>
-<dd><p class="first last"><strong>transaction으로 그룹화된 연산은 최종 결과에 의해 전부 실패되거나 성공되어야 한다는 특성이다.</strong></p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><em>durability</em></dt>
-<dd><p class="first last"><strong>durability는 반드시 영속적인 기록장치에 저장되도록 보장함을 의미하는 속성이다.</strong></p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><em>isolated</em>:</dt>
-<dd><p class="first">transaction끼리 서로 영향을 주지 영향을 주지 않도록 관리되어야 한다.</p>
-<p class="last"><em>(이는 최종적으로 transaction integrity가 언제 적용되야 하는지까지 이어진다.)</em></p>
-</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><em>consistency</em>:</dt>
-<dd><p class="first">DBMS가 허용하는 방식, 제약사항을 충족한 상태로만 Data에 영향을 주어야 한다.</p>
-<p class="last"><em>(cascade, constraints, triggers 등의 사전 조건)</em></p>
-</dd>
-</dl>
-</li>
-</ul>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="k">Create</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">MYSQL</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span>
+<span class="k">ADD</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+
+<span class="o">##</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="n">MYSQL5</span><span class="w"> </span><span class="n">Internally</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span>
+<span class="o">#</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="o">#</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+
+<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">10</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+<span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="o">#</span><span class="w"> </span><span class="n">REMOVE</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">MYSQL</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span><span class="p">;</span>
+
+<span class="o">##</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="n">MYSQL5</span><span class="w"> </span><span class="n">Internally</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span>
+<span class="o">#</span><span class="w"> </span><span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="o">#</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">customer</span><span class="p">;</span>
+
+<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">10</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+<span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+</pre></div>
 </blockquote>
-<div class="section" id="atomicity">
-<h3>atomicity</h3>
 <div class="line-block">
-<div class="line">DB에 연속적인 동작으로 완결되는 요청이 있을 경우,</div>
-<div class="line">이전의 동작이 완료되어야 다음으로 약속된 행동으로 연결되는 것이 옳은 논리적인 처리가 필요하다.</div>
-<div class="line">사전동작에서 부터 최종동작까지 모두 중요한 의미를 가지겠으나,</div>
-<div class="line">논리적인 절차에 의해서 이는 순차적으로(단계적으로) 처리하기 마련이다.</div>
+<div class="line">기본적으로 생성되는 Index는 B-tree(Balacing binary search tree)의 자료구조로 관리된다.</div>
+<div class="line">Index가 내장되면서, query optimizer는 이점이 있어보이는 index를 사용하도록 선택할 수 있다.</div>
 </div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">EXPLAIN</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;a%&#39;</span><span class="p">;</span>
+
+<span class="o">#</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="k">Index</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                 </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
+<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_email</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">idx_email</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">203</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">44</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
+
+<span class="o">#</span><span class="w"> </span><span class="k">without</span><span class="w"> </span><span class="k">Index</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">       </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
+<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">ALL</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">599</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">11</span><span class="p">.</span><span class="mi">11</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
+
+<span class="k">SHOW</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">Key_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;idx_email&#39;</span><span class="w"> </span><span class="err">\</span><span class="k">G</span><span class="p">;</span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span>
+<span class="w">        </span><span class="k">Table</span><span class="p">:</span><span class="w"> </span><span class="n">customer</span>
+<span class="w">   </span><span class="n">Non_unique</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">     </span><span class="n">Key_name</span><span class="p">:</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="w"> </span><span class="n">Seq_in_index</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="k">Column_name</span><span class="p">:</span><span class="w"> </span><span class="n">email</span>
+<span class="w">    </span><span class="k">Collation</span><span class="p">:</span><span class="w"> </span><span class="n">A</span>
+<span class="w">  </span><span class="k">Cardinality</span><span class="p">:</span><span class="w"> </span><span class="mi">599</span>
+<span class="w">     </span><span class="n">Sub_part</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
+<span class="w">       </span><span class="n">Packed</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
+<span class="w">         </span><span class="k">Null</span><span class="p">:</span><span class="w"> </span><span class="n">YES</span>
+<span class="w">   </span><span class="n">Index_type</span><span class="p">:</span><span class="w"> </span><span class="n">BTREE</span>
+<span class="w">      </span><span class="k">Comment</span><span class="p">:</span>
+<span class="n">Index_comment</span><span class="p">:</span>
+<span class="w">      </span><span class="n">Visible</span><span class="p">:</span><span class="w"> </span><span class="n">YES</span>
+<span class="w">   </span><span class="n">Expression</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
+<span class="mi">1</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</blockquote>
+<div class="line-block">
+<div class="line">MySQL은 index를 테이블에 소속되는 추가적인 요소로 여기기 때문에, ALTER구문을 사용하도록 한다.</div>
+<div class="line">반면 많은 다른 서버의 경우(ORACLE, MSSQL, POSTGRESQL)는 Index를 별도의 Schema objects로 취급한다.</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+</pre></div>
+</blockquote>
+<div class="line-block">
+<div class="line">현재는 mysql 5.0 이후로 <tt class="docutils literal">CREATE, DROP</tt>구문으로 Index를 관리할 수 있지만</div>
+<div class="line">내부적으로 ALTER를 사용하는 것은 차이가 없다.</div>
+</div>
+</div>
+<div class="section" id="multicolumn-indexes">
+<h3>Multicolumn indexes</h3>
+<div class="line-block">
+<div class="line">데이터의 두 개 이상의 구성요소를 결합한 것에 대해서도 Index를 생성할 수 있다.</div>
+<div class="line">예를 들어, 성과 이름을 합친 전체 이름에 대해서 Index를 생성한다고 하면,</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_full_name</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">first_name</span><span class="p">);</span>
+
+<span class="k">EXPLAIN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;k%&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">FIRST_NAME</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;k%&#39;</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                 </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
+<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_full_name</span><span class="p">,</span><span class="n">idx_last_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_full_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">364</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">14</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">11</span><span class="p">.</span><span class="mi">11</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
+<span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</blockquote>
+<p>이때 <em>idx_full_name</em>은 <em>last_name</em> 을 기준으로 first_name까지 연결된 것을 Index로 삼고 있기 때문에,</p>
+<blockquote>
 <ol class="arabic simple">
-<li>일련의 요청에 대한 안전한 처리를 위해 요청을 전달하는 프로그램쪽에서 최초로 <em>transaction</em>을 시작한다.</li>
-<li>그리고 연결되는(그룹) SQL 구문이 있음을 알린다(issue).</li>
-<li>모든 동작이 성공적이었을 때,<ol class="arabic">
-<li>프로그램은 서버에 <tt class="docutils literal">commit</tt>명령을 issue하고</li>
-<li>DBMS는 <strong>transaction을 종료</strong>하도록 한다.</li>
+<li><em>last_name</em>과 뒤로 <em>first_name</em>이 연결된 것을 검색할 때</li>
+<li><em>last_name</em>을 기준으로 검색할 때</li>
 </ol>
-</li>
-<li>예외적인 상황이 발생했을 때,<ol class="arabic">
-<li>프로그램은 서버에 <tt class="docutils literal">rollback</tt>명령을 issue하고</li>
-<li>DBMS는 <strong>transaction이 시작된 이후로 발생한 모든 변경을 취소</strong>한다.</li>
-</ol>
-</li>
-</ol>
-<p><strong>atomicity는 transaction으로 그룹화된 연산은 최종 결과에 의해 전부 실패되거나 성공되어야 한다는 특성이다.</strong></p>
-</div>
-<div class="section" id="durability">
-<h3>durability</h3>
+</blockquote>
 <div class="line-block">
-<div class="line">비정상적으로 서버가 종료되어 <tt class="docutils literal">commit</tt>이나 <tt class="docutils literal">rollback</tt>명령을 수행하기 전 상태의 transcation이 있을 경우,</div>
-<div class="line">(modified table의 정보는 아직 in-memory상태였을 것이다.)</div>
-<div class="line">DBMS는 재실행된 후 반드시 변화를 다시 적용해야 한다.</div>
-</div>
-<p><strong>durability는 반드시 영속적인 기록장치에 저장되는 것을 보장함을 의미하는 속성이다.</strong></p>
-</div>
-</div>
-<div class="section" id="starting-a-transaction">
-<h2>Starting a transaction</h2>
-<p>DBMS는 transaction의 생성을 아래 두 가지 방법 중 하나의 방법으로 다룬다.</p>
-<blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name" colspan="2">connection session as transaction:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">연결 세션 자체를 트랜젝션으로 처리한다.</p>
-<div class="line-block">
-<div class="line">활성화된 transaction은 항상 DB session과 연관되어 있기 때문에,</div>
-<div class="line">명시적으로 transaction을 시작하는 필요나 수단이 준비되지 않는다.</div>
-<div class="line">진행중인 transaction이 종료되면, 서버는 자동으로 나의 session에 대한 새로운 transaction을 준비한다.</div>
-<div class="line">Oracle의 경우 이 방법을 선택하고 있다.</div>
+<div class="line">두 경우에서 사용될 수 있으며, <em>first_name</em>을 기준으로 검색하는 경우에는 활용이 불가능하다.</div>
+<div class="line">따라서 <em>multicolumn INDEX</em>를 생성하고 이를 <em>query optimizer</em>가 활용할 수 있는 옵션 설비로 하기 위해서</div>
+<div class="line"><strong>어떤 항목을 기준으로 먼저 검색하도록 할지의 순서가 중요하다.</strong></div>
 </div>
 <blockquote>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">이 경우 단일 SQL구문이라도 transaction 처리되어, 나중에라도 이 요청을 rollback이 가능하다.</p>
-</div>
-</blockquote>
-</td>
-</tr>
-<tr class="field"><th class="field-name" colspan="2">no transaction without issuing:</th></tr>
-<tr class="field"><td>&nbsp;</td><td class="field-body"><p class="first">명시적으로 실행하지 않으면, 개별적으로만 처리한다.</p>
-<div class="line-block">
-<div class="line">명시적으로 transaction을 실행하지 않는다면,</div>
-<div class="line">개별적인 SQL구문들은 자동적으로 개별적인 독립된 commit이 진행될 것이다.</div>
-<div class="line">transaction을 실행하기 위해서, 처음 command를 issue해야 한다.</div>
-<div class="line">MSSQL, MYSQL의 경우 이 방법을 선택하고 있다.</div>
-</div>
-<blockquote class="last">
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">한번 입력이 종료되면, 추후 이 요청을 취소하여 되돌리는 것은 불가능하다.</p>
-</div>
-</blockquote>
-</td>
-</tr>
-</tbody>
-</table>
-</blockquote>
-<div class="line-block">
-<div class="line">MSSQL, MYSQL의 경우에도 autocommit 모드를 끄는 것으로</div>
-<div class="line">ORACLE처럼 기본 SQL의 처리방식을 transaction으로 다루게 할 수 있다.</div>
-</div>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="n">MSSQL</span>
-<span class="k">SET</span><span class="w"> </span><span class="n">IMPLICIT_TRANSACTIONS</span><span class="w"> </span><span class="k">ON</span>
-
-<span class="o">#</span><span class="n">MYSQL</span>
-<span class="k">SET</span><span class="w"> </span><span class="n">AUTOCOMMIT</span><span class="o">=</span><span class="mi">0</span>
-</pre></div>
-<div class="admonition important">
-<p class="first admonition-title">Important</p>
-<div class="last line-block">
-<div class="line">이 경우 모든 SQL명령은 transaction의 group scope로 포함되며,</div>
-<div class="line">반드시 명시적인 <tt class="docutils literal">commit</tt>이나 <tt class="docutils literal">rollback</tt>이 되어야 한다.</div>
-</div>
-</div>
-</blockquote>
 <div class="admonition tip">
 <p class="first admonition-title">Tip</p>
+<p class="last">multicolumn index는 구성 요소가 같아도 순서가 다르다면(순서를 기준으로 구성되는 것이라) 생성 가능하다.</p>
+</div>
+</blockquote>
+</div>
+</div>
+<div class="section" id="unique-unique-index">
+<h2>UNIQUE (unique index)</h2>
 <div class="line-block">
-<div class="line">로그인 세션이 실행될 때마다 autocommit 모드를 끄는 것으로</div>
-<div class="line">모든 SQL구문을 transaction내에서 진행하는 습관을 들이는 것이 좋다.</div>
-</div>
-<p class="last">'무려 DBA에게 자신 실수를 되돌릴 것을 요청하는데 부끄러움을 줄이는데 아주 큰 도움이 된다!'</p>
-</div>
-</div>
-<div class="section" id="ending-a-transaction">
-<h2>Ending a Transaction</h2>
-<p>Transaction의 실행방법은 아래와 같았다.</p>
-<blockquote>
-<ul>
-<li><p class="first">설정에 의한 자동 Transaction처리</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">MYSQL</span>
-<span class="k">SET</span><span class="w"> </span><span class="n">AUTOCOMMIT</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
-<span class="cm">/* SELECT QUERY 생략 */</span>
-<span class="cm">/* INSERT QUERY 생략 */</span>
-<span class="k">COMMIT</span><span class="p">;</span>
-</pre></div>
-</blockquote>
-</li>
-<li><p class="first">SQL구문에서 명시적으로 Transaction실행</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
-<span class="cm">/* SELECT QUERY 생략 */</span>
-<span class="cm">/* INSERT QUERY 생략 */</span>
-<span class="k">COMMIT</span><span class="p">;</span>
-</pre></div>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-<p>어떤 방식으로 시작되었건 간에, 전달하는 명령으로서 공통적으로는 아래 두 명령으로 종결되어야 한다.</p>
-<blockquote>
-<ul class="simple">
-<li><tt class="docutils literal">COMMIT;</tt></li>
-<li><tt class="docutils literal">ROLLBACK;</tt></li>
-</ul>
-</blockquote>
-<p>위 두 가지 말고도 transaction이 종료될 수 있는 상황이 존재한다.</p>
-<div class="section" id="straight-forward-scenario">
-<h3>Straight forward Scenario</h3>
-<blockquote>
-<ul>
-<li><p class="first">서버가 종료된 경우</p>
-<blockquote>
-<p>서버가 재시작되면 transaction은 rollback된다.</p>
-</blockquote>
-</li>
-<li><p class="first">다시 <tt class="docutils literal">START TRANSACTION;</tt>을 전달할 경우</p>
-<blockquote>
-<p>이전의 transaction은 commit된다.</p>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</div>
-<div class="section" id="concerned-scenario">
-<h3>Concerned Scenario</h3>
-<blockquote>
-<ul>
-<li><p class="first">SQL Schema를 변경하는 DDL의 요청이 포함되는 경우</p>
-<blockquote>
-<div class="line-block">
-<div class="line"><tt class="docutils literal">ALTER TABLE</tt>과 같은 구문을 포함했을때, 현재 transaction이 commit되고 새로운 transaction이 시작될 수 있다.</div>
-</div>
-<ul class="simple">
-<li>테이블 생성, 삭제</li>
-<li>인덱스 생성, 삭제</li>
-<li>Table Column 삭제</li>
-</ul>
-<div class="line-block">
-<div class="line">위와 같은 명령의 경우에는 ROLLBACK이 불가능한 이유로, transaction 밖에서 수행되도록 설정된다.</div>
-</div>
-</blockquote>
-</li>
-<li><p class="first">서버가 <em>dead-lock</em>을 발견하거나, transaction이 규칙을 깨는 경우</p>
-<blockquote>
-<p>현재 transaction은 rollback 되며, 에러 메세지를 응답으로 받게 된다.</p>
-<blockquote>
-<p><tt class="docutils literal">Message: Deadlock found when trying to get lock; try restarting transaction</tt></p>
-</blockquote>
-<div class="line-block">
-<div class="line">이는 여러 transaction이 서로의 lock을 요구하는 상황에 발생하는데,</div>
-<div class="line">이 경우, 하나의 transaction이 선택되어 roll back되고, 나머지는 진행을 이어가도록 한다.</div>
-<div class="line">대부분 이렇게 종료된 transaction은 다시 실행될 수 있고, 추가적인 deadlock 상황 없이 종료된다.</div>
+<div class="line">Database를 디자인 할때, 특정한 데이터의 구성요소가 중복된 값을 가질 수 있는지 없는지를 결정하는 것은 매우 중요하다.</div>
+<div class="line"><tt class="docutils literal">UNIQUE</tt> index를 생성하는 것으로 이 규칙은 강화할 수 있다.</div>
+<div class="line">이 규칙은 두 가지 정도의 역할을 동시에 수행한다.</div>
 </div>
 <blockquote>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p><em>dead-lock</em>의 경우 언제 발생하는가?</p>
-<div class="last line-block">
-<div class="line">두 개의 transaction이 각각 다른 lock-A, lock-B을 가지고 있고,</div>
-<div class="line">다음에 각각 서로가 가진 lock-B, lock-A를 요구하는 상황일 때.</div>
-<div class="line">(lock granularity에 따라 row거나, table에 대한 lock)</div>
-<div class="line">서로 무한히 lock을 기다리는 상황이 발생할 수 있다.</div>
-</div>
-</div>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p>만약 deadlock이 자주 발생하는 편이라면?</p>
-<p>DBMS에 요청을 수행하는 프로그램 자체를 수정해서 문제를 예방해야 한다.</p>
-<blockquote class="last">
-<p><strong>(가장 흔한 전략으로는, SQL 구문상 테이블 접근순서를 동일하게 통일하는 것이다.)</strong></p>
+<ol class="arabic simple">
+<li><tt class="docutils literal">INDEX</tt>로서의 기능(B-tree)</li>
+<li>데이터 항목이 중복된 내용으로 수정, 생성이 되는 것을 거부하는 기능</li>
+</ol>
 </blockquote>
-</div>
-</blockquote>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</div>
-</div>
-<div class="section" id="transaction-savepoints">
-<h2>Transaction Savepoints</h2>
-<div class="line-block">
-<div class="line">가끔 transaction내에서, ROLLBACK을 요구하는 상황에서</div>
-<div class="line">해당 transaction내의 모든 요청이 취소되는 것을 바라지 않을 수 있다.</div>
-<div class="line">이런 상황에 대비하여 transaction내에 중간 지점을 가리키는 <em>savepoints</em>들을 설정하면,</div>
-<div class="line">특점 지점까지만 rollback하는 방식으로 활용될 수 있다.</div>
-</div>
-<div class="highlight"><pre><span></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="p">;</span>
-<span class="k">UPDATE</span><span class="w"> </span><span class="n">rental</span>
-<span class="k">SET</span><span class="w"> </span><span class="n">return_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">()</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">rental_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">creation</span><span class="w"> </span><span class="p">(</span><span class="k">ALTER</span><span class="p">)</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
 
-<span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">before_update_rental</span><span class="p">;</span>
-
-<span class="k">UPDATE</span><span class="w"> </span><span class="n">rental</span>
-<span class="k">SET</span><span class="w"> </span><span class="n">update_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">CURRENT_TIMESTAMP</span><span class="p">()</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">rental_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-
-<span class="k">ROLLBACK</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">SAVEPOINT</span><span class="w"> </span><span class="n">before_update_rental</span><span class="p">;</span>
-<span class="k">COMMIT</span><span class="p">;</span>
+<span class="o">#</span><span class="w"> </span><span class="n">duplicate</span><span class="w"> </span><span class="n">insertion</span><span class="w"> </span><span class="n">error</span>
+<span class="n">ERROR</span><span class="w"> </span><span class="mi">1062</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Duplicate</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="s1">&#39;dup-email@dupemail.org&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="s1">&#39;customer.idx_email&#39;</span>
 </pre></div>
+</div>
+<div class="section" id="types-of-indexes">
+<h2>Types of Indexes</h2>
 </div>
                 </article>
             </aside><!-- /#featured -->
@@ -483,6 +255,33 @@
                     <h1>Other articles</h1>
                     <hr />
                     <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/posts/database/2023/03/28/how-to-transaction" rel="bookmark"
+                           title="Permalink to Query Primer 12. Transactions">Query Primer 12. Transactions</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2023-03-28T22:04:00+09:00">
+                Published: Tue 28 March 2023
+        </abbr>
+		<br />
+        <abbr class="modified" title="2023-03-31T21:10:00+09:00">
+                Updated: Fri 31 March 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/database.html">database</a>.</p>
+<p>tags: <a href="/tag/database.html">database</a> <a href="/tag/transaction.html">transaction</a> </p>
+</footer><!-- /.post-info -->                <p class="first last">how to transcation</p>
+
+                <a class="readmore" href="/posts/database/2023/03/28/how-to-transaction">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -697,33 +496,6 @@
 </footer><!-- /.post-info -->                <p class="first last">intro to select clause</p>
 
                 <a class="readmore" href="/posts/database/2022/08/05/sql-query-select">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/posts/database/2022/08/05/sql-query-explanations" rel="bookmark"
-                           title="Permalink to Query Primer 1. What is Query">Query Primer 1. What is Query</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2022-08-05T13:35:00+09:00">
-                Published: Fri 05 August 2022
-        </abbr>
-		<br />
-        <abbr class="modified" title="2022-08-05T13:35:00+09:00">
-                Updated: Fri 05 August 2022
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
-        </address>
-<p>In <a href="/category/database.html">database</a>.</p>
-<p>tags: <a href="/tag/sql.html">sql</a> </p>
-</footer><!-- /.post-info -->                <p class="first last">how-dose-Query-work</p>
-
-                <a class="readmore" href="/posts/database/2022/08/05/sql-query-explanations">read more</a>
                 </div><!-- /.entry-content -->
             </article></li>
                 </ol><!-- /#posts-list -->

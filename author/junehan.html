@@ -22,7 +22,247 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/posts/writting/2023/06/26/summary-to-the-organized-mind-2">Book Summary, &quot;The Organized Mind&quot; By Daniel J.Levitin #2</a></h1>
+                    <h1 class="entry-title"><a href="/posts/database/2023/09/04/indexes-and-constraints">Query Primer 13. Indexes and Constraints</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2023-09-04T18:04:00+09:00">
+                Published: Mon 04 September 2023
+        </abbr>
+		<br />
+        <abbr class="modified" title="2023-09-07T23:38:00+09:00">
+                Updated: Thu 07 September 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/database.html">database</a>.</p>
+<p>tags: <a href="/tag/database.html">database</a> </p>
+</footer><!-- /.post-info --><div class="section" id="subject-index-constraints">
+<h2>SUBJECT: index와 constraints를 이해하고 사용해보자</h2>
+<blockquote>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">select, insert, update, delete</tt>등의 SQL을 사용하는 것과 별개로,</div>
+<div class="line">SQL의 사용에 영향을 주는 다른 기능들을 알아보자.</div>
+</div>
+<ul>
+<li><p class="first">References</p>
+<blockquote>
+<ul>
+<li><p class="first">web</p>
+</li>
+<li><p class="first">text book</p>
+<blockquote>
+<ul class="simple">
+<li>Learning sql 3rd edition/Alan Beaulieu/9781492057611</li>
+<li>SQL level up/Mic/9788968482519</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="indexes">
+<h2>Indexes</h2>
+<div class="line-block">
+<div class="line">테이블에 데이터를 추가하는 경우에, DB는 이 데이터를 특정한 위치로 놓도록 순서를 조정하거나 하지 않고 단순히 테이블의 남은 공간의 첫 위치에 놓을 뿐이다.</div>
+<div class="line">따라서 테이블에 query를 한다면 서버는 <em>table scan</em>(테이블 풀 스캔)을 통해 원하는 응답을 생성한다.</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;Y%&#39;</span><span class="p">;</span>
+
+<span class="o">+</span><span class="c1">------------+-----------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">first_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">------------+-----------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">LUIS</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">YANEZ</span><span class="w">     </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">MARVIN</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">YEE</span><span class="w">       </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">CYNTHIA</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">YOUNG</span><span class="w">     </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">------------+-----------+</span>
+<span class="mi">3</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+</pre></div>
+<div class="line-block">
+<div class="line">매우 많은 데이터를 대상으로 table scan을 진행할 때,</div>
+<div class="line">서버는 추가적인 도움없이 합리적인 시간 내에 결과를 생성할 수 없을 것이다.</div>
+<div class="line">이때에 필요한 도움은 테이블 내의 하나 혹은 다수의 <em>indexes</em>의 형태로 받을 수 있다.</div>
+</div>
+</blockquote>
+<dl class="docutils">
+<dt><em>index</em></dt>
+<dd><div class="first last line-block">
+<div class="line">출판물의 앞 혹은 뒤에 있는 목차, 용어 목록과 다르지 않게</div>
+<div class="line">db서버는 <em>indexes</em>를 사용하여 테이블의 특정 행을 가리킨다.</div>
+<div class="line"><em>indexes</em>는 일반적인 테이블과 다르게 특정한 순서가 유지되는 테이블이다.</div>
+<div class="line">그들은 데이터 entity를 전부 포함하는 대신, 특정 행을 가리키기 위한 데이터를 포함하며,
+거기에는 특정하는 행의 물리적인 위치정보도 포함된다.</div>
+<div class="line">그러므로, <em>indexes</em>의 역할은 테이블의 데이터 subset을 추적하는 시설을 갖추어</div>
+<div class="line">모든 테이블을 탐색하지 않도록 하는 것이다.</div>
+</div>
+</dd>
+</dl>
+<div class="section" id="index">
+<h3>INDEX 생성</h3>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="k">Create</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">MYSQL</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span>
+<span class="k">ADD</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+
+<span class="o">##</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="n">MYSQL5</span><span class="w"> </span><span class="n">Internally</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span>
+<span class="o">#</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="o">#</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+
+<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">10</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+<span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+
+<span class="o">#</span><span class="w"> </span><span class="n">REMOVE</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">MYSQL</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span><span class="p">;</span>
+
+<span class="o">##</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="n">MYSQL5</span><span class="w"> </span><span class="n">Internally</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span>
+<span class="o">#</span><span class="w"> </span><span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="o">#</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">customer</span><span class="p">;</span>
+
+<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">10</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+<span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+</pre></div>
+</blockquote>
+<div class="line-block">
+<div class="line">기본적으로 생성되는 Index는 B-tree(Balacing binary search tree)의 자료구조로 관리된다.</div>
+<div class="line">Index가 내장되면서, query optimizer는 이점이 있어보이는 index를 사용하도록 선택할 수 있다.</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">EXPLAIN</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;a%&#39;</span><span class="p">;</span>
+
+<span class="o">#</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="k">Index</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                 </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
+<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_email</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">idx_email</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">203</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">44</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
+
+<span class="o">#</span><span class="w"> </span><span class="k">without</span><span class="w"> </span><span class="k">Index</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">       </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
+<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">ALL</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">599</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">11</span><span class="p">.</span><span class="mi">11</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
+
+<span class="k">SHOW</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">Key_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;idx_email&#39;</span><span class="w"> </span><span class="err">\</span><span class="k">G</span><span class="p">;</span>
+<span class="o">***************************</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span>
+<span class="w">        </span><span class="k">Table</span><span class="p">:</span><span class="w"> </span><span class="n">customer</span>
+<span class="w">   </span><span class="n">Non_unique</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">     </span><span class="n">Key_name</span><span class="p">:</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="w"> </span><span class="n">Seq_in_index</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="k">Column_name</span><span class="p">:</span><span class="w"> </span><span class="n">email</span>
+<span class="w">    </span><span class="k">Collation</span><span class="p">:</span><span class="w"> </span><span class="n">A</span>
+<span class="w">  </span><span class="k">Cardinality</span><span class="p">:</span><span class="w"> </span><span class="mi">599</span>
+<span class="w">     </span><span class="n">Sub_part</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
+<span class="w">       </span><span class="n">Packed</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
+<span class="w">         </span><span class="k">Null</span><span class="p">:</span><span class="w"> </span><span class="n">YES</span>
+<span class="w">   </span><span class="n">Index_type</span><span class="p">:</span><span class="w"> </span><span class="n">BTREE</span>
+<span class="w">      </span><span class="k">Comment</span><span class="p">:</span>
+<span class="n">Index_comment</span><span class="p">:</span>
+<span class="w">      </span><span class="n">Visible</span><span class="p">:</span><span class="w"> </span><span class="n">YES</span>
+<span class="w">   </span><span class="n">Expression</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
+<span class="mi">1</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</blockquote>
+<div class="line-block">
+<div class="line">MySQL은 index를 테이블에 소속되는 추가적인 요소로 여기기 때문에, ALTER구문을 사용하도록 한다.</div>
+<div class="line">반면 많은 다른 서버의 경우(ORACLE, MSSQL, POSTGRESQL)는 Index를 별도의 Schema objects로 취급한다.</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+</pre></div>
+</blockquote>
+<div class="line-block">
+<div class="line">현재는 mysql 5.0 이후로 <tt class="docutils literal">CREATE, DROP</tt>구문으로 Index를 관리할 수 있지만</div>
+<div class="line">내부적으로 ALTER를 사용하는 것은 차이가 없다.</div>
+</div>
+</div>
+<div class="section" id="multicolumn-indexes">
+<h3>Multicolumn indexes</h3>
+<div class="line-block">
+<div class="line">데이터의 두 개 이상의 구성요소를 결합한 것에 대해서도 Index를 생성할 수 있다.</div>
+<div class="line">예를 들어, 성과 이름을 합친 전체 이름에 대해서 Index를 생성한다고 하면,</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_full_name</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">first_name</span><span class="p">);</span>
+
+<span class="k">EXPLAIN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;k%&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">FIRST_NAME</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;k%&#39;</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
+<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                 </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
+<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_full_name</span><span class="p">,</span><span class="n">idx_last_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_full_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">364</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">14</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">11</span><span class="p">.</span><span class="mi">11</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">|</span>
+<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
+<span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
+</pre></div>
+</blockquote>
+<p>이때 <em>idx_full_name</em>은 <em>last_name</em> 을 기준으로 first_name까지 연결된 것을 Index로 삼고 있기 때문에,</p>
+<blockquote>
+<ol class="arabic simple">
+<li><em>last_name</em>과 뒤로 <em>first_name</em>이 연결된 것을 검색할 때</li>
+<li><em>last_name</em>을 기준으로 검색할 때</li>
+</ol>
+</blockquote>
+<div class="line-block">
+<div class="line">두 경우에서 사용될 수 있으며, <em>first_name</em>을 기준으로 검색하는 경우에는 활용이 불가능하다.</div>
+<div class="line">따라서 <em>multicolumn INDEX</em>를 생성하고 이를 <em>query optimizer</em>가 활용할 수 있는 옵션 설비로 하기 위해서</div>
+<div class="line"><strong>어떤 항목을 기준으로 먼저 검색하도록 할지의 순서가 중요하다.</strong></div>
+</div>
+<blockquote>
+<div class="admonition tip">
+<p class="first admonition-title">Tip</p>
+<p class="last">multicolumn index는 구성 요소가 같아도 순서가 다르다면(순서를 기준으로 구성되는 것이라) 생성 가능하다.</p>
+</div>
+</blockquote>
+</div>
+</div>
+<div class="section" id="unique-unique-index">
+<h2>UNIQUE (unique index)</h2>
+<div class="line-block">
+<div class="line">Database를 디자인 할때, 특정한 데이터의 구성요소가 중복된 값을 가질 수 있는지 없는지를 결정하는 것은 매우 중요하다.</div>
+<div class="line"><tt class="docutils literal">UNIQUE</tt> index를 생성하는 것으로 이 규칙은 강화할 수 있다.</div>
+<div class="line">이 규칙은 두 가지 정도의 역할을 동시에 수행한다.</div>
+</div>
+<blockquote>
+<ol class="arabic simple">
+<li><tt class="docutils literal">INDEX</tt>로서의 기능(B-tree)</li>
+<li>데이터 항목이 중복된 내용으로 수정, 생성이 되는 것을 거부하는 기능</li>
+</ol>
+</blockquote>
+<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">creation</span><span class="w"> </span><span class="p">(</span><span class="k">ALTER</span><span class="p">)</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+
+<span class="o">#</span><span class="w"> </span><span class="n">duplicate</span><span class="w"> </span><span class="n">insertion</span><span class="w"> </span><span class="n">error</span>
+<span class="n">ERROR</span><span class="w"> </span><span class="mi">1062</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Duplicate</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="s1">&#39;dup-email@dupemail.org&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="s1">&#39;customer.idx_email&#39;</span>
+</pre></div>
+</div>
+<div class="section" id="types-of-indexes">
+<h2>Types of Indexes</h2>
+</div>
+                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/posts/writting/2023/06/26/summary-to-the-organized-mind-2" rel="bookmark"
+                           title="Permalink to Book Summary, "The Organized Mind" By Daniel J.Levitin #2">Book Summary, &quot;The Organized Mind&quot; By Daniel J.Levitin #2</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2023-06-26T17:04:00+09:00">
                 Published: Mon 26 June 2023
@@ -37,19 +277,11 @@
         </address>
 <p>In <a href="/category/writting.html">writting</a>.</p>
 <p>tags: <a href="/tag/summary.html">summary</a> <a href="/tag/book.html">book</a> </p>
-</footer><!-- /.post-info --><div class="section" id="section-1">
-<h2>02. 제일 먼저 이해해야할 것</h2>
-<div class="line-block">
-<div class="line">2, 3부에서는 모든 것이 통신으로 이어져 정신을 산만하게 만드는 것이 점점 많아지는 이 세상에서</div>
-<div class="line">어떻게 우리가 이런 시스템을 활용해서 더 효율적이고 생산적이고 행복하게, 그리고 스트레스를 덜 받으며 생활할 수 있을지 알아볼 것이다.</div>
-</div>
-</div>
-                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+</footer><!-- /.post-info -->                <p class="first last">summary for a certain game changing book.</p>
+
+                <a class="readmore" href="/posts/writting/2023/06/26/summary-to-the-organized-mind-2">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -63,8 +295,8 @@
                 Published: Tue 13 June 2023
         </abbr>
 		<br />
-        <abbr class="modified" title="2023-06-19T17:08:00+09:00">
-                Updated: Mon 19 June 2023
+        <abbr class="modified" title="2023-07-24T16:08:00+09:00">
+                Updated: Mon 24 July 2023
         </abbr>
 
         <address class="vcard author">
@@ -264,33 +496,6 @@
 </footer><!-- /.post-info -->                <p class="first last">선과 각</p>
 
                 <a class="readmore" href="/posts/math/2023/01/30/intro-to-figure">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/posts/math/2023/01/03/intro-to-statistics" rel="bookmark"
-                           title="Permalink to 5.3 statistics">5.3 statistics</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2023-01-03T09:45:00+09:00">
-                Published: Tue 03 January 2023
-        </abbr>
-		<br />
-        <abbr class="modified" title="2023-01-16T11:22:00+09:00">
-                Updated: Mon 16 January 2023
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
-        </address>
-<p>In <a href="/category/math.html">math</a>.</p>
-<p>tags: <a href="/tag/statistics.html">statistics</a> </p>
-</footer><!-- /.post-info -->                <p class="first last">확률</p>
-
-                <a class="readmore" href="/posts/math/2023/01/03/intro-to-statistics">read more</a>
                 </div><!-- /.entry-content -->
             </article></li>
                 </ol><!-- /#posts-list -->
