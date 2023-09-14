@@ -22,14 +22,14 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/posts/database/2023/09/04/indexes-and-constraints">Query Primer 13. Indexes and Constraints</a></h1>
+                    <h1 class="entry-title"><a href="/posts/database/2023/09/11/sql-views">Query Primer 14. SQL-Views</a></h1>
 <footer class="post-info">
-        <abbr class="published" title="2023-09-04T18:04:00+09:00">
-                Published: Mon 04 September 2023
+        <abbr class="published" title="2023-09-11T18:04:00+09:00">
+                Published: Mon 11 September 2023
         </abbr>
 		<br />
-        <abbr class="modified" title="2023-09-08T23:58:00+09:00">
-                Updated: Fri 08 September 2023
+        <abbr class="modified" title="2023-09-14T19:32:00+09:00">
+                Updated: Thu 14 September 2023
         </abbr>
 
         <address class="vcard author">
@@ -37,12 +37,12 @@
         </address>
 <p>In <a href="/category/database.html">database</a>.</p>
 <p>tags: <a href="/tag/database.html">database</a> </p>
-</footer><!-- /.post-info --><div class="section" id="subject-index-constraints">
-<h2>SUBJECT: index와 constraints를 이해하고 사용해보자</h2>
+</footer><!-- /.post-info --><div class="section" id="subject-view">
+<h2>SUBJECT: view를 활용하여 인터페이스를 구현해보자</h2>
 <blockquote>
 <div class="line-block">
-<div class="line"><tt class="docutils literal">select, insert, update, delete</tt>등의 SQL을 사용하는 것과 별개로,</div>
-<div class="line">SQL의 사용에 영향을 주는 다른 기능들을 알아보자.</div>
+<div class="line">공공 인터페이스는 내부 구현을 추상화하여 사용자에게 상세한 지식을 필요로 하지 않도록 한다.</div>
+<div class="line">view를 통해서 테이블의 정보를 숨기고 view를 통해서만 접근이 가능하도록 할 수 있다.</div>
 </div>
 <ul>
 <li><p class="first">References</p>
@@ -64,573 +64,144 @@
 </ul>
 </blockquote>
 </div>
-<div class="section" id="indexes">
-<h2>Indexes</h2>
+<div class="section" id="views">
+<h2>Views란 무엇인가?</h2>
 <div class="line-block">
-<div class="line">테이블에 데이터를 추가하는 경우에, DB는 이 데이터를 특정한 위치로 놓도록 순서를 조정하거나 하지 않고 단순히 테이블의 남은 공간의 첫 위치에 놓을 뿐이다.</div>
-<div class="line">따라서 테이블에 query를 한다면 서버는 <em>table scan</em>(테이블 풀 스캔)을 통해 원하는 응답을 생성한다.</div>
+<div class="line">view는 데이터를 추출하는 메커니즘이다.</div>
+<div class="line">테이블과 달리 실제 데이터를 가지고 있지 않으며,</div>
+<div class="line"><tt class="docutils literal">select</tt>구문에 대해 이름을 부여하는 것으로 view를 생성할 수 있다.</div>
+</div>
+<div class="line-block">
+<div class="line">예를 들어, 고객정보 테이블에서 이메일 주소를 부분적으로 알려지지 않는 것으로 하려 한다.</div>
+<div class="line">마케팅 부서에서는 광고 관련한 의도로 해당 이메일에 접근을 필요로 할 수 있다.</div>
+<div class="line">하지만 해당 회사의 개인정보 보호법상 이 데이터는 보안이 지켜져야 하는 것이다.</div>
+<div class="line">그러므로 직접 데이터 테이블의 접근을 허용하지 않는 대신,</div>
+<div class="line">view를 생성하여, 마케팅 의도가 아닌 개인적인 사용에 고객정보에 접근하려면 이것을 사용하도록 주문할 수 있다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">customer_vw</span><span class="w"> </span><span class="p">(</span>
+<span class="w">   </span><span class="n">customer_id</span><span class="p">,</span>
+<span class="w">   </span><span class="n">first_name</span><span class="p">,</span>
+<span class="w">   </span><span class="n">last_name</span><span class="p">,</span>
+<span class="w">   </span><span class="n">email</span>
+<span class="p">)</span><span class="w"> </span><span class="k">AS</span>
+<span class="w">   </span><span class="k">SELECT</span>
+<span class="w">      </span><span class="n">customer_id</span><span class="p">,</span>
+<span class="w">      </span><span class="n">first_name</span><span class="p">,</span>
+<span class="w">      </span><span class="n">last_name</span><span class="p">,</span>
+<span class="w">      </span><span class="n">CONCAT</span><span class="p">(</span><span class="n">SUBSTR</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;*****&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">SUBSTR</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">email</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="p">;</span>
+</pre></div>
+</div>
+<div class="section" id="view">
+<h2>view를 사용하는 이유</h2>
+<div class="section" id="data">
+<h3>Data 보안</h3>
+<div class="line-block">
+<div class="line">권한에 맞게 접근 단위를 조절하는 방법으로 가장 좋은 제안은,</div>
+<div class="line">유저에 대해서 table에 대한 <tt class="docutils literal">select</tt>의 권한을 주지 않으면서,</div>
+<div class="line">view를 생성해 감춰야할 정보를 생략하거나 일부 감추는 것으로 하는 것이다.</div>
+<div class="line">또한 view에서 <tt class="docutils literal">where</tt>조건을 걸어 유저가 접근이 가능한 데이터에 제약을 둘 수 도 있다.</div>
+</div>
+</div>
+<div class="section" id="data-1">
+<h3>Data 집약과 추상화</h3>
+<div class="line-block">
+<div class="line">프로그램에 대해 정리하는 것은 일반적으로 집약된 데이터를 요구하고,</div>
+<div class="line">view는 그러한 상태로 database에 저장되어 있는 것처럼 보이게 하는 좋은 방법이다.</div>
+<div class="line">또한 긴 SQL을 저장할 수 있기에, JOIN으로 연결된 다수의 테이블을 하나의 테이블처럼 추상화할 수 있다는 장점이 있다.</div>
 </div>
 <blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;Y%&#39;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">sales_by_film_category</span>
+<span class="k">AS</span>
+<span class="w">   </span><span class="k">SELECT</span>
+<span class="w">      </span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">category</span><span class="p">,</span>
+<span class="w">      </span><span class="k">SUM</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_sales</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">p</span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
+<span class="w">         </span><span class="n">rental</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">rental_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">rental_id</span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
+<span class="w">         </span><span class="n">inventory</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">inventory_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">inventory_id</span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
+<span class="w">         </span><span class="n">film</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">film_id</span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
+<span class="w">         </span><span class="n">film_category</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">fc</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fc</span><span class="p">.</span><span class="n">film_id</span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
+<span class="w">         </span><span class="n">category</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">fc</span><span class="p">.</span><span class="n">category_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">category_id</span>
+<span class="w">   </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">name</span>
+<span class="w">   </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">total_sales</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+</pre></div>
+</blockquote>
+</div>
+<div class="section" id="section-1">
+<h3>분할된 데이터의 결합</h3>
+<div class="line-block">
+<div class="line">때로 데이터베이스는 커다란 테이블을 성능 개선을 이유로 분할하는 경우가 있다.</div>
+<div class="line">예를 들어 오래된 데이터나 자주 사용하지 않을 데이터만 따로 추출해서 보관하는 것으로 테이블의 크기를 줄인다.</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">payment_all</span>
+<span class="w">   </span><span class="n">payment_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">staff_id</span><span class="p">,</span><span class="w"> </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">payment_date</span><span class="p">,</span><span class="w"> </span><span class="n">last_update</span>
+<span class="k">AS</span>
+<span class="w">   </span><span class="k">SELECT</span>
+<span class="w">      </span><span class="n">payment_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">staff_id</span><span class="p">,</span><span class="w"> </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">payment_date</span><span class="p">,</span><span class="w"> </span><span class="n">last_update</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment_old</span>
+<span class="w">   </span><span class="k">UNION</span><span class="w"> </span><span class="k">ALL</span>
+<span class="w">   </span><span class="k">SELECT</span>
+<span class="w">      </span><span class="n">payment_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">staff_id</span><span class="p">,</span><span class="w"> </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">payment_date</span><span class="p">,</span><span class="w"> </span><span class="n">last_update</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment_current</span><span class="p">;</span>
+</pre></div>
+</blockquote>
+<div class="line-block">
+<div class="line">이 활용방식은 좋은 사례인데, 참조 테이블의 데이터의 구조를 변경하고자 할때</div>
+<div class="line">모든 유저들이 기존에 이 View를 사용하고 있었다면,</div>
+<div class="line">그들의 쿼리를 변경할 필요 없이 구조 변경이 종료될 수 있다.</div>
+</div>
+</div>
+<div class="section" id="view-1">
+<h3>View의 데이터 조작과 기반 테이블</h3>
+<div class="line-block">
+<div class="line">View로 생성된 결과 테이블이 참조하는 base table의 데이터 항목을 변형하지 않은 상태이며 제약을 위반하지 않는다면,</div>
+<div class="line">하나의 base table에 <tt class="docutils literal">UPDATE, DELETE, INSERT</tt>가 모두 가능하다.</div>
+<div class="line">View에 포함된 데이터 Column의 base 테이블간의 관계, 그리고 제약사항을 감안하여 반드시 체크해야 한다.</div>
+<div class="line">(<em>권한상으로 View에 대해</em> <tt class="docutils literal">UPDATE</tt><em>만 가능하도록 하는 것이 가장 낫다.</em>)</div>
+</div>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">customer_details</span>
+<span class="k">AS</span>
+<span class="w">   </span><span class="k">SELECT</span>
+<span class="w">      </span><span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">store_id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">active</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">create_date</span><span class="p">,</span>
+<span class="w">      </span><span class="n">a</span><span class="p">.</span><span class="n">address</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">postal_code</span><span class="p">,</span>
+<span class="w">      </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span><span class="p">,</span>
+<span class="w">      </span><span class="n">cn</span><span class="p">.</span><span class="n">country</span>
+<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ct</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span>
+<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cn</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">country_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cn</span><span class="p">.</span><span class="n">country_id</span><span class="p">;</span>
 
-<span class="o">+</span><span class="c1">------------+-----------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">first_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">|</span>
-<span class="o">+</span><span class="c1">------------+-----------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">LUIS</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">YANEZ</span><span class="w">     </span><span class="o">|</span>
-<span class="o">|</span><span class="w"> </span><span class="n">MARVIN</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">YEE</span><span class="w">       </span><span class="o">|</span>
-<span class="o">|</span><span class="w"> </span><span class="n">CYNTHIA</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">YOUNG</span><span class="w">     </span><span class="o">|</span>
-<span class="o">+</span><span class="c1">------------+-----------+</span>
-<span class="mi">3</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
-</pre></div>
-<div class="line-block">
-<div class="line">매우 많은 데이터를 대상으로 table scan을 진행할 때,</div>
-<div class="line">서버는 추가적인 도움없이 합리적인 시간 내에 결과를 생성할 수 없을 것이다.</div>
-<div class="line">이때에 필요한 도움은 테이블 내의 하나 혹은 다수의 <em>indexes</em>의 형태로 받을 수 있다.</div>
-</div>
-</blockquote>
-<dl class="docutils">
-<dt><em>index</em></dt>
-<dd><div class="first last line-block">
-<div class="line">출판물의 앞 혹은 뒤에 있는 목차, 용어 목록과 다르지 않게</div>
-<div class="line">db서버는 <em>indexes</em>를 사용하여 테이블의 특정 행을 가리킨다.</div>
-<div class="line"><em>indexes</em>는 일반적인 테이블과 다르게 특정한 순서가 유지되는 테이블이다.</div>
-<div class="line">그들은 데이터 entity를 전부 포함하는 대신, 특정 행을 가리키기 위한 데이터를 포함하며,
-거기에는 특정하는 행의 물리적인 위치정보도 포함된다.</div>
-<div class="line">그러므로, <em>indexes</em>의 역할은 테이블의 데이터 subset을 추적하는 시설을 갖추어</div>
-<div class="line">모든 테이블을 탐색하지 않도록 하는 것이다.</div>
-</div>
-</dd>
-</dl>
-<div class="section" id="index">
-<h3>INDEX 생성</h3>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="k">Create</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">MYSQL</span>
-<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span>
-<span class="k">ADD</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+<span class="o">#</span><span class="w"> </span><span class="n">SUCCESS</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="k">table</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">customer_details</span>
+<span class="k">SET</span>
+<span class="w">   </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;SMITH-ALLEN&#39;</span>
+<span class="w">   </span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">03</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"> </span><span class="k">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
 
-<span class="o">##</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="n">MYSQL5</span><span class="w"> </span><span class="n">Internally</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span>
-<span class="o">#</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
-<span class="o">#</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
+<span class="o">#</span><span class="w"> </span><span class="n">SUCCESS</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="k">table</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">customer_details</span>
+<span class="k">SET</span>
+<span class="w">   </span><span class="n">address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;999 Mockingbird Lane&#39;</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">03</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"> </span><span class="k">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
 
-<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">10</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
-<span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
-
-<span class="o">#</span><span class="w"> </span><span class="n">REMOVE</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">MYSQL</span>
-<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span>
-<span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span><span class="p">;</span>
-
-<span class="o">##</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">since</span><span class="w"> </span><span class="n">MYSQL5</span><span class="w"> </span><span class="n">Internally</span><span class="w"> </span><span class="k">alter</span><span class="w"> </span><span class="k">table</span>
-<span class="o">#</span><span class="w"> </span><span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
-<span class="o">#</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">customer</span><span class="p">;</span>
-
-<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">10</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
-<span class="n">Records</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Duplicates</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
+<span class="o">#</span><span class="w"> </span><span class="n">Fail</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="n">tables</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">customer_details</span>
+<span class="k">SET</span>
+<span class="w">   </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;SMITH-ALLEN&#39;</span>
+<span class="w">   </span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">   </span><span class="n">address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;999 Mockingbird Lane&#39;</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="n">ERROR</span><span class="w"> </span><span class="mi">1393</span><span class="w"> </span><span class="p">(</span><span class="n">HY000</span><span class="p">):</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">modify</span><span class="w"> </span><span class="k">more</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="k">view</span><span class="w"> </span><span class="s1">&#39;sakila.customer_details&#39;</span>
 </pre></div>
-</blockquote>
-<div class="line-block">
-<div class="line">기본적으로 생성되는 Index는 B-tree(Balacing binary search tree)의 자료구조로 관리된다.</div>
-<div class="line">Index가 내장되면서, query optimizer는 이점이 있어보이는 index를 사용하도록 선택할 수 있다.</div>
-</div>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">EXPLAIN</span>
-<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;a%&#39;</span><span class="p">;</span>
-
-<span class="o">#</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="k">Index</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                 </span><span class="o">|</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
-<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_email</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="n">idx_email</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">203</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">44</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">100</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">|</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+---------------+-----------+---------+------+------+----------+-----------------------+</span>
-
-<span class="o">#</span><span class="w"> </span><span class="k">without</span><span class="w"> </span><span class="k">Index</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">       </span><span class="o">|</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
-<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="k">ALL</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">599</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">11</span><span class="p">.</span><span class="mi">11</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="o">|</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+</span>
-
-<span class="k">SHOW</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">Key_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;idx_email&#39;</span><span class="w"> </span><span class="err">\</span><span class="k">G</span><span class="p">;</span>
-<span class="o">***************************</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="o">***************************</span>
-<span class="w">        </span><span class="k">Table</span><span class="p">:</span><span class="w"> </span><span class="n">customer</span>
-<span class="w">   </span><span class="n">Non_unique</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">     </span><span class="n">Key_name</span><span class="p">:</span><span class="w"> </span><span class="n">idx_email</span>
-<span class="w"> </span><span class="n">Seq_in_index</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">  </span><span class="k">Column_name</span><span class="p">:</span><span class="w"> </span><span class="n">email</span>
-<span class="w">    </span><span class="k">Collation</span><span class="p">:</span><span class="w"> </span><span class="n">A</span>
-<span class="w">  </span><span class="k">Cardinality</span><span class="p">:</span><span class="w"> </span><span class="mi">599</span>
-<span class="w">     </span><span class="n">Sub_part</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
-<span class="w">       </span><span class="n">Packed</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
-<span class="w">         </span><span class="k">Null</span><span class="p">:</span><span class="w"> </span><span class="n">YES</span>
-<span class="w">   </span><span class="n">Index_type</span><span class="p">:</span><span class="w"> </span><span class="n">BTREE</span>
-<span class="w">      </span><span class="k">Comment</span><span class="p">:</span>
-<span class="n">Index_comment</span><span class="p">:</span>
-<span class="w">      </span><span class="n">Visible</span><span class="p">:</span><span class="w"> </span><span class="n">YES</span>
-<span class="w">   </span><span class="n">Expression</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
-<span class="mi">1</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
-</pre></div>
-</blockquote>
-<div class="line-block">
-<div class="line">MySQL은 index를 테이블에 소속되는 추가적인 요소로 여기기 때문에, ALTER구문을 사용하도록 한다.</div>
-<div class="line">반면 많은 다른 서버의 경우(ORACLE, MSSQL, POSTGRESQL)는 Index를 별도의 Schema objects로 취급한다.</div>
-</div>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
-<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
-</pre></div>
-</blockquote>
-<div class="line-block">
-<div class="line">현재는 mysql 5.0 이후로 <tt class="docutils literal">CREATE, DROP</tt>구문으로 Index를 관리할 수 있지만</div>
-<div class="line">내부적으로 ALTER를 사용하는 것은 차이가 없다.</div>
-</div>
-</div>
-<div class="section" id="multicolumn-indexes">
-<h3>Multicolumn indexes</h3>
-<div class="line-block">
-<div class="line">데이터의 두 개 이상의 구성요소를 결합한 것에 대해서도 Index를 생성할 수 있다.</div>
-<div class="line">예를 들어, 성과 이름을 합친 전체 이름에 대해서 Index를 생성한다고 하면,</div>
-</div>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_full_name</span>
-<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">first_name</span><span class="p">);</span>
-
-<span class="k">EXPLAIN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;k%&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">FIRST_NAME</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;k%&#39;</span><span class="p">;</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
-<span class="o">|</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">select_type</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">table</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">partitions</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">type</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">possible_keys</span><span class="w">               </span><span class="o">|</span><span class="w"> </span><span class="k">key</span><span class="w">           </span><span class="o">|</span><span class="w"> </span><span class="n">key_len</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">ref</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Extra</span><span class="w">                 </span><span class="o">|</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
-<span class="o">|</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">SIMPLE</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_full_name</span><span class="p">,</span><span class="n">idx_last_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">idx_full_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mi">364</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="mi">14</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="mi">11</span><span class="p">.</span><span class="mi">11</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">condition</span><span class="w"> </span><span class="o">|</span>
-<span class="o">+</span><span class="c1">----+-------------+----------+------------+-------+-----------------------------+---------------+---------+------+------+----------+-----------------------+</span>
-<span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
-</pre></div>
-</blockquote>
-<p>이때 <em>idx_full_name</em>은 <em>last_name</em> 을 기준으로 first_name까지 연결된 것을 Index로 삼고 있기 때문에,</p>
-<blockquote>
-<ol class="arabic simple">
-<li><em>last_name</em>과 뒤로 <em>first_name</em>이 연결된 것을 검색할 때</li>
-<li><em>last_name</em>을 기준으로 검색할 때</li>
-</ol>
-</blockquote>
-<div class="line-block">
-<div class="line">두 경우에서 사용될 수 있으며, <em>first_name</em>을 기준으로 검색하는 경우에는 활용이 불가능하다.</div>
-<div class="line">따라서 <em>multicolumn INDEX</em>를 생성하고 이를 <em>query optimizer</em>가 활용할 수 있는 옵션 설비로 하기 위해서</div>
-<div class="line"><strong>어떤 항목을 기준으로 먼저 검색하도록 할지의 순서가 중요하다.</strong></div>
-</div>
-<blockquote>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<p class="last">multicolumn index는 구성 요소가 같아도 순서가 다르다면(순서를 기준으로 구성되는 것이라) 생성 가능하다.</p>
-</div>
-</blockquote>
-</div>
-<div class="section" id="unique-unique-index">
-<h3>UNIQUE (unique index)</h3>
-<div class="line-block">
-<div class="line">Database를 디자인 할때, 특정한 데이터의 구성요소가 중복된 값을 가질 수 있는지 없는지를 결정하는 것은 매우 중요하다.</div>
-<div class="line"><tt class="docutils literal">UNIQUE</tt> index를 생성하는 것으로 이 규칙은 강화할 수 있다.</div>
-<div class="line">이 규칙은 두 가지 정도의 역할을 동시에 수행한다.</div>
-</div>
-<blockquote>
-<ol class="arabic simple">
-<li><tt class="docutils literal">INDEX</tt>로서의 기능(B-tree)</li>
-<li>데이터 항목이 중복된 내용으로 수정, 생성이 되는 것을 거부하는 기능</li>
-</ol>
-</blockquote>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">creation</span><span class="w"> </span><span class="p">(</span><span class="k">ALTER</span><span class="p">)</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_email</span>
-<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span>
-
-<span class="o">#</span><span class="w"> </span><span class="n">duplicate</span><span class="w"> </span><span class="n">insertion</span><span class="w"> </span><span class="n">error</span>
-<span class="n">ERROR</span><span class="w"> </span><span class="mi">1062</span><span class="w"> </span><span class="p">(</span><span class="mi">23000</span><span class="p">):</span><span class="w"> </span><span class="n">Duplicate</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="s1">&#39;dup-email@dupemail.org&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="s1">&#39;customer.idx_email&#39;</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="types-of-indexes">
-<h2>Types of Indexes</h2>
-<div class="section" id="b-tree-index">
-<h3>B-tree index</h3>
-<ul class="simple">
-<li>branch node: A-Z, 0-9 등으로 traverse 방향을 가리키기 위한 navigating node</li>
-<li>leaf node(no child node): actual value와 physical 데이터 위치값을 가진 actual node</li>
-</ul>
-<div class="line-block">
-<div class="line">데이터가 삽입되고 수정, 삭제될때마다 B-tree는 치우치는 것을 방지하기 위해 부분 정렬을 실시한다.</div>
-<div class="line">tree를 균형상태로 유지하는 것으로, leaf node를 탐색의 균일한 속도를 보장할 수 있다.</div>
-</div>
-</div>
-<div class="section" id="bitmap-index">
-<h3>Bitmap index</h3>
-<div class="line-block">
-<div class="line">B-tree index가 다양한 범위의 값들을 정렬한 상태로 탐색하기 일반적으로 좋은 것이라면,</div>
-<div class="line">때로는 <em>true, false</em>등과 같이 정해진 값이 분포되는 데이터의 항목이 있는 경우도 있다.</div>
-<div class="line">이 경우 0, 1을 나누는 용도로 branch node가 navigate로서 의미있게 활용될 수 없을 것이다.</div>
-</div>
-<div class="line-block">
-<div class="line">이렇게 적은 범위의 값(<em>low-cardinality data</em>)을 가진 데이터 구성요소를 위해서는 다른 indexing 전략이 필요하다.</div>
-<div class="line">Oracle DB의 경우에 <em>bitmap index</em>를 사용한다.</div>
-<div class="line">이것은 각 데이터 항목에 대해서 bitmap을 생성한다.</div>
-</div>
-<blockquote>
-<div class="line-block">
-<div class="line">두 개 범위의 값을 가지고 있는 경우(true, false)</div>
-<div class="line">두 종류의 비트맵을 생성한다.</div>
-<div class="line">만약 <em>false</em>인 데이터를 찾는다면, DB서버는 0 비트맵을 읽고 빠르게 찾으려는 데이터를 조회한다.</div>
-</div>
-</blockquote>
-<div class="line-block">
-<div class="line">bitmap index는 low-cardinality data에 대해서 간편하고 좋은 방법이디만,</div>
-<div class="line">이 전략은 값의 범위가 넓어진다면 너무 많은 bitmap들을 관리해야하게 되어 실패로 이어질 수 있다.</div>
-</div>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">Oracle</span><span class="w"> </span><span class="n">feature</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="n">BITMAP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_active</span>
-<span class="k">ON</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span><span class="n">active</span><span class="p">);</span>
-</pre></div>
-</div>
-<div class="section" id="text-index">
-<h3>Text index</h3>
-<div class="line-block">
-<div class="line">데이터 항목이 많은 텍스트를 포함하고 있는 경우에, 해당 데이터에서 특정 키워드나 구문을 검색하게 되는 경우가 있다.</div>
-<div class="line">그렇다고 이 항목을 전부 탐색해서 키워드를 검색하는 것을 원하지는 않을 것이다.</div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<ul class="last simple">
-<li>MySQL의 경우에는 <em>full text</em> indexes라는 도구를 지원하며,</li>
-<li>Oracle의 경우에는 <em>Oracle Text</em>라는 도구를 지원한다.</li>
-</ul>
-</div>
-<div class="line-block">
-<div class="line">Document 탐색은 예시를 들기에는 매우 최적화가 된 도구이니,</div>
-<div class="line">단순히 이런 도구가 있으며 문서탐색에 사용된다는 것으로 파악하고 있는 것이 좋다.</div>
-</div>
-</div>
-<div class="section" id="using-index">
-<h3>Using Index</h3>
-<p>각 Database Server 는 <em>query optimizer</em>가 어떻게 SQL을 처리하는지 확인시켜주는 도구를 포함한다.</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">EXPLAIN</span>
-<span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">customer</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">first_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;S%&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">last_anme</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;P%&#39;</span><span class="w"> </span><span class="err">\</span><span class="k">G</span><span class="p">;</span>
-
-<span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
-<span class="n">select_type</span><span class="p">:</span><span class="w"> </span><span class="k">SIMPLE</span>
-<span class="k">table</span><span class="p">:</span><span class="w"> </span><span class="n">customer</span>
-<span class="n">partitions</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
-<span class="k">type</span><span class="p">:</span><span class="w"> </span><span class="n">range</span>
-<span class="n">possible_keys</span><span class="p">:</span><span class="w"> </span><span class="n">idx_last_name</span>
-<span class="k">key</span><span class="p">:</span><span class="w"> </span><span class="n">idx_last_name</span>
-<span class="n">key_len</span><span class="p">:</span><span class="w"> </span><span class="mi">182</span>
-<span class="k">ref</span><span class="p">:</span><span class="w"> </span><span class="k">NULL</span>
-<span class="k">rows</span><span class="p">:</span><span class="w"> </span><span class="mi">28</span>
-<span class="n">filtered</span><span class="p">:</span><span class="w"> </span><span class="mi">11</span><span class="p">.</span><span class="mi">11</span>
-<span class="n">Extra</span><span class="p">:</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">condition</span><span class="p">;</span><span class="w"> </span><span class="k">Using</span><span class="w"> </span><span class="k">where</span>
-<span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">warning</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span>
-</pre></div>
-</blockquote>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<div class="last line-block">
-<div class="line">SQL과 INDEX등을 통해 여기까지 보여준 과정은 쿼리튜닝의 예시이다.</div>
-<div class="line">튜닝은 SQL 구문을 살피고 서버에서 선택할 자원을 결정하는 것을 포함한다.</div>
-<div class="line">SQL구문을 수정하거나, DB서버의 자원을 수정하거나 혹은 둘 다 시행할 수 있다.</div>
-<div class="line">튜닝은 매우 상세한 것을 다루는 주제이니,</div>
-<div class="line">사용하는 서버의 튜닝가이드나 별도 서적을 살펴보는 것이 좋다.</div>
-</div>
-</div>
-<ul>
-<li><p class="first">테이블 내에 Index를 생성하는 것이 적합한지는 <em>값의 다양성 분포(cardinality)</em>가 높은지에 달려 있다.</p>
-</li>
-<li><p class="first">SQL구문의 Index활용 효율성은 데이터 선택 압축율이 10%보다 작은 것을 기준으로 일반적으로 평가된다.</p>
-<blockquote>
-<ul>
-<li><p class="first">압축율이 높은 범위의 Index scan을 하도록 제한하는 방법을 사용한다.</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">post</span>
-<span class="k">WHERE</span>
-<span class="w">   </span><span class="n">created</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="s1">&#39;2023-08-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="s1">&#39;2023-08-07&#39;</span>
-</pre></div>
-</blockquote>
-</li>
-<li><p class="first">찾으려는 데이터 항목을 <em>Covering Index</em>로 생성하고 이를 사용한다.</p>
-<blockquote>
-<p>이는 테이블 접근 없이, <em>multicolumn index object</em> 내에서 검색과 추출이 종료됨을 의미한다.</p>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">multicolumn</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="err">없이</span><span class="w"> </span><span class="err">두</span><span class="w"> </span><span class="err">항목을</span><span class="w"> </span><span class="err">필터</span><span class="w"> </span><span class="err">추출</span>
-<span class="k">EXPLAIN</span><span class="w"> </span><span class="n">FORMAT</span><span class="o">=</span><span class="n">JSON</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">address_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">address_id</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="mi">300</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="p">(</span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;H%&#39;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;J%&#39;</span><span class="p">)</span><span class="err">\</span><span class="k">G</span><span class="p">;</span>
-</pre></div>
-<div class="highlight"><pre><span></span><span class="err">EXPLAIN</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;query_block&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;select_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;cost_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;query_cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;28.86&quot;</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;table_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;customer&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;access_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;range&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;possible_keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;idx_fk_address_id&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;idx_last_name&quot;</span>
-<span class="w">      </span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;idx_last_name&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;used_key_parts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;last_name&quot;</span>
-<span class="w">      </span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;key_length&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;182&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;rows_examined_per_scan&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">63</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;rows_produced_per_join&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;filtered&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;16.69&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;index_condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;((`sakila`.`customer`.`last_name` like &#39;H%&#39;) or (`sakila`.`customer`.`last_name` like &#39;J%&#39;))&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;cost_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;read_cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;27.81&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;eval_cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.05&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;prefix_cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;28.86&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;data_read_per_join&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5K&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;used_columns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;last_name&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;address_id&quot;</span>
-<span class="w">      </span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;attached_condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;(`sakila`.`customer`.`address_id` between 200 and 300)&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="n">multicolumn</span><span class="w"> </span><span class="n">index에</span><span class="w"> </span><span class="err">대해서만</span><span class="w"> </span><span class="err">필터</span><span class="w"> </span><span class="err">추출</span>
-<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_lname_addr</span><span class="w"> </span><span class="p">(</span><span class="n">address_id</span><span class="p">,</span><span class="w"> </span><span class="n">last_name</span><span class="p">);</span>
-<span class="k">EXPLAIN</span><span class="w"> </span><span class="n">FORMAT</span><span class="o">=</span><span class="n">JSON</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="n">address_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">address_id</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="mi">200</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="mi">300</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="p">(</span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;H%&#39;</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;J%&#39;</span><span class="p">)</span><span class="err">\</span><span class="k">G</span><span class="p">;</span>
-</pre></div>
-<div class="highlight"><pre><span></span><span class="err">EXPLAIN</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;query_block&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;select_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">&quot;cost_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;query_cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;20.60&quot;</span>
-<span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="nt">&quot;table&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;table_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;customer&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;access_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;range&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;possible_keys&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;idx_fk_address_id&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;idx_last_name&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;idx_lname_addr&quot;</span>
-<span class="w">      </span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;idx_lname_addr&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;used_key_parts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;address_id&quot;</span>
-<span class="w">      </span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;key_length&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;184&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;rows_examined_per_scan&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">99</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;rows_produced_per_join&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;filtered&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;10.52&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;using_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="c1">// &lt;- covering index 사용여부</span>
-<span class="w">      </span><span class="nt">&quot;cost_info&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;read_cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;19.56&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;eval_cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.04&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;prefix_cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;20.60&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;data_read_per_join&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5K&quot;</span>
-<span class="w">      </span><span class="p">},</span>
-<span class="w">      </span><span class="nt">&quot;used_columns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">        </span><span class="s2">&quot;last_name&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="s2">&quot;address_id&quot;</span>
-<span class="w">      </span><span class="p">],</span>
-<span class="w">      </span><span class="nt">&quot;attached_condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;((`sakila`.`customer`.`address_id` between 200 and 300) and ((`sakila`.`customer`.`last_name` like &#39;H%&#39;) or (`sakila`.`customer`.`last_name` like &#39;J%&#39;)))&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</blockquote>
-</li>
-<li><p class="first">캐싱 데이터를 활용한다.</p>
-<blockquote>
-<ul>
-<li><p class="first">IO 크기를 줄이는 <em>summary table</em> (접근 테이블을 분할해서 복사한 테이블)</p>
-<blockquote>
-<ul class="simple">
-<li>원본 테이블과의 sync가 fresh(신선)해야한다.</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="o">#</span><span class="w"> </span><span class="err">검색</span><span class="w"> </span><span class="err">데이터</span><span class="w"> </span><span class="err">항목과</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="n">key만</span><span class="w"> </span><span class="err">가지고</span><span class="w"> </span><span class="err">있는</span><span class="w"> </span><span class="n">subset</span><span class="p">.</span>
-
-<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">post_date_mart</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">created</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="s1">&#39;2023-08-01&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="s1">&#39;2023-08-07&#39;</span><span class="p">;</span>
-</pre></div>
-</blockquote>
-</li>
-<li><p class="first">데이터 수를 줄이는 <em>cache database</em> (최근 사용중인 데이터만 저장하는 서버)</p>
-<blockquote>
-<ul class="simple">
-<li>백업 DB로의 주기적인 업로드 batch job을 포함한다.</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-</div>
-<div class="section" id="downside-of-index">
-<h3>Downside of Index</h3>
-<div class="line-block">
-<div class="line">Index는 Table의 특정 column을 복사해둔 듯한 별도의 테이블이다.</div>
-</div>
-<blockquote>
-<ul class="simple">
-<li>많은 공간을 차지하며,</li>
-<li>테이블에 대한 수정은 연관된 index table의 조정으로 이어진다.</li>
-</ul>
-<p>따라서 Index를 많이 생성할수록 서버는 모든 Schem objects(index)이어서 관리해야하고 이는 속도를 느리게 한다.</p>
-</blockquote>
-<div class="line-block">
-<div class="line">가장 좋은 전략은 특별히 필요성을 느끼는 경우에는 index를 추가하는 것이다.</div>
-</div>
-<blockquote>
-<ul>
-<li><p class="first">월별로 실시하는 백업이 있다면, 필요한 만큼 index를 생성하고 업무가 끝난 뒤에 삭제하고,</p>
-</li>
-<li><p class="first">데이터센터의 경우라면 로그가 쌓이는 낮에 index의 수정이 취약하고, 데이터를 백업하는 저녁에는 덜 필요할 것이다.</p>
-<blockquote>
-<ul class="simple">
-<li>백업전에 index를 삭제하고, 데이터 백업 후 index를 새로 생성하는 것이 일반적이다.</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-<div class="line-block">
-<div class="line">Index는 너무 많거나 너무 적어도 문제가 되는 존재다.</div>
-<div class="line">만약 얼마나 많은 index를 준비해야할지 결정이 어렵다면 아래의 메뉴얼을 따르는 것을 추천한다.</div>
-</div>
-<blockquote>
-<ul>
-<li><p class="first">Primary key</p>
-</li>
-<li><p class="first">Foreign key, CASCADE</p>
-</li>
-<li><p class="first">frequently used to retrieve data</p>
-<blockquote>
-<div class="admonition tip">
-<p class="first admonition-title">Tip</p>
-<ul class="simple">
-<li>date column</li>
-<li>short string(2 ~ 50) column</li>
-</ul>
-<p class="last">위 경우 이외에는 피하는 것이 좋다.</p>
-</div>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</div>
-</div>
-<div class="section" id="constraints">
-<h2>Constraints</h2>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field"><th class="field-name"><em>Primary key</em>:</th><td class="field-body"><p class="first">데이터의 구성요소가 테이블 내에서 유일함을 보장함</p>
-<ul class="simple">
-<li>primary key는 unique에 탐색유용성과 데이터의 대표성을 더한 특별한 변형</li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name"><em>Unique key</em>:</th><td class="field-body"><p class="first">데이터의 구성요소가 테이블 내에서 유일함을 보장함</p>
-</td>
-</tr>
-<tr class="field"><th class="field-name"><em>Foreign key</em>:</th><td class="field-body"><p class="first">데이터의 구성요소가 다른 테이블의 primary key 항목만을 포함하도록 보장함</p>
-<ul class="simple">
-<li><em>update cascade</em></li>
-<li><em>delete cascade</em></li>
-</ul>
-</td>
-</tr>
-<tr class="field"><th class="field-name"><em>Check key</em>:</th><td class="field-body"><p class="first last">데이터의 구성요소가 특정한 값들만 가질 수 있도록 제한함</p>
-</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><p class="first"><em>constrints</em>를 제외하면 database의 지속가능성은 의심받을 수 있는 것이다.</p>
-<blockquote>
-<div class="line-block">
-<div class="line">예를 들어, 만약 서버가 foreign key로 사용중인 customer의 ID를 변경하면서 연관된 정보를 수정하지 않는다면,</div>
-<div class="line">해당 ID를 참조하는 다른 테이블의 정보는 유효하지 않은 것이 된다.</div>
-<div class="line">이러한 데이터를 <em>orphaned rows</em>라고 부른다.</div>
-</div>
-</blockquote>
-</li>
-<li><p class="first">반면 <em>primary key, foreign key</em>가 존재한다면,</p>
-<blockquote>
-<div class="line-block">
-<div class="line">DB서버는 제약사항이 무너지는지 확인되는 순간 에러를 발생시키거나,</div>
-<div class="line">규칙을 유지하기 위해 다른 테이블에 이 변화를 전파할 것이다.</div>
-</div>
-</blockquote>
-</li>
-</ul>
-<div class="section" id="creation">
-<h3>Creation</h3>
-<ul>
-<li><p class="first">테이블 생성시 제약 조건 생성</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="p">(</span>
-<span class="w">   </span><span class="n">customer_id</span><span class="w"> </span><span class="nb">SMALLINT</span><span class="w"> </span><span class="n">UNSIGNED</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span>
-<span class="w">   </span><span class="n">store_id</span><span class="w"> </span><span class="n">TINYINT</span><span class="w"> </span><span class="n">UNSIGNED</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">   </span><span class="n">address_id</span><span class="w"> </span><span class="nb">SMALLINT</span><span class="w"> </span><span class="n">UNSIGNED</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-<span class="w">   </span><span class="n">last_name</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
-
-<span class="w">   </span><span class="o">#</span><span class="w"> </span><span class="k">Constraints</span>
-<span class="w">   </span><span class="o">##</span><span class="w"> </span><span class="n">PK</span>
-<span class="w">   </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">),</span>
-<span class="w">   </span><span class="o">##</span><span class="w"> </span><span class="k">INDEX</span>
-<span class="w">   </span><span class="k">KEY</span><span class="w"> </span><span class="n">idx_last_name</span><span class="w"> </span><span class="p">(</span><span class="n">last_name</span><span class="p">),</span>
-<span class="w">   </span><span class="o">##</span><span class="w"> </span><span class="n">FK</span>
-<span class="w">   </span><span class="k">KEY</span><span class="w"> </span><span class="n">idx_fk_store_id</span><span class="w"> </span><span class="p">(</span><span class="n">store_id</span><span class="p">),</span>
-<span class="w">   </span><span class="k">KEY</span><span class="w"> </span><span class="n">idx_fk_address_id</span><span class="w"> </span><span class="p">(</span><span class="n">address_id</span><span class="p">),</span>
-<span class="w">   </span><span class="o">###</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">address_id</span><span class="o">-&gt;</span><span class="n">address</span><span class="p">.</span><span class="n">address_id</span>
-<span class="w">   </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_customer_address</span>
-<span class="w">      </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">address_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">address_id</span><span class="p">)</span>
-<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="k">DELETE</span><span class="w"> </span><span class="k">RESTRICT</span>
-<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="k">CASCADE</span><span class="p">,</span>
-<span class="w">   </span><span class="o">###</span><span class="w"> </span><span class="n">customer</span><span class="p">.</span><span class="n">store_id</span><span class="o">-&gt;</span><span class="n">store</span><span class="p">.</span><span class="n">store_id</span>
-<span class="w">   </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_customer_store</span>
-<span class="w">      </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">store_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="p">(</span><span class="n">store_id</span><span class="p">)</span>
-<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="k">DELETE</span><span class="w"> </span><span class="k">RESTRICT</span>
-<span class="w">      </span><span class="k">ON</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="k">CASCADE</span>
-<span class="p">)</span><span class="w"> </span><span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8</span><span class="p">;</span>
-</pre></div>
-</blockquote>
-</li>
-<li><p class="first">테이블 생성 후 제약 조건 생성</p>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customer</span>
-<span class="w">   </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_customer_address</span>
-<span class="w">   </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">address_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="p">(</span><span class="n">address_id</span><span class="p">)</span>
-<span class="w">   </span><span class="k">ON</span><span class="w"> </span><span class="k">DELETE</span><span class="w"> </span><span class="k">RESTRICT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="k">CASCADE</span><span class="p">;</span>
-</pre></div>
-</blockquote>
-</li>
-</ul>
-<div class="line-block">
-<div class="line"><em>FOREIGN KEY</em>의 경우 다른 데이터 항목에 대해 의존하는 제약조건 인 만큼,</div>
-<div class="line">참조하는 항목의 수정, 삭제가 일어났을떄 어떻게 동작할지 규정할 수 있다.</div>
-</div>
-<blockquote>
-<ul class="simple">
-<li><dl class="first docutils">
-<dt><tt class="docutils literal">RESTRICT</tt>: 참조 항목 변경, 삭제 시도를 에러처리 한다.</dt>
-<dd>orphaned row가 발생하지 않도록 제한한다.</dd>
-</dl>
-</li>
-<li><dl class="first docutils">
-<dt><tt class="docutils literal">CASCADE</tt>: 참조 항목 변경 시 데이터 항목은 이를 반영하며, 삭제시 항목을 포함하는 데이터도 삭제한다.</dt>
-<dd>orphaned row가 될 경우 삭제하도록 한다.</dd>
-</dl>
-</li>
-<li><tt class="docutils literal">SET &lt;VALUE&gt;</tt>: 참조 항목 변경, 삭제시 데이터 항목을 &lt;VALUE&gt;값으로 설정한다.</li>
-</ul>
 </blockquote>
 </div>
 </div>
@@ -640,6 +211,33 @@
                     <h1>Other articles</h1>
                     <hr />
                     <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/posts/database/2023/09/04/indexes-and-constraints" rel="bookmark"
+                           title="Permalink to Query Primer 13. Indexes and Constraints">Query Primer 13. Indexes and Constraints</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2023-09-04T18:04:00+09:00">
+                Published: Mon 04 September 2023
+        </abbr>
+		<br />
+        <abbr class="modified" title="2023-09-08T23:58:00+09:00">
+                Updated: Fri 08 September 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/database.html">database</a>.</p>
+<p>tags: <a href="/tag/database.html">database</a> </p>
+</footer><!-- /.post-info -->                <p class="first last">how to create index and constraints for table</p>
+
+                <a class="readmore" href="/posts/database/2023/09/04/indexes-and-constraints">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -854,33 +452,6 @@
 </footer><!-- /.post-info -->                <p class="first last">intro to data manipulates and DDL</p>
 
                 <a class="readmore" href="/posts/database/2023/02/10/Data-generation-manipulation-conversion">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/posts/math/2023/01/30/intro-to-figure" rel="bookmark"
-                           title="Permalink to 6.1 Basic of figure">6.1 Basic of figure</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2023-01-30T19:45:00+09:00">
-                Published: Mon 30 January 2023
-        </abbr>
-		<br />
-        <abbr class="modified" title="2023-01-30T21:22:00+09:00">
-                Updated: Mon 30 January 2023
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
-        </address>
-<p>In <a href="/category/math.html">math</a>.</p>
-<p>tags: <a href="/tag/figure.html">figure</a> </p>
-</footer><!-- /.post-info -->                <p class="first last">선과 각</p>
-
-                <a class="readmore" href="/posts/math/2023/01/30/intro-to-figure">read more</a>
                 </div><!-- /.entry-content -->
             </article></li>
                 </ol><!-- /#posts-list -->
