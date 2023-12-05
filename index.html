@@ -13,6 +13,8 @@
                 <h1><a href="/">junehan.dev.log</a></h1>
                 <nav><ul>
                     <li><a href="/category/algorithm.html">algorithm</a></li>
+                    <li><a href="/category/book-review.html">book-review</a></li>
+                    <li><a href="/category/book-summary.html">book-summary</a></li>
                     <li><a href="/category/database.html">database</a></li>
                     <li><a href="/category/datastructure.html">datastructure</a></li>
                     <li><a href="/category/math.html">math</a></li>
@@ -22,7 +24,258 @@
 
             <aside id="featured" class="body">
                 <article>
-                    <h1 class="entry-title"><a href="/posts/database/2023/09/11/sql-views">Query Primer 14. SQL-Views</a></h1>
+                    <h1 class="entry-title"><a href="/posts/book-summary/2023/11/26/practical-vim-1-the-vim-way">Practical Vim/1/The vim way</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2023-11-26T23:41:00+09:00">
+                Published: Sun 26 November 2023
+        </abbr>
+		<br />
+        <abbr class="modified" title="2023-12-05T19:10:00+09:00">
+                Updated: Tue 05 December 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/book-summary.html">book-summary</a>.</p>
+<p>tags: <a href="/tag/vim.html">vim</a> <a href="/tag/practical-vim.html">practical vim</a> </p>
+</footer><!-- /.post-info --><div class="section" id="intro">
+<h2>Intro</h2>
+<div class="line-block">
+<div class="line">우리의 작업은 자연적으로 반복을 수반한다.</div>
+<div class="line">반복적으로 실행되는 작업으로 연결되는 것은 우리의 시간을 수 십배만큼 절약시킬 수 있다.</div>
+</div>
+<div class="line-block">
+<div class="line">Vim은 반복작업에 최적화가 되어 있다.</div>
+<div class="line">Vim의 효율성은 우리의 마지막 행동을 기록하는 것에 기초한다.</div>
+<div class="line">그들이 다시 동작했을 때 유용한 단위의 행동을 하도록 우리의 행동을 개선하도록 습득하지 않는다면 의미없다.</div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">.&lt;DOT-COMMAND&gt;</span></tt>명령은 이것의 시작이다.</div>
+<div class="line">이것은 눈에 보이듯이 매우 간단한 명령이고 대중적인 도구이지만,</div>
+<div class="line">이것을 잘 이해하는 것이 vim을 마스터하기 위한 첫번째 도약이 될 것이다.</div>
+</div>
+</div>
+<div class="section" id="tip-1-dot-command">
+<h2>TIP-1 Dot command</h2>
+<div class="line-block">
+<div class="line">Vim은 두 가지 모드에서 변화에 대한 키 입력을 기록한다.</div>
+</div>
+<blockquote>
+<ul class="simple">
+<li>Normal mode changes(<tt class="docutils literal">&gt;&gt;</tt>, <tt class="docutils literal">x</tt>, <tt class="docutils literal">dd</tt>)</li>
+<li>Insert mode changes</li>
+</ul>
+</blockquote>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">.&lt;DOT-COMMAND&gt;</span></tt>키는 이 기록의 마지막 키입력 단위를 반복해서 현재 커서위치에 적용한다.</div>
+</div>
+</div>
+<div class="section" id="tip-2-don-t-repeat-yourself">
+<h2>TIP-2 Don't repeat yourself</h2>
+<div class="section" id="reduce-extraneous-movement">
+<h3>Reduce Extraneous Movement</h3>
+<ul>
+<li><p class="first">아래의 텍스트 각 줄의 끝에 ';'삽입하기</p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">bar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">foobar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span>
+</pre></div>
+</blockquote>
+</li>
+<li><p class="first">기본명령을 사용한 과정과 단축된 방법</p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="c">&quot; procedural way</span>
+$<span class="k">a</span>;
+<span class="k">j</span>$.
+<span class="k">j</span>$.
+
+<span class="c">&quot; improved way</span>
+A;
+<span class="k">j</span>.
+<span class="k">j</span>.
+</pre></div>
+</blockquote>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Compound Commands.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name"><tt class="docutils literal">C</tt>:</th><td class="field-body"><tt class="docutils literal">c$</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">s</tt>:</th><td class="field-body"><tt class="docutils literal">cl</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">S</tt>:</th><td class="field-body"><tt class="docutils literal">^C</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">I</tt>:</th><td class="field-body"><tt class="docutils literal">^i</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">A</tt>:</th><td class="field-body"><tt class="docutils literal">$a</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">o</tt>:</th><td class="field-body"><tt class="docutils literal">A&lt;CR&gt;</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">O</tt>:</th><td class="field-body"><tt class="docutils literal">ko</tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="tip-3-take-one-step-back-then-three-forward">
+<h2>TIP-3 Take One Step Back, Then Three Forward</h2>
+<div class="section" id="padding-characters">
+<h3>Padding Characters</h3>
+<div class="line-block">
+<div class="line">여기서도 Vim의 관용구적인 사용법을 활용하여</div>
+<div class="line">특정 문자 좌우로 &lt;SPACE&gt;를 삽입하는 실습을 진행한다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;method(&quot;</span><span class="o">+</span><span class="nx">argument1</span><span class="o">+</span><span class="s2">&quot;,&quot;</span><span class="o">+</span><span class="nx">arguments2</span><span class="o">+</span><span class="s2">&quot;)&quot;</span><span class="p">;</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="c">&quot; 1. find + in a line forward from cursor</span>
+<span class="k">f</span><span class="p">+</span>
+
+<span class="c">&quot; 2. delete cursor char and insert &quot; + &quot;</span>
+s <span class="p">+</span> <span class="p">&lt;</span>ESC<span class="p">&gt;</span>
+
+<span class="c">&quot; 3. find next and redo 3 times</span>
+;.
+;.
+;.
+</pre></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">s</tt>키는 두 가지(삭제 + 삽입모드)를 한번에 진행한다.</div>
+<div class="line">우리는 이를 통해 <tt class="docutils literal"><span class="pre">.&lt;DOT-COMMAND&gt;</span></tt>를 사용하여 이후의 과정을 원활히 진행할 수 있다.</div>
+</div>
+</div>
+</div>
+<div class="section" id="tip-4-act-repeat-reverse">
+<h2>TIP.4 Act, Repeat, Reverse</h2>
+<table border="1" class="docutils">
+<caption>Repeatable Actions and How to Reverse Them</caption>
+<colgroup>
+<col width="45%" />
+<col width="36%" />
+<col width="9%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">의도</th>
+<th class="head">명령</th>
+<th class="head">반복</th>
+<th class="head">되돌리기</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Make a change</td>
+<td>{모든 수정사항}</td>
+<td><tt class="docutils literal">.</tt></td>
+<td><tt class="docutils literal">u</tt></td>
+</tr>
+<tr><td>Scan line for next char</td>
+<td><tt class="docutils literal"><span class="pre">f{char}/t{char}</span></tt></td>
+<td><tt class="docutils literal">;</tt></td>
+<td><tt class="docutils literal">,</tt></td>
+</tr>
+<tr><td>Scan line for prev char</td>
+<td><tt class="docutils literal"><span class="pre">F{char}/T{char}</span></tt></td>
+<td><tt class="docutils literal">;</tt></td>
+<td><tt class="docutils literal">,</tt></td>
+</tr>
+<tr><td>Scan document for next match</td>
+<td><tt class="docutils literal">/pattern&lt;CR&gt;</tt></td>
+<td><tt class="docutils literal">n</tt></td>
+<td><tt class="docutils literal">N</tt></td>
+</tr>
+<tr><td>Scan document for prev match</td>
+<td><tt class="docutils literal"><span class="pre">?pattern&lt;CR&gt;</span></tt></td>
+<td><tt class="docutils literal">n</tt></td>
+<td><tt class="docutils literal">N</tt></td>
+</tr>
+<tr><td>Perform substitution</td>
+<td><tt class="docutils literal">s/target/replacement</tt></td>
+<td><tt class="docutils literal">&amp;</tt></td>
+<td><tt class="docutils literal">u</tt></td>
+</tr>
+<tr><td>Execute a sequence of changes(macro record)</td>
+<td><tt class="docutils literal">qx{changes}q</tt></td>
+<td><tt class="docutils literal">&#64;x</tt></td>
+<td><tt class="docutils literal">u</tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="tip-5-find-and-replace-by-hand">
+<h2>TIP.5 Find and Replace by Hand</h2>
+<div class="line-block">
+<div class="line">formal way로써는 <tt class="docutils literal">:s</tt>, <tt class="docutils literal">:substitute</tt>명령을 사용하여 원하는 패턴을 찾고 값을 교체할 수 있다.</div>
+<div class="line">여기서는 직접 하나씩 비교적 간편하게 교체하는 방법을 소개한다.</div>
+</div>
+<div class="section" id="be-lazy-search-without-typing">
+<h3>Be Lazy: Search Without Typing</h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name"><tt class="docutils literal">*</tt>:</th><td class="field-body"><tt class="docutils literal">/&lt;word on cursor&gt;</tt>와 같이 동작한다.</td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">#</tt>:</th><td class="field-body"><tt class="docutils literal"><span class="pre">?&lt;word</span> on cursor&gt;</tt>와 같이 동작한다.</td>
+</tr>
+</tbody>
+</table>
+<pre class="literal-block">
+Document from vim doc
+
+   'typing을 줄일 수 있는 방법으로, word를 기준으로 find를 할 때
+   *명령은 커서 위에 위치한 word를 찾는다.'
+</pre>
+<div class="highlight"><pre><span></span><span class="c">&quot; find keyword on cursor</span>
+*
+<span class="c">&quot; change key</span>
+<span class="k">cw</span>{WORD}
+<span class="c">&quot; repeat on next</span>
+<span class="k">n</span>.
+</pre></div>
+</div>
+</div>
+<div class="section" id="tip-6-meet-the-dot-formula">
+<h2>TIP.6 Meet the Dot Formula</h2>
+<ol class="arabic simple">
+<li>tip2: 문장 끝에 ;키 추가
+<tt class="docutils literal">A;</tt> + <tt class="docutils literal">j.</tt></li>
+<li>tip3: padding space on '+' character
+<tt class="docutils literal">f+</tt> + <tt class="docutils literal">s + &lt;CR&gt;</tt> + <tt class="docutils literal">;.</tt></li>
+<li>tip5: replace word by hand
+<tt class="docutils literal">*</tt> + <tt class="docutils literal">cw{WORD}</tt> + <tt class="docutils literal">n.</tt></li>
+</ol>
+<div class="section" id="the-ideal-1-key-move-1-key-execute">
+<h3>The Ideal: 1 Key(move) + 1 Key(execute)</h3>
+<div class="line-block">
+<div class="line">한번의 키 입력으로 원하는 위치로 이동하고,</div>
+<div class="line">한번의 키 입력으로 원하는 변경을 수행하는 것.</div>
+<div class="line">이것은 이상적인 해결책이다.</div>
+<div class="line">이러한 해결법을 앞으로도 사용하게 될 것이고,</div>
+<div class="line">이 패턴으로 <em>Dot Formula</em>라고 부르기로 한다.</div>
+</div>
+</div>
+</div>
+                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/posts/database/2023/09/11/sql-views" rel="bookmark"
+                           title="Permalink to Query Primer 14. SQL-Views">Query Primer 14. SQL-Views</a></h1>
+                </header>
+
+                <div class="entry-content">
 <footer class="post-info">
         <abbr class="published" title="2023-09-11T18:04:00+09:00">
                 Published: Mon 11 September 2023
@@ -37,180 +290,11 @@
         </address>
 <p>In <a href="/category/database.html">database</a>.</p>
 <p>tags: <a href="/tag/database.html">database</a> </p>
-</footer><!-- /.post-info --><div class="section" id="subject-view">
-<h2>SUBJECT: view를 활용하여 인터페이스를 구현해보자</h2>
-<blockquote>
-<div class="line-block">
-<div class="line">공공 인터페이스는 내부 구현을 추상화하여 사용자에게 상세한 지식을 필요로 하지 않도록 한다.</div>
-<div class="line">view를 통해서 테이블의 정보를 숨기고 view를 통해서만 접근이 가능하도록 할 수 있다.</div>
-</div>
-<ul>
-<li><p class="first">References</p>
-<blockquote>
-<ul>
-<li><p class="first">web</p>
-</li>
-<li><p class="first">text book</p>
-<blockquote>
-<ul class="simple">
-<li>Learning sql 3rd edition/Alan Beaulieu/9781492057611</li>
-<li>SQL level up/Mic/9788968482519</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</li>
-</ul>
-</blockquote>
-</div>
-<div class="section" id="views">
-<h2>Views란 무엇인가?</h2>
-<div class="line-block">
-<div class="line">view는 데이터를 추출하는 메커니즘이다.</div>
-<div class="line">테이블과 달리 실제 데이터를 가지고 있지 않으며,</div>
-<div class="line"><tt class="docutils literal">select</tt>구문에 대해 이름을 부여하는 것으로 view를 생성할 수 있다.</div>
-</div>
-<div class="line-block">
-<div class="line">예를 들어, 고객정보 테이블에서 이메일 주소를 부분적으로 알려지지 않는 것으로 하려 한다.</div>
-<div class="line">마케팅 부서에서는 광고 관련한 의도로 해당 이메일에 접근을 필요로 할 수 있다.</div>
-<div class="line">하지만 해당 회사의 개인정보 보호법상 이 데이터는 보안이 지켜져야 하는 것이다.</div>
-<div class="line">그러므로 직접 데이터 테이블의 접근을 허용하지 않는 대신,</div>
-<div class="line">view를 생성하여, 마케팅 의도가 아닌 개인적인 사용에 고객정보에 접근하려면 이것을 사용하도록 주문할 수 있다.</div>
-</div>
-<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">customer_vw</span><span class="w"> </span><span class="p">(</span>
-<span class="w">   </span><span class="n">customer_id</span><span class="p">,</span>
-<span class="w">   </span><span class="n">first_name</span><span class="p">,</span>
-<span class="w">   </span><span class="n">last_name</span><span class="p">,</span>
-<span class="w">   </span><span class="n">email</span>
-<span class="p">)</span><span class="w"> </span><span class="k">AS</span>
-<span class="w">   </span><span class="k">SELECT</span>
-<span class="w">      </span><span class="n">customer_id</span><span class="p">,</span>
-<span class="w">      </span><span class="n">first_name</span><span class="p">,</span>
-<span class="w">      </span><span class="n">last_name</span><span class="p">,</span>
-<span class="w">      </span><span class="n">CONCAT</span><span class="p">(</span><span class="n">SUBSTR</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;*****&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">SUBSTR</span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">4</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">email</span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="p">;</span>
-</pre></div>
-</div>
-<div class="section" id="view">
-<h2>view를 사용하는 이유</h2>
-<div class="section" id="data">
-<h3>Data 보안</h3>
-<div class="line-block">
-<div class="line">권한에 맞게 접근 단위를 조절하는 방법으로 가장 좋은 제안은,</div>
-<div class="line">유저에 대해서 table에 대한 <tt class="docutils literal">select</tt>의 권한을 주지 않으면서,</div>
-<div class="line">view를 생성해 감춰야할 정보를 생략하거나 일부 감추는 것으로 하는 것이다.</div>
-<div class="line">또한 view에서 <tt class="docutils literal">where</tt>조건을 걸어 유저가 접근이 가능한 데이터에 제약을 둘 수 도 있다.</div>
-</div>
-</div>
-<div class="section" id="data-1">
-<h3>Data 집약과 추상화</h3>
-<div class="line-block">
-<div class="line">프로그램에 대해 정리하는 것은 일반적으로 집약된 데이터를 요구하고,</div>
-<div class="line">view는 그러한 상태로 database에 저장되어 있는 것처럼 보이게 하는 좋은 방법이다.</div>
-<div class="line">또한 긴 SQL을 저장할 수 있기에, JOIN으로 연결된 다수의 테이블을 하나의 테이블처럼 추상화할 수 있다는 장점이 있다.</div>
-</div>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">sales_by_film_category</span>
-<span class="k">AS</span>
-<span class="w">   </span><span class="k">SELECT</span>
-<span class="w">      </span><span class="k">c</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">category</span><span class="p">,</span>
-<span class="w">      </span><span class="k">SUM</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_sales</span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">p</span>
-<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
-<span class="w">         </span><span class="n">rental</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">rental_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">rental_id</span>
-<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
-<span class="w">         </span><span class="n">inventory</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">inventory_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">inventory_id</span>
-<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
-<span class="w">         </span><span class="n">film</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">film_id</span>
-<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
-<span class="w">         </span><span class="n">film_category</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">fc</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="n">film_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fc</span><span class="p">.</span><span class="n">film_id</span>
-<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span>
-<span class="w">         </span><span class="n">category</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">fc</span><span class="p">.</span><span class="n">category_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">category_id</span>
-<span class="w">   </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">name</span>
-<span class="w">   </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">total_sales</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
-</pre></div>
-</blockquote>
-</div>
-<div class="section" id="section-1">
-<h3>분할된 데이터의 결합</h3>
-<div class="line-block">
-<div class="line">때로 데이터베이스는 커다란 테이블을 성능 개선을 이유로 분할하는 경우가 있다.</div>
-<div class="line">예를 들어 오래된 데이터나 자주 사용하지 않을 데이터만 따로 추출해서 보관하는 것으로 테이블의 크기를 줄인다.</div>
-</div>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">payment_all</span>
-<span class="w">   </span><span class="n">payment_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">staff_id</span><span class="p">,</span><span class="w"> </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">payment_date</span><span class="p">,</span><span class="w"> </span><span class="n">last_update</span>
-<span class="k">AS</span>
-<span class="w">   </span><span class="k">SELECT</span>
-<span class="w">      </span><span class="n">payment_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">staff_id</span><span class="p">,</span><span class="w"> </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">payment_date</span><span class="p">,</span><span class="w"> </span><span class="n">last_update</span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment_old</span>
-<span class="w">   </span><span class="k">UNION</span><span class="w"> </span><span class="k">ALL</span>
-<span class="w">   </span><span class="k">SELECT</span>
-<span class="w">      </span><span class="n">payment_id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">staff_id</span><span class="p">,</span><span class="w"> </span><span class="n">rental_id</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">payment_date</span><span class="p">,</span><span class="w"> </span><span class="n">last_update</span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">payment_current</span><span class="p">;</span>
-</pre></div>
-</blockquote>
-<div class="line-block">
-<div class="line">이 활용방식은 좋은 사례인데, 참조 테이블의 데이터의 구조를 변경하고자 할때</div>
-<div class="line">모든 유저들이 기존에 이 View를 사용하고 있었다면,</div>
-<div class="line">그들의 쿼리를 변경할 필요 없이 구조 변경이 종료될 수 있다.</div>
-</div>
-</div>
-<div class="section" id="view-1">
-<h3>View의 데이터 조작과 기반 테이블</h3>
-<div class="line-block">
-<div class="line">View로 생성된 결과 테이블이 참조하는 base table의 데이터 항목을 변형하지 않은 상태이며 제약을 위반하지 않는다면,</div>
-<div class="line">하나의 base table에 <tt class="docutils literal">UPDATE, DELETE, INSERT</tt>가 모두 가능하다.</div>
-<div class="line">View에 포함된 데이터 Column의 base 테이블간의 관계, 그리고 제약사항을 감안하여 반드시 체크해야 한다.</div>
-<div class="line">(<em>권한상으로 View에 대해</em> <tt class="docutils literal">UPDATE</tt><em>만 가능하도록 하는 것이 가장 낫다.</em>)</div>
-</div>
-<blockquote>
-<div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">customer_details</span>
-<span class="k">AS</span>
-<span class="w">   </span><span class="k">SELECT</span>
-<span class="w">      </span><span class="k">c</span><span class="p">.</span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">store_id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">first_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">last_name</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">active</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">create_date</span><span class="p">,</span>
-<span class="w">      </span><span class="n">a</span><span class="p">.</span><span class="n">address</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">postal_code</span><span class="p">,</span>
-<span class="w">      </span><span class="n">ct</span><span class="p">.</span><span class="n">city</span><span class="p">,</span>
-<span class="w">      </span><span class="n">cn</span><span class="p">.</span><span class="n">country</span>
-<span class="w">   </span><span class="k">FROM</span><span class="w"> </span><span class="n">customer</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">c</span>
-<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">address_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">address_id</span>
-<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ct</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">city_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">city_id</span>
-<span class="w">      </span><span class="k">INNER</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cn</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">ct</span><span class="p">.</span><span class="n">country_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cn</span><span class="p">.</span><span class="n">country_id</span><span class="p">;</span>
+</footer><!-- /.post-info -->                <p class="first last">view, api in dbms</p>
 
-<span class="o">#</span><span class="w"> </span><span class="n">SUCCESS</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="k">table</span>
-<span class="k">UPDATE</span><span class="w"> </span><span class="n">customer_details</span>
-<span class="k">SET</span>
-<span class="w">   </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;SMITH-ALLEN&#39;</span>
-<span class="w">   </span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">03</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"> </span><span class="k">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
-
-<span class="o">#</span><span class="w"> </span><span class="n">SUCCESS</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="k">table</span>
-<span class="k">UPDATE</span><span class="w"> </span><span class="n">customer_details</span>
-<span class="k">SET</span>
-<span class="w">   </span><span class="n">address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;999 Mockingbird Lane&#39;</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">03</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w"> </span><span class="k">Rows</span><span class="w"> </span><span class="n">matched</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Changed</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="n">Warnings</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
-
-<span class="o">#</span><span class="w"> </span><span class="n">Fail</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="n">tables</span>
-<span class="k">UPDATE</span><span class="w"> </span><span class="n">customer_details</span>
-<span class="k">SET</span>
-<span class="w">   </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;SMITH-ALLEN&#39;</span>
-<span class="w">   </span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
-<span class="w">   </span><span class="n">address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;999 Mockingbird Lane&#39;</span>
-<span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-<span class="n">ERROR</span><span class="w"> </span><span class="mi">1393</span><span class="w"> </span><span class="p">(</span><span class="n">HY000</span><span class="p">):</span><span class="w"> </span><span class="n">Can</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">modify</span><span class="w"> </span><span class="k">more</span><span class="w"> </span><span class="k">than</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">through</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="k">view</span><span class="w"> </span><span class="s1">&#39;sakila.customer_details&#39;</span>
-</pre></div>
-</blockquote>
-</div>
-</div>
-                </article>
-            </aside><!-- /#featured -->
-                <section id="content" class="body">
-                    <h1>Other articles</h1>
-                    <hr />
-                    <ol id="posts-list" class="hfeed">
+                <a class="readmore" href="/posts/database/2023/09/11/sql-views">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
 
             <li><article class="hentry">
                 <header>
@@ -295,7 +379,7 @@
 
             <li><article class="hentry">
                 <header>
-                    <h1><a href="/posts/writting/2023/04/11/summary-to-the-understanding-the-digital-world" rel="bookmark"
+                    <h1><a href="/posts/book-summary/2023/04/11/summary-to-the-understanding-the-digital-world" rel="bookmark"
                            title="Permalink to Book Summary, "Understanding the digital World"">Book Summary, &quot;Understanding the digital World&quot;</a></h1>
                 </header>
 
@@ -312,11 +396,11 @@
         <address class="vcard author">
                 By                         <a class="url fn" href="/author/junehan.html">junehan</a>
         </address>
-<p>In <a href="/category/writting.html">writting</a>.</p>
-<p>tags: <a href="/tag/summary.html">summary</a> <a href="/tag/book.html">book</a> <a href="/tag/ongoing.html">ongoing</a> </p>
+<p>In <a href="/category/book-summary.html">book-summary</a>.</p>
+
 </footer><!-- /.post-info -->                <p class="first last">summary for IT summary by brian kernighan</p>
 
-                <a class="readmore" href="/posts/writting/2023/04/11/summary-to-the-understanding-the-digital-world">read more</a>
+                <a class="readmore" href="/posts/book-summary/2023/04/11/summary-to-the-understanding-the-digital-world">read more</a>
                 </div><!-- /.entry-content -->
             </article></li>
 
@@ -425,33 +509,6 @@
 </footer><!-- /.post-info -->                <p class="first last">Aggregations in database</p>
 
                 <a class="readmore" href="/posts/database/2023/02/28/grouping-and-aggregates">read more</a>
-                </div><!-- /.entry-content -->
-            </article></li>
-
-            <li><article class="hentry">
-                <header>
-                    <h1><a href="/posts/database/2023/02/10/Data-generation-manipulation-conversion" rel="bookmark"
-                           title="Permalink to Query Primer 7. Data Generation, Manipulation, and Conversion">Query Primer 7. Data Generation, Manipulation, and Conversion</a></h1>
-                </header>
-
-                <div class="entry-content">
-<footer class="post-info">
-        <abbr class="published" title="2023-02-10T18:18:00+09:00">
-                Published: Fri 10 February 2023
-        </abbr>
-		<br />
-        <abbr class="modified" title="2023-02-27T19:41:00+09:00">
-                Updated: Mon 27 February 2023
-        </abbr>
-
-        <address class="vcard author">
-                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
-        </address>
-<p>In <a href="/category/database.html">database</a>.</p>
-<p>tags: <a href="/tag/sql.html">sql</a> </p>
-</footer><!-- /.post-info -->                <p class="first last">intro to data manipulates and DDL</p>
-
-                <a class="readmore" href="/posts/database/2023/02/10/Data-generation-manipulation-conversion">read more</a>
                 </div><!-- /.entry-content -->
             </article></li>
                 </ol><!-- /#posts-list -->

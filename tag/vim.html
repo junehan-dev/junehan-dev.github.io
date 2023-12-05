@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>junehan.dev.log - vim</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">junehan.dev.log</a></h1>
+                <nav><ul>
+                    <li><a href="/category/algorithm.html">algorithm</a></li>
+                    <li><a href="/category/book-review.html">book-review</a></li>
+                    <li><a href="/category/book-summary.html">book-summary</a></li>
+                    <li><a href="/category/database.html">database</a></li>
+                    <li><a href="/category/datastructure.html">datastructure</a></li>
+                    <li><a href="/category/math.html">math</a></li>
+                    <li><a href="/category/writting.html">writting</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/posts/book-summary/2023/11/26/practical-vim-1-the-vim-way">Practical Vim/1/The vim way</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2023-11-26T23:41:00+09:00">
+                Published: Sun 26 November 2023
+        </abbr>
+		<br />
+        <abbr class="modified" title="2023-12-05T19:10:00+09:00">
+                Updated: Tue 05 December 2023
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/junehan.html">junehan</a>
+        </address>
+<p>In <a href="/category/book-summary.html">book-summary</a>.</p>
+<p>tags: <a href="/tag/vim.html">vim</a> <a href="/tag/practical-vim.html">practical vim</a> </p>
+</footer><!-- /.post-info --><div class="section" id="intro">
+<h2>Intro</h2>
+<div class="line-block">
+<div class="line">우리의 작업은 자연적으로 반복을 수반한다.</div>
+<div class="line">반복적으로 실행되는 작업으로 연결되는 것은 우리의 시간을 수 십배만큼 절약시킬 수 있다.</div>
+</div>
+<div class="line-block">
+<div class="line">Vim은 반복작업에 최적화가 되어 있다.</div>
+<div class="line">Vim의 효율성은 우리의 마지막 행동을 기록하는 것에 기초한다.</div>
+<div class="line">그들이 다시 동작했을 때 유용한 단위의 행동을 하도록 우리의 행동을 개선하도록 습득하지 않는다면 의미없다.</div>
+</div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">.&lt;DOT-COMMAND&gt;</span></tt>명령은 이것의 시작이다.</div>
+<div class="line">이것은 눈에 보이듯이 매우 간단한 명령이고 대중적인 도구이지만,</div>
+<div class="line">이것을 잘 이해하는 것이 vim을 마스터하기 위한 첫번째 도약이 될 것이다.</div>
+</div>
+</div>
+<div class="section" id="tip-1-dot-command">
+<h2>TIP-1 Dot command</h2>
+<div class="line-block">
+<div class="line">Vim은 두 가지 모드에서 변화에 대한 키 입력을 기록한다.</div>
+</div>
+<blockquote>
+<ul class="simple">
+<li>Normal mode changes(<tt class="docutils literal">&gt;&gt;</tt>, <tt class="docutils literal">x</tt>, <tt class="docutils literal">dd</tt>)</li>
+<li>Insert mode changes</li>
+</ul>
+</blockquote>
+<div class="line-block">
+<div class="line"><tt class="docutils literal"><span class="pre">.&lt;DOT-COMMAND&gt;</span></tt>키는 이 기록의 마지막 키입력 단위를 반복해서 현재 커서위치에 적용한다.</div>
+</div>
+</div>
+<div class="section" id="tip-2-don-t-repeat-yourself">
+<h2>TIP-2 Don't repeat yourself</h2>
+<div class="section" id="reduce-extraneous-movement">
+<h3>Reduce Extraneous Movement</h3>
+<ul>
+<li><p class="first">아래의 텍스트 각 줄의 끝에 ';'삽입하기</p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">bar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">foobar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span>
+</pre></div>
+</blockquote>
+</li>
+<li><p class="first">기본명령을 사용한 과정과 단축된 방법</p>
+<blockquote>
+<div class="highlight"><pre><span></span><span class="c">&quot; procedural way</span>
+$<span class="k">a</span>;
+<span class="k">j</span>$.
+<span class="k">j</span>$.
+
+<span class="c">&quot; improved way</span>
+A;
+<span class="k">j</span>.
+<span class="k">j</span>.
+</pre></div>
+</blockquote>
+</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>Compound Commands.</p>
+<table class="last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name"><tt class="docutils literal">C</tt>:</th><td class="field-body"><tt class="docutils literal">c$</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">s</tt>:</th><td class="field-body"><tt class="docutils literal">cl</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">S</tt>:</th><td class="field-body"><tt class="docutils literal">^C</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">I</tt>:</th><td class="field-body"><tt class="docutils literal">^i</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">A</tt>:</th><td class="field-body"><tt class="docutils literal">$a</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">o</tt>:</th><td class="field-body"><tt class="docutils literal">A&lt;CR&gt;</tt></td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">O</tt>:</th><td class="field-body"><tt class="docutils literal">ko</tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="section" id="tip-3-take-one-step-back-then-three-forward">
+<h2>TIP-3 Take One Step Back, Then Three Forward</h2>
+<div class="section" id="padding-characters">
+<h3>Padding Characters</h3>
+<div class="line-block">
+<div class="line">여기서도 Vim의 관용구적인 사용법을 활용하여</div>
+<div class="line">특정 문자 좌우로 &lt;SPACE&gt;를 삽입하는 실습을 진행한다.</div>
+</div>
+<div class="highlight"><pre><span></span><span class="kd">var</span><span class="w"> </span><span class="nx">foo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;method(&quot;</span><span class="o">+</span><span class="nx">argument1</span><span class="o">+</span><span class="s2">&quot;,&quot;</span><span class="o">+</span><span class="nx">arguments2</span><span class="o">+</span><span class="s2">&quot;)&quot;</span><span class="p">;</span>
+</pre></div>
+<div class="highlight"><pre><span></span><span class="c">&quot; 1. find + in a line forward from cursor</span>
+<span class="k">f</span><span class="p">+</span>
+
+<span class="c">&quot; 2. delete cursor char and insert &quot; + &quot;</span>
+s <span class="p">+</span> <span class="p">&lt;</span>ESC<span class="p">&gt;</span>
+
+<span class="c">&quot; 3. find next and redo 3 times</span>
+;.
+;.
+;.
+</pre></div>
+<div class="line-block">
+<div class="line"><tt class="docutils literal">s</tt>키는 두 가지(삭제 + 삽입모드)를 한번에 진행한다.</div>
+<div class="line">우리는 이를 통해 <tt class="docutils literal"><span class="pre">.&lt;DOT-COMMAND&gt;</span></tt>를 사용하여 이후의 과정을 원활히 진행할 수 있다.</div>
+</div>
+</div>
+</div>
+<div class="section" id="tip-4-act-repeat-reverse">
+<h2>TIP.4 Act, Repeat, Reverse</h2>
+<table border="1" class="docutils">
+<caption>Repeatable Actions and How to Reverse Them</caption>
+<colgroup>
+<col width="45%" />
+<col width="36%" />
+<col width="9%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">의도</th>
+<th class="head">명령</th>
+<th class="head">반복</th>
+<th class="head">되돌리기</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>Make a change</td>
+<td>{모든 수정사항}</td>
+<td><tt class="docutils literal">.</tt></td>
+<td><tt class="docutils literal">u</tt></td>
+</tr>
+<tr><td>Scan line for next char</td>
+<td><tt class="docutils literal"><span class="pre">f{char}/t{char}</span></tt></td>
+<td><tt class="docutils literal">;</tt></td>
+<td><tt class="docutils literal">,</tt></td>
+</tr>
+<tr><td>Scan line for prev char</td>
+<td><tt class="docutils literal"><span class="pre">F{char}/T{char}</span></tt></td>
+<td><tt class="docutils literal">;</tt></td>
+<td><tt class="docutils literal">,</tt></td>
+</tr>
+<tr><td>Scan document for next match</td>
+<td><tt class="docutils literal">/pattern&lt;CR&gt;</tt></td>
+<td><tt class="docutils literal">n</tt></td>
+<td><tt class="docutils literal">N</tt></td>
+</tr>
+<tr><td>Scan document for prev match</td>
+<td><tt class="docutils literal"><span class="pre">?pattern&lt;CR&gt;</span></tt></td>
+<td><tt class="docutils literal">n</tt></td>
+<td><tt class="docutils literal">N</tt></td>
+</tr>
+<tr><td>Perform substitution</td>
+<td><tt class="docutils literal">s/target/replacement</tt></td>
+<td><tt class="docutils literal">&amp;</tt></td>
+<td><tt class="docutils literal">u</tt></td>
+</tr>
+<tr><td>Execute a sequence of changes(macro record)</td>
+<td><tt class="docutils literal">qx{changes}q</tt></td>
+<td><tt class="docutils literal">&#64;x</tt></td>
+<td><tt class="docutils literal">u</tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="tip-5-find-and-replace-by-hand">
+<h2>TIP.5 Find and Replace by Hand</h2>
+<div class="line-block">
+<div class="line">formal way로써는 <tt class="docutils literal">:s</tt>, <tt class="docutils literal">:substitute</tt>명령을 사용하여 원하는 패턴을 찾고 값을 교체할 수 있다.</div>
+<div class="line">여기서는 직접 하나씩 비교적 간편하게 교체하는 방법을 소개한다.</div>
+</div>
+<div class="section" id="be-lazy-search-without-typing">
+<h3>Be Lazy: Search Without Typing</h3>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name"><tt class="docutils literal">*</tt>:</th><td class="field-body"><tt class="docutils literal">/&lt;word on cursor&gt;</tt>와 같이 동작한다.</td>
+</tr>
+<tr class="field"><th class="field-name"><tt class="docutils literal">#</tt>:</th><td class="field-body"><tt class="docutils literal"><span class="pre">?&lt;word</span> on cursor&gt;</tt>와 같이 동작한다.</td>
+</tr>
+</tbody>
+</table>
+<pre class="literal-block">
+Document from vim doc
+
+   'typing을 줄일 수 있는 방법으로, word를 기준으로 find를 할 때
+   *명령은 커서 위에 위치한 word를 찾는다.'
+</pre>
+<div class="highlight"><pre><span></span><span class="c">&quot; find keyword on cursor</span>
+*
+<span class="c">&quot; change key</span>
+<span class="k">cw</span>{WORD}
+<span class="c">&quot; repeat on next</span>
+<span class="k">n</span>.
+</pre></div>
+</div>
+</div>
+<div class="section" id="tip-6-meet-the-dot-formula">
+<h2>TIP.6 Meet the Dot Formula</h2>
+<ol class="arabic simple">
+<li>tip2: 문장 끝에 ;키 추가
+<tt class="docutils literal">A;</tt> + <tt class="docutils literal">j.</tt></li>
+<li>tip3: padding space on '+' character
+<tt class="docutils literal">f+</tt> + <tt class="docutils literal">s + &lt;CR&gt;</tt> + <tt class="docutils literal">;.</tt></li>
+<li>tip5: replace word by hand
+<tt class="docutils literal">*</tt> + <tt class="docutils literal">cw{WORD}</tt> + <tt class="docutils literal">n.</tt></li>
+</ol>
+<div class="section" id="the-ideal-1-key-move-1-key-execute">
+<h3>The Ideal: 1 Key(move) + 1 Key(execute)</h3>
+<div class="line-block">
+<div class="line">한번의 키 입력으로 원하는 위치로 이동하고,</div>
+<div class="line">한번의 키 입력으로 원하는 변경을 수행하는 것.</div>
+<div class="line">이것은 이상적인 해결책이다.</div>
+<div class="line">이러한 해결법을 앞으로도 사용하게 될 것이고,</div>
+<div class="line">이 패턴으로 <em>Dot Formula</em>라고 부르기로 한다.</div>
+</div>
+</div>
+</div>
+                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="https://github.com/junehan-dev">github</a></li>
+                            <li><a href="https://junehan-dev.github.io/doc">study blog</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="https://github.com/junehan-dev/">github</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a href="https://www.python.org/">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
